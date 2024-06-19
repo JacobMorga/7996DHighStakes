@@ -38,6 +38,8 @@
 #include "vector"
 #include "math.h"
 
+#include "robotConfig.h"
+
 /**
  * You should add more #includes here
  */
