@@ -39,6 +39,8 @@
 #include "math.h"
 
 #include "robotConfig.h"
+#include "odometry.h"
+#include "purePursuit.h"
 
 /**
  * You should add more #includes here
