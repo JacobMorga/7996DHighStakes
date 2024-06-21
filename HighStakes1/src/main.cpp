@@ -7,8 +7,7 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize(); // hehe haha
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::lcd::initialize();
 }
 
 /**
@@ -56,9 +55,28 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	/*
+
+	
+
+	DisplayBox box1 (0,0,120,239,0,2);
+	box1.setButtons({COLOR_BLUE, COLOR_RED}, false);
+
+	DisplayBox box2 (120,0,360,239,3,3);
+	box1.setButtons({COLOR_GREEN}, true);
+
+	DisplayBox box3 (360,0,479,239,0,0);
+
+	vector<DisplayBox> testingRects {box1,box2,box3};
+	autonSelectorNEW(testingRects);
+	*/
 
 	while (true) {
 
+		drive1.move_velocity(600 * controller.get_digital(E_CONTROLLER_DIGITAL_L1));
+		drive2.move_velocity(600 * controller.get_digital(E_CONTROLLER_DIGITAL_L1));
+
 		pros::delay(20);
 	}
+	
 }

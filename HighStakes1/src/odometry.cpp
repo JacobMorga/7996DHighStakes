@@ -55,12 +55,14 @@ void odometry(void){
 
     xTracking.set_position(0.0);
     yTracking.set_position(0.0);
-    inertial.set_heading(0.0);
+    inertial1.set_heading(0.0);
+    inertial2.set_heading(0.0);
+    inertial3.set_heading(0.0);
 
     while(1){
         currentXPosition = xTracking.get_position();
         currentYPosition = yTracking.get_position();
-        currentTheta = inertial.get_rotation();
+        currentTheta = getAngle();
 
         deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / (36000.0 * xWheelSprocketRatio); //inches
         deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / (36000.0 * yWheelSprocketRatio);
