@@ -11,6 +11,7 @@ extern Motor drive6;
 extern Motor_Group rightDrive;
 extern Motor_Group leftDrive;
 extern Motor_Group drivetrain;
+extern Motor intake;
 
 extern Rotation xTracking;
 extern Rotation yTracking;

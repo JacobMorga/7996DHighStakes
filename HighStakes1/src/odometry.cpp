@@ -60,21 +60,23 @@ void odometry(void){
     inertial3.set_heading(0.0);
 
     while(1){
-        currentXPosition = xTracking.get_position();
+        //currentXPosition = xTracking.get_position();
         currentYPosition = yTracking.get_position();
-        currentTheta = getAngle();
+        //currentTheta = getAngle();
+        currentTheta = inertial1.get_rotation();
 
-        deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / (36000.0 * xWheelSprocketRatio); //inches
+        //deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / (36000.0 * xWheelSprocketRatio); //inches
         deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / (36000.0 * yWheelSprocketRatio);
         deltaTheta = currentTheta - previousTheta; //degrees
 
         avgTheta = (previousTheta + currentTheta) / 2.0;
 
-        previousXPosition = currentXPosition;
+        //previousXPosition = currentXPosition;
         previousYPosition = currentYPosition;
         previousTheta = currentTheta;
 
-        deltaXLocal = 2 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(deltaTheta / 2.0);
+        //deltaXLocal = 2 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(deltaTheta / 2.0);
+        deltaXLocal = 0.0;
         deltaYLocal = 2 * ((deltaYWheel / deltaTheta) + yWheelOffset) * sin(deltaTheta / 2.0);
 
         deltaRLocal = sqrt((powf(deltaXLocal, 2.0)) + powf(deltaYLocal, 2.0));
@@ -86,6 +88,11 @@ void odometry(void){
 
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
+
+        pros::lcd::set_text(1, std::to_string(xPos));
+        pros::lcd::set_text(2, std::to_string(yPos));
+        pros::lcd::set_text(3, std::to_string(currentTheta));
+        pros::lcd::set_text(4, std::to_string(yTracking.get_position()));
 
         delay(10);
     }

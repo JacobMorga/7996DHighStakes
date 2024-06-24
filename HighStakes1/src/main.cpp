@@ -70,12 +70,20 @@ void opcontrol() {
 	vector<DisplayBox> testingRects {box1,box2,box3};
 	autonSelectorNEW(testingRects);
 	*/
+	inertial1.reset();
+	yTracking.reset();
+
+	delay(3000);
+
+	pros::Task my_cpp_task (odometry,"My Task");
 
 	while (true) {
 
-		drive1.move_velocity(600 * controller.get_digital(E_CONTROLLER_DIGITAL_L1));
-		drive2.move_velocity(600 * controller.get_digital(E_CONTROLLER_DIGITAL_L1));
+		rightDrive.move_velocity(controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)/127*600);
+		leftDrive.move_velocity(controller.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)/127*600);
 
+		intake.move_velocity(600 * (controller.get_digital(E_CONTROLLER_DIGITAL_R1) - controller.get_digital(E_CONTROLLER_DIGITAL_R2)));
+		
 		pros::delay(20);
 	}
 	
