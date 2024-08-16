@@ -40,7 +40,7 @@
 
 #include "robotConfig.h"
 #include "odometry.h"
-#include "purePursuit.h"
+#include "motion.h"
 #include "general.h"
 
 /**

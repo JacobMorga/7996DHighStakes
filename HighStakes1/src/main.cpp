@@ -75,7 +75,7 @@ void opcontrol() {
 
 	delay(3000);
 
-	pros::Task my_cpp_task (odometry,"My Task");
+	pros::Task odomTask (odometry, "odomTask");
 
 	while (true) {
 
