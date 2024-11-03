@@ -19,3 +19,6 @@ extern Rotation yTracking;
 extern IMU inertial1;
 extern IMU inertial2;
 extern IMU inertial3;
+
+extern ADIPort backClaw;
+extern ADIPort ploinker;

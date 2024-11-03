@@ -14,6 +14,11 @@ float leastdif = 0.0;
 int difselect = 0;
 float angle = 0.0;
 
+const bool on = true;
+const bool off = false;
+const bool pressed = true;
+const bool unpressed = false;
+
 float getAngle(void){
     dif12 = fabs(inertial1.get_rotation() - inertial2.get_rotation());
     dif23 = fabs(inertial2.get_rotation() - inertial3.get_rotation());

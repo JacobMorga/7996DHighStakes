@@ -42,6 +42,7 @@
 #include "odometry.h"
 #include "motion.h"
 #include "general.h"
+#include "driveCont.h"
 
 /**
  * You should add more #includes here

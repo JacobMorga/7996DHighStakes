@@ -6,6 +6,11 @@ extern const float wheelDia;
 extern float getDir(float input);
 extern float getAngle(void);
 
+extern const bool on;
+extern const bool of;
+extern const bool pressed;
+extern const bool unpressed;
+
 class DisplayBox{
     public:
     float X1 = 0;

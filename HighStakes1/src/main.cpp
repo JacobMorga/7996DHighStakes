@@ -8,6 +8,15 @@
  */
 void initialize() {
 	pros::lcd::initialize();
+	drive1.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive2.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive3.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive4.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
+
+	intake.set_brake_mode(MOTOR_BRAKE_COAST);
+
 }
 
 /**
@@ -79,10 +88,7 @@ void opcontrol() {
 
 	while (true) {
 
-		rightDrive.move_velocity(controller.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)/127*600);
-		leftDrive.move_velocity(controller.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)/127*600);
-
-		intake.move_velocity(600 * (controller.get_digital(E_CONTROLLER_DIGITAL_R1) - controller.get_digital(E_CONTROLLER_DIGITAL_R2)));
+		runDriveCont();
 		
 		pros::delay(20);
 	}
