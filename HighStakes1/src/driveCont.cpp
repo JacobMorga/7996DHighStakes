@@ -23,6 +23,8 @@ void runDriveCont (){
         rightDrive.move_velocity(rightDrivePow); // Sets motors to move
         leftDrive.move_velocity(leftDrivePow);
 
+
+
         if (fabs(rightDrivePow) < 5 && fabs(leftDrivePow) < 5){ // Brakes drive when joytsick hits zero
             rightDrive.brake();
             leftDrive.brake();
@@ -57,5 +59,6 @@ void runDriveCont (){
 
         delay(20);
         // Test
+        //Bibg balls
     }
 }
