@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 float joystickYVal = 0.0;
 float joystickXVal = 0.0;
 float rightDrivePow = 0.0;
@@ -8,7 +7,7 @@ float leftDrivePow = 0.0;
 
 bool buttonR2Prev = 0;
 
-int intakeState = 0; // 0- stoped  1- intake  2- outtake
+int intakeState = 0; // 0- stopped  1- intake  2- outtake
 
 void runDriveCont (){
 
@@ -46,9 +45,9 @@ void runDriveCont (){
             intakeState = 0;
         } 
 
-
-
         buttonR2Prev = controller.get_digital(DIGITAL_R2);
+
+
 
         if (controller.get_digital_new_press(DIGITAL_L1) == pressed){
             backClaw.set_value(!backClaw.get_value());

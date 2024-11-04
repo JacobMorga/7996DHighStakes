@@ -97,12 +97,12 @@ void odometry(void){
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
 
-        pros::lcd::set_text(1, std::to_string(xPos));
-        pros::lcd::set_text(2, std::to_string(yPos));
-        pros::lcd::set_text(3, std::to_string(currentTheta));
-        pros::lcd::set_text(4, std::to_string(yTracking.get_position()));
-        pros::lcd::set_text(4, std::to_string(deltaXGlobal));
-        pros::lcd::set_text(4, std::to_string(deltaYGlobal));
+        lcd::set_text(1, std::to_string(xPos));
+        lcd::set_text(2, std::to_string(yPos));
+        lcd::set_text(3, std::to_string(currentTheta));
+        lcd::set_text(4, std::to_string(yTracking.get_position()));
+        lcd::set_text(4, std::to_string(deltaXGlobal));
+        lcd::set_text(4, std::to_string(deltaYGlobal));
 
         delay(10);
     }

@@ -20,8 +20,8 @@ Rotation xTracking (18);
 Rotation yTracking (9);
 
 IMU inertial1 (1);
-IMU inertial2 (8);
-IMU inertial3 (10);
+IMU inertial2 (2);
+IMU inertial3 (3);
 
 ADIPort backClaw ('A', ADI_DIGITAL_OUT);
 ADIPort ploinker ('B', ADI_DIGITAL_OUT);
