@@ -7,7 +7,7 @@ float leftDrivePow = 0.0;
 
 bool buttonR2Prev = 0;
 
-int intakeState = 0; // 0- stoped  1- intake  2- outtake
+int intakeState = 0; // 0- stopped  1- intake  2- outtake
 
 void runDriveCont (){
 
@@ -43,11 +43,11 @@ void runDriveCont (){
         }
         if (controller.get_digital(DIGITAL_R2) == unpressed && buttonR2Prev == pressed){
             intakeState = 0;
-        }
-
-
+        } 
 
         buttonR2Prev = controller.get_digital(DIGITAL_R2);
+
+
 
         if (controller.get_digital_new_press(DIGITAL_L1) == pressed){
             backClaw.set_value(!backClaw.get_value());
@@ -57,9 +57,5 @@ void runDriveCont (){
         }
 
         delay(20);
-        // Test
-        //Bibg balls
-        //Big g monry
-        // bigger G money
     }
 }

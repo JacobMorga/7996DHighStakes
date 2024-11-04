@@ -80,17 +80,28 @@ void opcontrol() {
 	autonSelectorNEW(testingRects);
 	*/
 	inertial1.reset();
+	inertial2.reset();
+	inertial3.reset();
 	yTracking.reset();
+	xTracking.reset();
 
-	delay(3000);
+	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
+		delay(20);
+	}
 
-	pros::Task odomTask (odometry, "odomTask");
+	delay(500);
+
+	//pros::Task odomTask (odometry, "odomTask");
 
 	while (true) {
 
-		runDriveCont();
+		lcd::set_text(1, std::to_string(inertial1.get_rotation()));
+		lcd::set_text(2, std::to_string(inertial2.get_rotation()));
+		lcd::set_text(3, std::to_string(inertial3.get_rotation()));
+		lcd::set_text(4, std::to_string(getAngle()));
+		//runDriveCont();
 		
-		pros::delay(20);
+		delay(20);
 	}
 	
 }

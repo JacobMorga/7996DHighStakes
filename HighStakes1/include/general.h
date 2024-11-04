@@ -7,7 +7,7 @@ extern float getDir(float input);
 extern float getAngle(void);
 
 extern const bool on;
-extern const bool of;
+extern const bool off;
 extern const bool pressed;
 extern const bool unpressed;
 
