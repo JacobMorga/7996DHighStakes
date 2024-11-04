@@ -44,7 +44,7 @@ void runDriveCont (){
         }
         if (controller.get_digital(DIGITAL_R2) == unpressed && buttonR2Prev == pressed){
             intakeState = 0;
-        }
+        } 
 
 
 
@@ -58,9 +58,5 @@ void runDriveCont (){
         }
 
         delay(20);
-        // Test
-        //Bibg balls
-        //Big g monry
-        // bigger G money
     }
 }
