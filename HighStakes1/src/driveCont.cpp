@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 float joystickYVal = 0.0;
 float joystickXVal = 0.0;
 float rightDrivePow = 0.0;
