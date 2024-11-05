@@ -91,15 +91,11 @@ void opcontrol() {
 
 	delay(500);
 
-	//pros::Task odomTask (odometry, "odomTask");
+	pros::Task odomTask (odometry, "odomTask");
 
 	while (true) {
 
-		lcd::set_text(1, std::to_string(inertial1.get_rotation()));
-		lcd::set_text(2, std::to_string(inertial2.get_rotation()));
-		lcd::set_text(3, std::to_string(inertial3.get_rotation()));
-		lcd::set_text(4, std::to_string(getAngle()));
-		//runDriveCont();
+		runDriveCont();
 		
 		delay(20);
 	}
