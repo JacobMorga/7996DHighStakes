@@ -35,6 +35,10 @@ float getAngle(void){
     return angle;
 }
 
+float getRangle(void){
+    return pi / 180.0 * getAngle();
+}
+
 float arctan2(float x, float y){
     float a = 0.0;
     if (x > 0){

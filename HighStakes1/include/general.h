@@ -6,6 +6,7 @@ extern const float wheelDia;
 extern float getDir(float input);
 extern float getAngle(void);
 extern float arctan2(float x, float y);
+extern float getRangle(void);
 
 extern const bool on;
 extern const bool off;

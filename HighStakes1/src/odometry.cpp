@@ -43,15 +43,18 @@ void odometry(void){
     while(1){
         currentXPosition = xTracking.get_position();
         currentYPosition = yTracking.get_position();
-        currentTheta = getAngle();
-        //currentTheta = inertial1.get_rotation();
+        currentTheta = getRangle();
 
         deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / (36000.0 * xWheelSprocketRatio); //inches
         deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / (36000.0 * yWheelSprocketRatio);
-        deltaTheta = currentTheta - previousTheta; //degrees
+        deltaTheta = currentTheta - previousTheta; //radians
         if (deltaTheta == 0.0){
-            if (rand() % 2 == 0){deltaTheta = 0.001;}
-            else{deltaTheta = -0.001;}
+            deltaXLocal = deltaXWheel;
+            deltaYLocal = deltaYWheel;
+        }
+        else{
+            deltaXLocal = 2.0 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(currentTheta / 2.0);
+            deltaYLocal = 2.0 * ((deltaYWheel / deltaTheta) + yWheelOffset) * sin(currentTheta / 2.0);
         }
 
         avgTheta = (previousTheta + currentTheta) / 2.0;
@@ -59,24 +62,23 @@ void odometry(void){
         previousXPosition = currentXPosition;
         previousYPosition = currentYPosition;
 
-        deltaXLocal = 2.0 * ((deltaXWheel / (pi / 180.0 * deltaTheta)) + xWheelOffset) * sin(pi / 180.0 * deltaTheta / 2.0);
-        //deltaXLocal = 0.0;
-        deltaYLocal = 2.0 * ((deltaYWheel / (pi / 180.0 * deltaTheta)) + yWheelOffset) * sin(pi / 180.0 * deltaTheta / 2.0);
+        deltaXLocal = 2.0 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(currentTheta / 2.0);
+        deltaYLocal = 2.0 * ((deltaYWheel / deltaTheta) + yWheelOffset) * sin(currentTheta / 2.0);
 
         deltaRLocal = sqrt((powf(deltaXLocal, 2.0)) + powf(deltaYLocal, 2.0));
-        deltaThetaLocal = 180.0 / pi * arctan2(deltaXLocal, deltaYLocal);
-        modTheta = deltaThetaLocal - avgTheta - previousTheta;
+        deltaThetaLocal = arctan2(deltaXLocal, deltaYLocal);
+        modTheta = deltaThetaLocal - avgTheta;
         previousTheta = currentTheta;
 
-        deltaXGlobal = deltaRLocal * cos(pi / 180.0 * modTheta);
-        deltaYGlobal = deltaRLocal * sin(pi / 180.0 * modTheta);
+        deltaXGlobal = deltaRLocal * cos(modTheta);
+        deltaYGlobal = deltaRLocal * sin(modTheta);
 
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
 
         lcd::set_text(1, std::to_string(xPos));
         lcd::set_text(2, std::to_string(yPos));
-        lcd::set_text(3, std::to_string(currentTheta));
+        lcd::set_text(3, std::to_string(180.0 / pi * currentTheta));
         lcd::set_text(4, std::to_string(yTracking.get_position()));
         lcd::set_text(5, std::to_string(deltaXGlobal));
         lcd::set_text(6, std::to_string(deltaYGlobal));
