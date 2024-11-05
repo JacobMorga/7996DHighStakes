@@ -22,6 +22,7 @@ float linintmax = 0.0;
 float linder = 0.0;
 float prelinerr = 0.0;
 float linpow = 0.0;
+float ttotar = 0.0;
 
 void rotlinrot(float targetx, float targety, float targett){
     while (terror >= 0.1){

@@ -35,8 +35,23 @@ float getAngle(void){
     return angle;
 }
 
-void atan2(float x, float y){
-    //if
+float arctan2(float x, float y){
+    float a = 0.0;
+    if (x > 0){
+        a = (atan(y / x));
+    }
+    else if (x < 0){
+        a = (atan(y / x) + pi);
+    }
+    else if (x == 0){
+        if (y > 0){
+            a = (pi / 2.0);
+        }
+        if (y < 0){
+            a = (1.5 * pi);
+        }
+    }
+    return a;
 }
 
 

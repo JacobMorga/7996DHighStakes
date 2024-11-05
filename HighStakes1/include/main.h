@@ -43,6 +43,7 @@
 #include "motion.h"
 #include "general.h"
 #include "driveCont.h"
+#include "motionAlgs.h"
 
 /**
  * You should add more #includes here
