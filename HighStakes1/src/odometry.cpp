@@ -43,19 +43,15 @@ void odometry(void){
     while(1){
         currentXPosition = xTracking.get_position();
         currentYPosition = yTracking.get_position();
-        //currentTheta = getAngle();
-        currentTheta = inertial1.get_rotation();
+        currentTheta = getAngle();
+        //currentTheta = inertial1.get_rotation();
 
         deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / (36000.0 * xWheelSprocketRatio); //inches
         deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / (36000.0 * yWheelSprocketRatio);
         deltaTheta = currentTheta - previousTheta; //degrees
         if (deltaTheta == 0.0){
-            if (rand() % 2 == 0){
-                deltaTheta = 0.001;
-            }
-            else{
-                deltaTheta = -0.001;
-            }
+            if (rand() % 2 == 0){deltaTheta = 0.001;}
+            else{deltaTheta = -0.001;}
         }
 
         avgTheta = (previousTheta + currentTheta) / 2.0;
@@ -82,8 +78,8 @@ void odometry(void){
         lcd::set_text(2, std::to_string(yPos));
         lcd::set_text(3, std::to_string(currentTheta));
         lcd::set_text(4, std::to_string(yTracking.get_position()));
-        lcd::set_text(4, std::to_string(deltaXGlobal));
-        lcd::set_text(4, std::to_string(deltaYGlobal));
+        lcd::set_text(5, std::to_string(deltaXGlobal));
+        lcd::set_text(6, std::to_string(deltaYGlobal));
 
         delay(10);
     }

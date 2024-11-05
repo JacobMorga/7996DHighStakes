@@ -27,7 +27,7 @@ float ttotar = 0.0;
 void rotlinrot(float targetx, float targety, float targett){
     while (terror >= 0.1){
         ttotar = 0.0;
-        terror = targett - currentTheta;
+        terror = ttotar - currentTheta;
         rotint += terror;
         if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
         rotder = terror - preterror;
