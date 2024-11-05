@@ -5,6 +5,7 @@ extern const float wheelEncoderRatio;
 extern const float wheelDia;
 extern float getDir(float input);
 extern float getAngle(void);
+extern float arctan2(float x, float y);
 
 extern const bool on;
 extern const bool off;
