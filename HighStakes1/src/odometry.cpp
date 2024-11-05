@@ -82,8 +82,8 @@ void odometry(void){
         lcd::set_text(2, std::to_string(yPos));
         lcd::set_text(3, std::to_string(currentTheta));
         lcd::set_text(4, std::to_string(yTracking.get_position()));
-        lcd::set_text(4, std::to_string(deltaXGlobal));
-        lcd::set_text(4, std::to_string(deltaYGlobal));
+        lcd::set_text(5, std::to_string(deltaXGlobal));
+        lcd::set_text(6, std::to_string(deltaYGlobal));
 
         delay(10);
     }
