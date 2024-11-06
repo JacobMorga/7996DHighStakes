@@ -126,7 +126,7 @@ void rotarc(float xtar, float ytar, float ttar){
         xsol = (((powf(xPos, 2.0) - powf(xtar, 2.0)) / (2.0 * (yPos - ytar))) + ((yPos - ytar) / 2.0) - (xtar / mtar)) / (((xPos - xtar) / (yPos - ytar)) - (1.0 / mtar));
         ysol = -1.0 * ((xPos - xtar) / (yPos - ytar)) * (xsol - ((xPos + xtar) / 2.0)) + ((yPos + ytar) / 2.0);
 
-        arcerr = atan2()
+        arcerr = atan2();
     }
 
 }
@@ -242,6 +242,6 @@ vector<float> determineBestPoint (vector<vector<float>> intersections, vector<ve
 vector<vector<float>> path {{-2.8, 2.9},{-1.4, -3.3},{-0.59,3.77},{3.0,-5.0},{3.1,4.01}};
 void PurePursuit (){
 
-    determineBestPoint( circlePathIntersection(path, xPos, yPos, 10.0) , path);
+    determineBestPoint( circlePathIntersection(path, xPos, yPos, 10.0) , path );
     
 }
