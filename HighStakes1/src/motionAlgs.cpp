@@ -168,16 +168,11 @@ void rotarc(float xtar, float ytar, float ttar){
 
 }
 
-void followArc (float xtar, float ytar, float ttar){
-
-    
-}
-
 
 bool dirdec = 0;
 float rotdir = 0.0;
 
-void topoint (float targetx, float targety){
+void facepoint (float targetx, float targety){
     xPos = 5.0;
     yPos = -10.0;
     loopcount = 0;
