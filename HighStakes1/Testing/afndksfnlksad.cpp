@@ -1,4 +1,6 @@
 #include "iostream"
+#include "vector"
+#include "math.h"
 using namespace std;
 
 
@@ -7,7 +9,7 @@ float x1 = 1.0;
 float y1w = 4.0;
 
 float x2 = 1.3;
-float y2 = 3;
+float y2 = 3.0;
 
 float rad = 3.0;
 
@@ -28,10 +30,10 @@ float intY2 = 0.0;
 
 float negorno (float val){
 
-    if (val < 0){return -1.0;}
+    if (val < 0.0){return -1.0;}
     else {return 1.0;}
 }
-
+/*
 void funchinfunction (){
 
     x1 -= xPos;
@@ -78,13 +80,11 @@ void funchinfunction (){
     }
     
 }
+*/
 
 
-
-vector<vector<float>> path {{-0.6, 6.0},{1.0, -5.3},{2.17,5.57}};
+vector<vector<float>> path {{-2.8, 2.9},{-1.4, -3.3},{-0.59,3.77},{3.0,-5.0},{3.0,4.01}};
 vector<vector<float>> intersectionPoints {};
-vector<float> point {};
-
 
 float px1 = 0.0;
 float py1 = 0.0;
@@ -92,15 +92,11 @@ float px2 = 0.0;
 float py2 = 0.0;
 
 int counter = 0;
-
-float robotX = 0.0;
-float robotY = 0.0;
-float lookAheadDis = 3.0;
     
-void funchininerfunction (vector<vector<float>>){
+vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLinePath, float robotX, float robotY, float lookAheadDis){
 
     // move the robot center to the origin (easier math)
-    for (vector<float> point : path){
+    for (vector<float> point : straightLinePath){
 
         point[0] -= robotX;
         point[1] -= robotY;
@@ -111,12 +107,12 @@ void funchininerfunction (vector<vector<float>>){
 
     cout << "\n";
 
-    while (counter < path.size() - 1){
+    while (counter < straightLinePath.size() - 1){
 
-        px1 = path[counter][0];
-        py1 = path[counter][1];
-        px2 = path[counter + 1][0];
-        py2 = path[counter + 1][1];
+        px1 = straightLinePath[counter][0];
+        py1 = straightLinePath[counter][1];
+        px2 = straightLinePath[counter + 1][0];
+        py2 = straightLinePath[counter + 1][1];
 
         // begining of calculations
         diffX = px2-px1;
@@ -130,54 +126,66 @@ void funchininerfunction (vector<vector<float>>){
         if (intersectionCount >= 0.0){ // One or two intersections
             cout << "two intersections" << "\n";
 
-            intX1 = (diffD * diffY + fabs(diffY) / diffY * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
-            intX2 = (diffD * diffY - fabs(diffY) / diffY * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
+            intX1 = (diffD * diffY + negorno(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
+            intX2 = (diffD * diffY - negorno(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
 
             intY1 = (-diffD * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
             intY2 = (-diffD * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
 
-            if ((intX1 > px1 && intX1 > px2) || (intX1 < px1 && intX1 < px2)){
-                cout << "point 1 failed" << "\n";
+
+            if (intX1 == intX2 && intY1 == intY2){ // Two intersections are the same
+
+                if (!(intX1 > px1 && intX1 > px2) && !(intX1 < px1 && intX1 < px2)){
+                    cout << "point 1 failed" << "\n";
+                }
+                else {
+
+                    intersectionPoints.push_back({intX1, intY1});
+                }
             }
             else {
-                cout << "intersection X1 = " << intX1 << "\n";
-                cout << "intersection Y1 = " << intY1 << "\n";
-            }
+                if (!(intX1 > px1 && intX1 > px2) && !(intX1 < px1 && intX1 < px2)){
+                    intersectionPoints.push_back({intX1, intY1});
+                }
+                else {
 
-            if ((intX2 > px1 && intX2 > px2) || (intX2 < px1 && intX2 < px2)){
-                cout << "point 2 failed" << "\n";
-            }
-            else {
-                cout << "intersection X2 = " << intX2 << "\n";
-                cout << "intersection Y2 = " << intY2 << "\n";
-            }
+                    cout << "point 1 failed" << "\n";
+                    cout << "intersection X1 = " << intX1 << "   " << px1 << "   " << "\n";
+                    cout << "intersection Y1 = " << intY1 << "   " << px2 << "   " << "\n";
+                }
 
-            if (intX1 == intX2 && intY1 == intY2){
-
-                point = {intX1, intY1};
-                intersectionPoints.push_back(point);
+                if (!(intX2 > px1 && intX2 > px2) && !(intX2 < px1 && intX2 < px2)){
+                    intersectionPoints.push_back({intX2, intY2});
+                }
+                else {
+                    
+                    cout << "point 2 failed" << "\n"; 
+                    cout << "intersection X2 = " << intX2 << "   " << px1 << "   " << "\n";
+                    cout << "intersection Y2 = " << intY2 << "   " << px2 << "   " << "\n";
+                }
             }
-            else {
-
-                point = {intX1, intY1};
-                intersectionPoints.push_back(point);
-                point = {intX2, intY2};
-                intersectionPoints.push_back(point);
-            }
-            
         }
         else{ // No intersections
 
-            cout << "no intersections";
+            cout << "no intersections" << "\n";
         }
         counter++;
     }
+    for (vector<float> point : intersectionPoints){
+
+        for (float item : point){
+            cout << item << ", ";
+        }
+        cout << "\n";
+    }
+
+    return intersectionPoints;
 }
 
 
 int main (){
 
-    funchininerfunction(path);
+    circlePathIntersection(path, 0.0, 0.0, 3.0);
 
     return 1;
 }
