@@ -53,19 +53,17 @@ void odometry(void){
             deltaYLocal = deltaYWheel;
         }
         else{
-            deltaXLocal = 2.0 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(currentTheta / 2.0);
-            deltaYLocal = 2.0 * ((deltaYWheel / deltaTheta) + yWheelOffset) * sin(currentTheta / 2.0);
+            deltaXLocal = 2.0 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(deltaTheta / 2.0);
+            deltaYLocal = 2.0 * ((deltaYWheel / deltaTheta) + yWheelOffset) * sin(deltaTheta / 2.0);
         }
 
         avgTheta = (previousTheta + currentTheta) / 2.0;
+        lcd::set_text(3, std::to_string(currentXPosition - previousXPosition));
 
         previousXPosition = currentXPosition;
         previousYPosition = currentYPosition;
 
-        deltaXLocal = 2.0 * ((deltaXWheel / deltaTheta) + xWheelOffset) * sin(currentTheta / 2.0);
-        deltaYLocal = 2.0 * ((deltaYWheel / deltaTheta) + yWheelOffset) * sin(currentTheta / 2.0);
-
-        deltaRLocal = sqrt((powf(deltaXLocal, 2.0)) + powf(deltaYLocal, 2.0));
+        deltaRLocal = sqrtf((powf(deltaXLocal, 2.0)) + powf(deltaYLocal, 2.0));
         deltaThetaLocal = arctan2(deltaXLocal, deltaYLocal);
         modTheta = deltaThetaLocal - avgTheta;
         previousTheta = currentTheta;
@@ -76,12 +74,13 @@ void odometry(void){
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
 
-        lcd::set_text(1, std::to_string(xPos));
-        lcd::set_text(2, std::to_string(yPos));
-        lcd::set_text(3, std::to_string(180.0 / pi * currentTheta));
-        lcd::set_text(4, std::to_string(yTracking.get_position()));
-        lcd::set_text(5, std::to_string(deltaXGlobal));
-        lcd::set_text(6, std::to_string(deltaYGlobal));
+        lcd::set_text(0, std::to_string(xPos));
+        lcd::set_text(1, std::to_string(yPos));
+        lcd::set_text(2, std::to_string(180.0 / pi * currentTheta));
+        lcd::set_text(4, std::to_string(deltaYLocal));
+        lcd::set_text(5, std::to_string(deltaXLocal));
+        lcd::set_text(6, std::to_string(deltaRLocal));
+        lcd::set_text(7, std::to_string(sqrtf((powf(0.0, 2.0)) + powf(0.0, 2.0))));
 
         delay(10);
     }
