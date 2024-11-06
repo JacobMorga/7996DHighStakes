@@ -14,6 +14,7 @@ void runDriveCont (){
     while (true){
 
         joystickYVal = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 10000.0 * 6.0; // Scales 127 to 100 then cubes and
+        //joystickYVal = 0.0;
         joystickXVal = powf(controller.get_analog(ANALOG_RIGHT_X) / 127.0 * 100.0, 3.0) / 10000.0 * 6.0; // scales back to 100 then multipes to 600 scale
 
         rightDrivePow = joystickYVal - joystickXVal;

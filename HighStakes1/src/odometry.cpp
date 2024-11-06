@@ -6,8 +6,8 @@ const float yWheelDiameter = 3.25;
 const float xWheelSprocketRatio = 1.0;
 const float yWheelSprocketRatio = 1.0;
 
-float xWheelOffset = 0.4786865;
-float yWheelOffset = 1.8125;
+float xWheelOffset = 0.599545; //0.4786865;
+float yWheelOffset = 1.71108; //1.8125;
 float deltaXWheel = 0.0;
 float deltaYWheel = 0.0;
 float currentXPosition = 0.0;
@@ -58,7 +58,6 @@ void odometry(void){
         }
 
         avgTheta = (previousTheta + currentTheta) / 2.0;
-        lcd::set_text(3, std::to_string(currentXPosition - previousXPosition));
 
         previousXPosition = currentXPosition;
         previousYPosition = currentYPosition;
@@ -77,10 +76,11 @@ void odometry(void){
         lcd::set_text(0, std::to_string(xPos));
         lcd::set_text(1, std::to_string(yPos));
         lcd::set_text(2, std::to_string(180.0 / pi * currentTheta));
-        lcd::set_text(4, std::to_string(deltaYLocal));
-        lcd::set_text(5, std::to_string(deltaXLocal));
-        lcd::set_text(6, std::to_string(deltaRLocal));
-        lcd::set_text(7, std::to_string(sqrtf((powf(0.0, 2.0)) + powf(0.0, 2.0))));
+        //lcd::set_text(3, std::to_string();
+        lcd::set_text(4, std::to_string(180.0 / pi * ((2 * (0.0 - xPos >= 0.0) - 1) * pi / 2.0 - atanf((-12.0 - yPos) / (0.0 - xPos)))));
+        lcd::set_text(5, std::to_string(rotpow));
+        lcd::set_text(6, std::to_string(loopcount));
+        lcd::set_text(7, std::to_string(180 / pi * terror));
 
         delay(10);
     }
