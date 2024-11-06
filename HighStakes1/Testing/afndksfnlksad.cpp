@@ -82,8 +82,8 @@ void funchinfunction (){
 }
 */
 
-
-vector<vector<float>> path {{-2.8, 2.9},{-1.4, -3.3},{-0.59,3.77},{3.0,-5.0},{3.0,4.01}};
+float var = -3.0 / cosf(3.1415926/4.0);
+vector<vector<float>> path {{-9.0, 9.6},{-5.9, -6.4},{0.66,6.84},{0.0,var},{-var,0}};
 vector<vector<float>> intersectionPoints {};
 
 float px1 = 0.0;
