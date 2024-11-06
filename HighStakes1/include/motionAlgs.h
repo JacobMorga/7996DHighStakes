@@ -6,4 +6,6 @@ extern float rotpow;
 extern int loopcount;
 extern float terror;
 
+extern float topointloop(float targetx, float targety);
+
 

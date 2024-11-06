@@ -105,7 +105,8 @@ vector<float> determineBestPoint (vector<vector<float>> intersections, vector<ve
 vector<vector<float>> path {{-9.0,9.6},{-5.9,-6.4},{0.66,6.84},{0.0,5.0},{6.0,2.78}};
 void PurePursuit (){
 
-    determineBestPoint( circlePathIntersection(path, xPos, yPos, 10.0) , path );
+    vector<float> followPoint = determineBestPoint(circlePathIntersection(path, xPos, yPos, 10.0) , path);
+    toPoint(followPoint[0], followPoint[1]);
 }
 
 
