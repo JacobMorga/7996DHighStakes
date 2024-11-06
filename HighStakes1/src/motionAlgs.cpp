@@ -49,6 +49,7 @@ void rotlinrot(float targetx, float targety, float targett){
 
     loopcount = 0;
     while (loopcount < 10){
+        //currently only considers distance to target point in final speed calculation; no angular correction
         linerr = sqrtf(powf((targetx - xPos), 2.0) + powf((targety - yPos), 2.0));
         linint += linerr;
         if ((fabs(linerr) <= linintmin) || fabs(linerr) >= linintmax){linint = 0.0;}
@@ -95,6 +96,18 @@ float xint = 0.0;
 float yint = 0.0;
 float arcerr = 0.0;
 float arcr = 0.0;
+float arcint = 0.0;
+float prearcerr = 0.0;
+float arcerrmin = 0.0;
+float arcintmax = 0.0;
+float arcder = 0.0;
+float arclinpow = 0.0;
+float arcrotpow = 0.0;
+float arcratetar = 0.0;
+float arcrateact = 0.0;
+float prevTheta = 0.0;
+float arcratedif = 0.0;
+float arcratek = 0.0; //tune this
 
 void rotarc(float xtar, float ytar, float ttar){
     mtar = tanf(ttar);
@@ -109,7 +122,7 @@ void rotarc(float xtar, float ytar, float ttar){
         ttotar = (2 * (xint - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
         terror = ttotar - currentTheta;
         rotint += terror;
-        if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
+        if ((fabs(terror) <= rotintmin) || fabs(rotint) >= rotintmax){rotint = 0.0;}
         rotder = terror - preterror;
         preterror = terror;
         rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
@@ -124,15 +137,33 @@ void rotarc(float xtar, float ytar, float ttar){
     delay(1000);
 
     loopcount = 0;
+    prevTheta = currentTheta; //just so it's not 0 on the first loop?
     while (loopcount < 10){
         mtar = tanf(ttar);
         xsol = (((powf(xPos, 2.0) - powf(xtar, 2.0)) / (2.0 * (yPos - ytar))) + ((yPos - ytar) / 2.0) - (xtar / mtar)) / (((xPos - xtar) / (yPos - ytar)) - (1.0 / mtar));
         ysol = -1.0 * ((xPos - xtar) / (yPos - ytar)) * (xsol - ((xPos + xtar) / 2.0)) + ((yPos + ytar) / 2.0);
-
         arcr = sqrtf(powf(xtar - xsol, 2.0) + powf(ytar - ysol, 2.0));
+
         arcerr = arcr * fabsf((arctan2(xtar - xsol, ytar - ysol) - arctan2(xPos - xsol, yPos - ysol)));
+        if (ttotar >= 0.0){rotdir = 1.0;}
+        else{rotdir = -1.0;}
+        arcint += arcerr;
+        if ((fabs(arcerr) <= arcerrmin) || fabs(arcint) >= arcintmax){arcint = 0.0;}
+        arcder = arcerr - prearcerr;
+        prearcerr = arcerr;
+        arclinpow = linkp * arcerr + linki * arcint + linkd * arcder;
 
+        arcratetar = (ttotar - currentTheta) / arcerr;
+        arcrateact = (currentTheta - prevTheta) / arcder;
+        prevTheta = currentTheta;
+        arcratedif = arcratetar - arcrateact;
+        arcrotpow += arcratek * arcratedif;
 
+        rightDrive.move_velocity(arclinpow - rotdir * arcrotpow);
+        leftDrive.move_velocity(arclinpow + rotdir * arcrotpow);
+        if (arcerr <= 1.0){loopcount += 1;}
+        else{loopcount = 0;}
+        delay(10);
     }
 
 }
@@ -174,6 +205,33 @@ void topoint (float targetx, float targety){
     rightDrive.brake();
     leftDrive.brake();
     delay(1000);
+}
+
+
+float targetxconst = 0.0;
+float targetyconst = 0.0;
+void lindist(float distance){
+    //currently places target point at distance ahead of current position with heading,
+    //but only considers distance to target point in final speed calculation;
+    //no angular correction.
+    loopcount = 0;
+    targetxconst = xPos + distance * cos(currentTheta);
+    targetyconst = yPos + distance * sin(currentTheta);
+    while (loopcount < 10){
+        linerr = sqrtf(powf((targetxconst - xPos), 2.0) + powf((targetyconst - yPos), 2.0));
+        linint += linerr;
+        if ((fabs(linerr) <= linintmin) || fabs(linerr) >= linintmax){linint = 0.0;}
+        linder = linerr - prelinerr;
+        prelinerr = linerr;
+        linpow = linkp * linerr + linki * linint + linkd * linder;
+        rightDrive.move_velocity(linpow);
+        leftDrive.move_velocity(linpow);
+        if (fabs(linerr) <= 0.1){loopcount += 1;}
+        else{loopcount = 0;}
+        delay(10);
+    }
+    rightDrive.brake();
+    leftDrive.brake();
 }
 
 vector<vector<float>> intersectionPoints {};
