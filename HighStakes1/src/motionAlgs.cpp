@@ -136,7 +136,7 @@ void followArc (float xtar, float ytar, float ttar){
     
 }
 
-vector<vector<float>> path {{-2.8, 2.9},{-1.4, -3.3},{-0.59,3.77},{3.0,-5.0},{3.0,4.01}};
+
 vector<vector<float>> intersectionPoints {};
 
 float px1 = 0.0;
@@ -194,16 +194,16 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
             if (intX1 == intX2 && intY1 == intY2){
 
                 if (!(intX1 > px1 && intX1 > px2) && !(intX1 < px1 && intX1 < px2)){
-                    intersectionPoints.push_back({intX1, intY1});
+                    intersectionPoints.push_back({intX1, intY1, static_cast<float>(counter)});
                 }
             }
             else {
                 if (!(intX1 > px1 && intX1 > px2) && !(intX1 < px1 && intX1 < px2)){
-                    intersectionPoints.push_back({intX1, intY1});
+                    intersectionPoints.push_back({intX1, intY1, static_cast<float>(counter)});
                 }
 
                 if (!(intX2 > px1 && intX2 > px2) && !(intX2 < px1 && intX2 < px2)){
-                    intersectionPoints.push_back({intX2, intY2});
+                    intersectionPoints.push_back({intX2, intY2, static_cast<float>(counter)});
                 }
             }
         }
@@ -213,8 +213,35 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
     return intersectionPoints;
 }
 
+vector<float> determineBestPoint (vector<vector<float>> intersections, vector<vector<float>> path){
+
+    vector<float> lastP = intersections[intersections.size() - 1];
+    vector<float> secLastP = intersections[intersections.size() - 2];
+
+    if (lastP[2] > secLastP[2]){
+
+        return {lastP[0], lastP[1]};
+    }
+    else{
+
+        vector<float> lineEP = path[lastP[2] + 1];
+
+        float distLP = sqrtf(powf(lineEP[0] - lastP[0], 2.0) + powf(lineEP[1] - lastP[1], 2.0));
+        float distSLP = sqrtf(powf(lineEP[0] - secLastP[0], 2.0) + powf(lineEP[1] - secLastP[1], 2.0));
+
+        if (distLP > distSLP){
+            return {secLastP[0], secLastP[1]};
+        }
+        else{
+            return {lastP[0], lastP[1]};
+        }
+    }
+}
+
+
+vector<vector<float>> path {{-2.8, 2.9},{-1.4, -3.3},{-0.59,3.77},{3.0,-5.0},{3.1,4.01}};
 void PurePursuit (){
 
-
+    determineBestPoint( circlePathIntersection(path, xPos, yPos, 10.0) , path);
     
 }
