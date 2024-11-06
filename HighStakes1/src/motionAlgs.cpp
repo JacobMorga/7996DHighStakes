@@ -3,9 +3,11 @@
 float linkp = 0.0;
 float linki = 0.0;
 float linkd = 0.0;
-float rotkp = 0.0;
+
+float rotkp = 150.0;
 float rotki = 0.0;
 float rotkd = 0.0;
+
 float terror = 0.0;
 float preterror = 0.0;
 float xerror = 0.0;
@@ -28,7 +30,7 @@ int loopcount = 0;
 void rotlinrot(float targetx, float targety, float targett){
     loopcount = 0;
     while (loopcount < 10){
-        ttotar = (2 * (targetx - xPos >= 0.0) - 1) * 90 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
+        ttotar = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
         terror = ttotar - currentTheta;
         rotint += terror;
         if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
@@ -37,7 +39,7 @@ void rotlinrot(float targetx, float targety, float targett){
         rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
         rightDrive.move_velocity(-rotpow);
         leftDrive.move_velocity(rotpow);
-        if (terror <= 1.0){loopcount += 1;}
+        if (fabs(terror) <= 1.0){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
     }
@@ -55,7 +57,7 @@ void rotlinrot(float targetx, float targety, float targett){
         linpow = linkp * linerr + linki * linint + linkd * linder;
         rightDrive.move_velocity(linpow);
         leftDrive.move_velocity(linpow);
-        if (linerr <= 0.1){loopcount += 1;}
+        if (fabs(linerr) <= 0.1){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
     }
@@ -76,7 +78,7 @@ void rotlinrot(float targetx, float targety, float targett){
         rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
         rightDrive.move_velocity(-rotpow);
         leftDrive.move_velocity(rotpow);
-        if (terror <= 1.0){loopcount += 1;}
+        if (fabs(terror) <= 1.0){loopcount += 1;}
         else{loopcount = 0.0;}
         delay(10);
     }
@@ -92,6 +94,7 @@ float mtar = 0.0;
 float xint = 0.0;
 float yint = 0.0;
 float arcerr = 0.0;
+float arcr = 0.0;
 
 void rotarc(float xtar, float ytar, float ttar){
     mtar = tanf(ttar);
@@ -103,7 +106,7 @@ void rotarc(float xtar, float ytar, float ttar){
 
     loopcount = 0;
     while (loopcount < 10){
-        ttotar = (2 * (xint - xPos >= 0.0) - 1) * 90 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
+        ttotar = (2 * (xint - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
         terror = ttotar - currentTheta;
         rotint += terror;
         if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
@@ -112,7 +115,7 @@ void rotarc(float xtar, float ytar, float ttar){
         rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
         rightDrive.move_velocity(-rotpow);
         leftDrive.move_velocity(rotpow);
-        if (terror <= 1.0){loopcount += 1;}
+        if (fabs(terror) <= 1.0){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
     }
@@ -126,7 +129,10 @@ void rotarc(float xtar, float ytar, float ttar){
         xsol = (((powf(xPos, 2.0) - powf(xtar, 2.0)) / (2.0 * (yPos - ytar))) + ((yPos - ytar) / 2.0) - (xtar / mtar)) / (((xPos - xtar) / (yPos - ytar)) - (1.0 / mtar));
         ysol = -1.0 * ((xPos - xtar) / (yPos - ytar)) * (xsol - ((xPos + xtar) / 2.0)) + ((yPos + ytar) / 2.0);
 
-        arcerr = atan2()
+        arcr = sqrtf(powf(xtar - xsol, 2.0) + powf(ytar - ysol, 2.0));
+        arcerr = arcr * fabsf((arctan2(xtar - xsol, ytar - ysol) - arctan2(xPos - xsol, yPos - ysol)));
+
+
     }
 
 }
@@ -134,4 +140,38 @@ void rotarc(float xtar, float ytar, float ttar){
 void followArc (float xtar, float ytar, float ttar){
 
     
+}
+
+
+bool dirdec = 0;
+float rotdir = 0.0;
+
+void topoint (float targetx, float targety){
+    xPos = 5.0;
+    yPos = -10.0;
+    loopcount = 0;
+    dirdec = 0;
+    while (1){ //loopcount < 10
+        ttotar = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
+        terror = ttotar - currentTheta;
+        if (dirdec == 0){
+            if (terror >= 0.0){rotdir = 1;}
+            else{rotdir = -1.0;}
+            dirdec = 1;
+        }
+        if (fabs(terror) / terror != rotdir && fabs(terror) > pi / 4.0){terror += 2.0 * pi * rotdir;}
+        rotint += terror;
+        if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
+        rotder = terror - preterror;
+        preterror = terror;
+        rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
+        rightDrive.move_velocity(-rotpow);
+        leftDrive.move_velocity(rotpow);
+        if (fabs(terror) <= 1.0){loopcount += 1;}
+        else{loopcount = 0;}
+        delay(10);
+    }
+    rightDrive.brake();
+    leftDrive.brake();
+    delay(1000);
 }

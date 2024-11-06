@@ -107,6 +107,8 @@ void opcontrol() {
 	delay(500);
 
 	pros::Task odomTask (odometry, "odomTask");
+	
+	topoint(0.0, -12.0);
 
 	while (true) {
 
