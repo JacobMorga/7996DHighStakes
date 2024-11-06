@@ -81,7 +81,7 @@ void funchinfunction (){
 
 
 
-vector<vector<float>> path {{-0.6, 6.0},{1.0, -5.3},{2.17,5.57}};
+vector<vector<float>> path {{1.1, 4.8},{-4.0, -7.0},{6.8,0.13}};
 vector<vector<float>> intersectionPoints {};
 vector<float> point {};
 
@@ -95,7 +95,7 @@ int counter = 0;
 
 float robotX = 0.0;
 float robotY = 0.0;
-float lookAheadDis = 3.0;
+float lookAheadDis = 3.6;
     
 void funchininerfunction (vector<vector<float>>){
 
@@ -142,6 +142,19 @@ void funchininerfunction (vector<vector<float>>){
             else {
                 cout << "intersection X1 = " << intX1 << "\n";
                 cout << "intersection Y1 = " << intY1 << "\n";
+
+                if (intX1 == intX2 && intY1 == intY2){
+
+                    point = {intX1, intY1};
+                    intersectionPoints.push_back(point);
+                }
+                else {
+
+                    point = {intX1, intY1};
+                    intersectionPoints.push_back(point);
+                    point = {intX2, intY2};
+                    intersectionPoints.push_back(point);
+                }
             }
 
             if ((intX2 > px1 && intX2 > px2) || (intX2 < px1 && intX2 < px2)){
@@ -150,21 +163,20 @@ void funchininerfunction (vector<vector<float>>){
             else {
                 cout << "intersection X2 = " << intX2 << "\n";
                 cout << "intersection Y2 = " << intY2 << "\n";
-            }
 
-            if (intX1 == intX2 && intY1 == intY2){
+                if (intX1 == intX2 && intY1 == intY2){
 
-                point = {intX1, intY1};
-                intersectionPoints.push_back(point);
-            }
-            else {
+                    point = {intX1, intY1};
+                    intersectionPoints.push_back(point);
+                }
+                else {
 
-                point = {intX1, intY1};
-                intersectionPoints.push_back(point);
-                point = {intX2, intY2};
-                intersectionPoints.push_back(point);
+                    point = {intX1, intY1};
+                    intersectionPoints.push_back(point);
+                    point = {intX2, intY2};
+                    intersectionPoints.push_back(point);
+                }
             }
-            
         }
         else{ // No intersections
 
