@@ -126,3 +126,8 @@ void rotarc(float xtar, float ytar, float ttar){
     }
 
 }
+
+void followArc (float xtar, float ytar, float ttar){
+
+    
+}
