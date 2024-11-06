@@ -91,6 +91,7 @@ float xsol = 0.0;
 float mtar = 0.0;
 float xint = 0.0;
 float yint = 0.0;
+float arcerr = 0.0;
 
 void rotarc(float xtar, float ytar, float ttar){
     mtar = tanf(ttar);
@@ -99,7 +100,6 @@ void rotarc(float xtar, float ytar, float ttar){
 
     xint = (-1.0 * mtar * xtar - (xPos * ((xPos - xsol) / (yPos - ysol))) - yPos + ytar) / (-1.0 * ((xPos - xsol) / (yPos - ysol)) - mtar);
     yint = -1.0 * ((xPos - xsol) / (yPos - ysol)) * (xtar - xPos) + yPos;
-
 
     loopcount = 0;
     while (loopcount < 10){
@@ -122,7 +122,11 @@ void rotarc(float xtar, float ytar, float ttar){
 
     loopcount = 0;
     while (loopcount < 10){
-        
+        mtar = tanf(ttar);
+        xsol = (((powf(xPos, 2.0) - powf(xtar, 2.0)) / (2.0 * (yPos - ytar))) + ((yPos - ytar) / 2.0) - (xtar / mtar)) / (((xPos - xtar) / (yPos - ytar)) - (1.0 / mtar));
+        ysol = -1.0 * ((xPos - xtar) / (yPos - ytar)) * (xsol - ((xPos + xtar) / 2.0)) + ((yPos + ytar) / 2.0);
+
+        arcerr = atan2()
     }
 
 }
