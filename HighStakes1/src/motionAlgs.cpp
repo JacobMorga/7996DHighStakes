@@ -146,30 +146,36 @@ void followArc (float xtar, float ytar, float ttar){
 bool dirdec = 0;
 float rotdir = 0.0;
 
+float topointloop(float targetx, float targety){
+
+    ttotar = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
+    terror = ttotar - currentTheta;
+    if (dirdec == 0){
+        if (terror >= 0.0){rotdir = 1;}
+        else{rotdir = -1.0;}
+        dirdec = 1;
+    }
+    if (fabs(terror) / terror != rotdir && fabs(terror) > pi / 4.0){terror += 2.0 * pi * rotdir;}
+    rotint += terror;
+    if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
+    rotder = terror - preterror;
+    preterror = terror;
+    rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
+    rightDrive.move_velocity(-rotpow);
+    leftDrive.move_velocity(rotpow);
+    if (fabs(terror) <= 1.0){loopcount += 1;}
+    else{loopcount = 0;}
+    delay(10);
+    return rotpow;
+}
+
 void topoint (float targetx, float targety){
     xPos = 5.0;
     yPos = -10.0;
     loopcount = 0;
     dirdec = 0;
     while (1){ //loopcount < 10
-        ttotar = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
-        terror = ttotar - currentTheta;
-        if (dirdec == 0){
-            if (terror >= 0.0){rotdir = 1;}
-            else{rotdir = -1.0;}
-            dirdec = 1;
-        }
-        if (fabs(terror) / terror != rotdir && fabs(terror) > pi / 4.0){terror += 2.0 * pi * rotdir;}
-        rotint += terror;
-        if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
-        rotder = terror - preterror;
-        preterror = terror;
-        rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
-        rightDrive.move_velocity(-rotpow);
-        leftDrive.move_velocity(rotpow);
-        if (fabs(terror) <= 1.0){loopcount += 1;}
-        else{loopcount = 0;}
-        delay(10);
+        topointloop(targetx, targety);
     }
     rightDrive.brake();
     leftDrive.brake();
