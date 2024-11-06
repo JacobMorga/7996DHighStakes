@@ -64,9 +64,23 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	/*
-
 	
+	/*
+    pros::screen_touch_status_s_t status;
+	delay(200);
+	screen::erase();
+	delay(200);
+    while(1){
+       status = pros::screen_touch_status_s();
+
+       // Will print various information about the last touch
+       pros::screen::print(pros::E_TEXT_MEDIUM, 1, "Touch Status (Type): %d", status.touch_status);
+       pros::screen::print(pros::E_TEXT_MEDIUM, 2, "Last X: %d", status.x);
+       pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Last Y: %d", status.y);
+       pros::screen::print(pros::E_TEXT_MEDIUM, 4, "Press Count: %d", status.press_count);
+       pros::screen::print(pros::E_TEXT_MEDIUM, 5, "Release Count: %d", status.release_count);
+       pros::delay(20);
+	}
 
 	DisplayBox box1 (0,0,120,239,0,2);
 	box1.setButtons({COLOR_BLUE, COLOR_RED}, false);
@@ -74,11 +88,12 @@ void opcontrol() {
 	DisplayBox box2 (120,0,360,239,3,3);
 	box1.setButtons({COLOR_GREEN}, true);
 
-	DisplayBox box3 (360,0,479,239,0,0);
+	DisplayBox box3 (360,0,479,239,1,1);
 
 	vector<DisplayBox> testingRects {box1,box2,box3};
 	autonSelectorNEW(testingRects);
 	*/
+	
 	inertial1.reset();
 	inertial2.reset();
 	inertial3.reset();

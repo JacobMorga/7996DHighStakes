@@ -80,14 +80,14 @@ void DisplayBox::drawVerticalLines (){
     for (int h = 1; h < AmtY; h++){
 
         newCord = Y1 + (fabs(Y1-Y2) / AmtY) * h;
-        pros::screen::draw_line(X1,newCord,X2,newCord);
+        screen::draw_line(X1,newCord,X2,newCord);
     }
 }
 void DisplayBox::drawHorizontalLines (){
     for (int z = 1; z < AmtX; z++){
 
         newCord = X1 + (fabs(X1-X2) / AmtX) * z;
-        pros::screen::draw_line(newCord,Y1,newCord,Y2);
+        screen::draw_line(newCord,Y1,newCord,Y2);
     }
 }
 void DisplayBox::handleButtons (){
@@ -96,16 +96,22 @@ void DisplayBox::handleButtons (){
 
 void autonSelectorNEW (vector<DisplayBox> divisions){
     while (1){
-        pros::screen::erase();
+        screen::erase();
         delay(5);
-        pros::screen::set_pen(COLOR_WHITE);
+        screen::set_pen(COLOR_WHITE);
 
         for (DisplayBox div : divisions){
-            pros::screen::draw_rect(div.X1,div.Y1,div.X2,div.Y2); // Draw main Rectangle
+            screen::draw_rect(div.X1,div.Y1,div.X2,div.Y2); // Draw main Rectangle
 
             div.drawHorizontalLines();
             div.drawVerticalLines();
         }
-        pros::delay(1000000000000000000);
+
+        while (screen_touch_status_s().touch_status != E_TOUCH_HELD){
+            delay(10);
+        }
+        screen::fill_rect(1,1,240,240); // Draw main Rectangle
+        delay(1000000);
+
     }
 }

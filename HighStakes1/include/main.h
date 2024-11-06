@@ -40,7 +40,6 @@
 
 #include "robotConfig.h"
 #include "odometry.h"
-#include "motion.h"
 #include "general.h"
 #include "driveCont.h"
 #include "motionAlgs.h"
