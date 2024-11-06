@@ -43,6 +43,7 @@
 #include "general.h"
 #include "driveCont.h"
 #include "motionAlgs.h"
+#include "purePursuit.h"
 
 /**
  * You should add more #includes here
