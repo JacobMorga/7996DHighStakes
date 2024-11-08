@@ -45,6 +45,8 @@
 #include "motionAlgs.h"
 #include "purePursuit.h"
 #include "PID.h"
+#include "auton.h"
+#include "autonSelector.h"
 
 /**
  * You should add more #includes here
