@@ -84,7 +84,7 @@ void competition_initialize() {
 void autonomous() {
 	//STARTTHETIMER = true;
 	//redgoal();
-	rednone();
+	//rednone();
 	//bluegoal();
 	//bluenone();
 
@@ -103,6 +103,8 @@ void autonomous() {
 	facepoint(0.0, 24.0);
     lcd::set_text(7, "ended auton");
 	*/
+
+	AUTONSELECTOR();
 }
 
 /**

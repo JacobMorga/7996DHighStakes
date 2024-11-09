@@ -59,7 +59,7 @@ float arctan2(float x, float y){
 }
 
 
-
+/*
 float newCord = 0;
 DisplayBox::DisplayBox (float inX1, float inY1, float inX2, float inY2, float inAmtX, float inAmtY){
 
@@ -125,7 +125,7 @@ void autonSelectorNEW (vector<DisplayBox> graph){
 
 
 }
-
+*/
 int autonSelector = 0;
 
 void AUTONSELECTOR (void){
