@@ -38,8 +38,8 @@ void runDriveCont (){
             leftDrive.brake();
         }
 
-        if (intakeState == 2){intake.move_velocity(-600);}
-        else if (intakeState == 1){intake.move_velocity(600);}
+        if (intakeState == 2){intake.move_voltage(-13000.0);;}
+        else if (intakeState == 1){intake.move_voltage(13000.0);;}
         else{intake.brake();}
 
         if (controller.get_digital_new_press(DIGITAL_R2) == pressed){
