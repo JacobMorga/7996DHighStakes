@@ -1,12 +1,12 @@
 #include "main.h"
 
-float linkp = 0.0;
+float linkp = 1.0;
 float linki = 0.0;
 float linkd = 0.0;
 
-float rotkp = 150.0;
+float rotkp = 200.0; //212.5; //150.0
 float rotki = 0.0;
-float rotkd = 0.0;
+float rotkd = 1625.0;
 
 float terror = 0.0;
 float preterror = 0.0;
@@ -15,17 +15,20 @@ float yerror = 0.0;
 float rotint = 0.0;
 float rotder = 0.0;
 float rotpow = 0.0;
-float rotintmin = 1.0;
-float rotintmax = 50.0;
+float rotintmin = 0.5; //tune
+float rotintmax = 1000.0; //tune
+float rotinterrmax = 10.0;
 float linerr = 0.0;
 float linint = 0.0;
-float linintmin = 0.0;
-float linintmax = 0.0;
+float linintmin = 1.0; //tune
+float linintmax = 50.0; //tune
 float linder = 0.0;
 float prelinerr = 0.0;
 float linpow = 0.0;
 float ttotar = 0.0;
 int loopcount = 0;
+
+bool inputvovfp = 0;
 
 void rotlinrot(float targetx, float targety, float targett){
     loopcount = 0;
@@ -39,13 +42,21 @@ void rotlinrot(float targetx, float targety, float targett){
         rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
         rightDrive.move_velocity(-rotpow);
         leftDrive.move_velocity(rotpow);
-        if (fabs(terror) <= 1.0){loopcount += 1;}
+        if (fabs(terror) <= pi / 180.0 * 1.0){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
+        lcd::set_text(0, std::to_string(xPos));
+        lcd::set_text(1, std::to_string(yPos));        
+        lcd::set_text(2, std::to_string(currentTheta));
+        //lcd::set_text(3, std::to_string());
+        lcd::set_text(4, std::to_string(terror));
+        lcd::set_text(5, std::to_string(rotpow));
+        lcd::set_text(6, std::to_string(ttotar));
+        lcd::set_text(7, std::to_string(loopcount));
     }
     rightDrive.brake();
     leftDrive.brake();
-    delay(1000);
+    //lcd::set_text(7, "reset"));
 
     loopcount = 0;
     while (loopcount < 10){
@@ -61,6 +72,14 @@ void rotlinrot(float targetx, float targety, float targett){
         if (fabs(linerr) <= 0.1){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
+        lcd::set_text(0, std::to_string(xPos));
+        lcd::set_text(1, std::to_string(yPos));        
+        lcd::set_text(2, std::to_string(180 / pi * currentTheta));
+        //lcd::set_text(3, std::to_string());
+        lcd::set_text(4, std::to_string(linerr));
+        lcd::set_text(5, std::to_string(linpow));
+        //lcd::set_text(6, std::to_string());
+        lcd::set_text(7, std::to_string(loopcount));
     }
     rightDrive.brake();
     leftDrive.brake();
@@ -98,8 +117,8 @@ float arcerr = 0.0;
 float arcr = 0.0;
 float arcint = 0.0;
 float prearcerr = 0.0;
-float arcerrmin = 0.0;
-float arcintmax = 0.0;
+float arcerrmin = 1.0; //tune
+float arcintmax = 50.0; //tune
 float arcder = 0.0;
 float arclinpow = 0.0;
 float arcrotpow = 0.0;
@@ -108,6 +127,7 @@ float arcrateact = 0.0;
 float prevTheta = 0.0;
 float arcratedif = 0.0;
 float arcratek = 0.0; //tune this
+float rotdir = 0.0;
 
 void rotarc(float xtar, float ytar, float ttar){
     mtar = tanf(ttar);
@@ -170,42 +190,114 @@ void rotarc(float xtar, float ytar, float ttar){
 
 
 bool dirdec = 0;
-float rotdir = 0.0;
 
 float topointloop(float targetx, float targety){
+    lcd::set_text(7, "entered topointloop");
+    lcd::set_text(4, std::to_string(180 / pi * terror));
+    lcd::set_text(5, std::to_string(20.0 * rotpow));
+    lcd::set_text(6, std::to_string(loopcount));
+    lcd::set_text(7, "topointloop variables ^");
 
     ttotar = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
     terror = ttotar - currentTheta;
+    while (terror > pi){terror -= 2.0 * pi;}
+    while (terror < -pi){terror += 2.0 * pi;}
+    if (dirdec == 0){
+        if (terror >= 0.0){rotdir = 1;}
+        else{rotdir = -1.0;}
+        dirdec = 1;
+    }
+    //if (fabs(terror) / terror != rotdir && fabs(terror) > pi / 4.0){terror += 2.0 * pi * rotdir;}
+    rotint += terror;
+    //if ((fabs(terror) <= rotintmin) || fabs(rotint) >= rotintmax || fabs(terror) >= lininterrmax){rotint = 0.0;}
+    if ((fabs(terror) <= pi / 180.0 * rotintmin) || fabs(terror) >= pi / 180.0 * rotinterrmax){rotint = 0.0;}
+    lcd::set_text(3, std::to_string(20.0 * rotki * rotint));
+    lcd::set_text(4, std::to_string(180 / pi * terror));
+    rotder = terror - preterror;
+    preterror = terror;
+    rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
+    
+    if (inputvovfp == 0){
+        rightDrive.move_velocity(-rotpow);
+        leftDrive.move_velocity(rotpow);
+    }
+    else{
+        rightDrive.move_voltage(20.0 * -rotpow);
+        leftDrive.move_voltage(20.0 * rotpow);
+    }
+    
+    if (fabs(terror) <= pi / 180 * 1.0){loopcount += 1;}
+    else{loopcount = 0;}
+    delay(10);
+    return rotpow;
+    lcd::set_text(7, "CHECK THIS end of topointloop");
+}
+
+
+float ttotara = 0.0;
+float ttotarb = 0.0;
+float tpl2dir = 0.0;
+float ttotaraerr = 0.0;
+float ttotarberr = 0.0;
+
+float topointloop2(float targetx, float targety){
+    lcd::set_text(3, "entered loop2");
+    ttotara = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos));
+    if (ttotara >= 0.0){ttotarb = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)) - pi;}
+    else{ttotarb = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)) + pi;}
+    ttotaraerr = ttotara - currentTheta;
+    ttotarberr = ttotarb - currentTheta;
+    while (ttotaraerr > pi){ttotaraerr -= 2.0 * pi;}
+    while (ttotaraerr < -pi){ttotaraerr += 2.0 * pi;}    
+    while (ttotarberr > pi){ttotarberr -= 2.0 * pi;}
+    while (ttotarberr < -pi){ttotarberr += 2.0 * pi;}
+    if (fabs(ttotaraerr) > fabs(ttotarberr)){
+        tpl2dir = -1.0;
+        ttotar = ttotarb;
+    }
+    else{
+        tpl2dir = 1.0;
+        ttotar = ttotara;
+    }
+    terror = ttotar - currentTheta;
+    while (terror > pi){terror -= 2.0 * pi;}
+    while (terror < -pi){terror += 2.0 * pi;}
+    
+
+    /*
+    ttotar = (2 * (targetx - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targety - yPos) / (targetx - xPos)); //check if condition returns boolean
+    terror = ttotar - currentTheta;
+    while (terror > pi){terror -= 2.0 * pi;}
+    while (terror < -pi){terror += 2.0 * pi;}
     if (dirdec == 0){
         if (terror >= 0.0){rotdir = 1;}
         else{rotdir = -1.0;}
         dirdec = 1;
     }
     if (fabs(terror) / terror != rotdir && fabs(terror) > pi / 4.0){terror += 2.0 * pi * rotdir;}
+    */
+
     rotint += terror;
-    if ((fabs(terror) <= rotintmin) || fabs(terror) >= rotintmax){rotint = 0.0;}
+    if ((fabs(terror) <= pi / 180.0 * rotintmin) || fabs(terror) >= pi / 180.0 * rotinterrmax){rotint = 0.0;}
     rotder = terror - preterror;
     preterror = terror;
     rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
-    rightDrive.move_velocity(-rotpow);
-    leftDrive.move_velocity(rotpow);
-    if (fabs(terror) <= 1.0){loopcount += 1;}
-    else{loopcount = 0;}
     delay(10);
     return rotpow;
 }
 
-void topoint (float targetx, float targety){
-    xPos = 5.0;
-    yPos = -10.0;
+
+void facepoint (float targetx, float targety){
+    lcd::set_text(7, "entered facepoint");
     loopcount = 0;
     dirdec = 0;
-    while (1){ //loopcount < 10
+    while (loopcount < 10){ //loopcount < 10
+        lcd::set_text(7, "entered loop to call topointloop");
         topointloop(targetx, targety);
     }
+    lcd::set_text(7, "exited topointloop loop");
     rightDrive.brake();
     leftDrive.brake();
-    delay(1000);
 }
 
 
@@ -235,111 +327,208 @@ void lindist(float distance){
     leftDrive.brake();
 }
 
-vector<vector<float>> intersectionPoints {};
+float rotPow = 0.0;
+float toplinerr = 0.0;
+float toplinint = 0.0;
+float toplinder = 0.0;
+float pretoplinerr = 0.0;
+float toplinintmin = 1.0; //tune
+float toplinintmax = 1000.0; //tune
+float toplinpow = 0.0;
+float toplinkp = 2.0; //tune
+float toplinki = 0.0; //tune
+float toplinkd = 1.0; //tune
+float toplinmax = 600.0;
 
-float px1 = 0.0;
-float py1 = 0.0;
-float px2 = 0.0;
-float py2 = 0.0;
+float linKp = 12.5; // 20
+float rotKp = 2.5;
+float tpright = 0.0;
+float tpleft = 0.0;
+float deadzonerad = 12.0; //12.0;
+float dist = 0.0;
+int loopcounter1 = 0;
+bool inputvov = 0;
+bool pauseloop = false;
 
-float diffX = 0.0;
-float diffY = 0.0;
-float diffR = 0.0;
-float diffD = 0.0;
+void toPoint(float targX, float targY){
+    loopcounter1 = 0;
+    dirdec = 0;
+    while(loopcounter1 < 10){
+        rotPow = topointloop2(targX, targY);
+        dist = sqrtf(powf(targX - xPos, 2.0) + powf(targY - yPos, 2.0));
+        toplinerr = tpl2dir * dist * cos(ttotar - currentTheta);
+        //toplinerr = dist * cos(ttotar - currentTheta);
+        toplinint += toplinerr;
+        if ((fabs(toplinerr) <= toplinintmin) || fabs(toplinerr) >= toplinintmax){toplinint = 0.0;}
+        toplinder = toplinerr - pretoplinerr;
+        pretoplinerr = toplinerr;
+        toplinpow = toplinkp * toplinerr + toplinki * toplinint + toplinkd * toplinder;
 
-float intersectionCount = 0.0;
-int counter = 0;
+        tpright = toplinpow * linKp - rotPow * rotKp;
+        tpleft = toplinpow * linKp + rotPow * rotKp;
 
-float intX1 = 0.0;
-float intX2 = 0.0;
-float intY1 = 0.0;
-float intY2 = 0.0;
-    
-vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLinePath, float robotX, float robotY, float lookAheadDis){
-
-    // move the robot center to the origin (easier math)
-    for (vector<float> point : straightLinePath){
-
-        point[0] -= robotX;
-        point[1] -= robotY;
-    }
-
-    while (counter < straightLinePath.size() - 1){
-
-        px1 = straightLinePath[counter][0];
-        py1 = straightLinePath[counter][1];
-        px2 = straightLinePath[counter + 1][0];
-        py2 = straightLinePath[counter + 1][1];
-
-        // begining of calculations
-        diffX = px2-px1;
-        diffY = py2-py1;
-
-        diffR = sqrtf(powf(diffX, 2.0) + powf(diffY, 2.0));
-        diffD = px1*py2 - px2*py1;
-
-        intersectionCount = powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0);
-
-        if (intersectionCount >= 0.0){ // One or two intersections
-
-            intX1 = (diffD * diffY + fabs(diffY) / diffY * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
-            intX2 = (diffD * diffY - fabs(diffY) / diffY * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
-
-            intY1 = (-diffD * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
-            intY2 = (-diffD * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
-
-
-            if (intX1 == intX2 && intY1 == intY2){
-
-                if (!(intX1 > px1 && intX1 > px2) && !(intX1 < px1 && intX1 < px2)){
-                    intersectionPoints.push_back({intX1, intY1, static_cast<float>(counter)});
-                }
-            }
-            else {
-                if (!(intX1 > px1 && intX1 > px2) && !(intX1 < px1 && intX1 < px2)){
-                    intersectionPoints.push_back({intX1, intY1, static_cast<float>(counter)});
-                }
-
-                if (!(intX2 > px1 && intX2 > px2) && !(intX2 < px1 && intX2 < px2)){
-                    intersectionPoints.push_back({intX2, intY2, static_cast<float>(counter)});
-                }
-            }
+        if (fabs(tpright) > toplinmax || fabs(tpleft) > toplinmax){
+            tpright = tpright * toplinmax / max(fabs(toplinpow * linKp - rotPow * rotKp), fabs(toplinpow * linKp + rotPow * rotKp));
+            tpleft = tpleft * toplinmax / max(fabs(toplinpow * linKp - rotPow * rotKp), fabs(toplinpow * linKp + rotPow * rotKp));
         }
-        counter++;
-    }
 
-    return intersectionPoints;
-}
+        if (dist < deadzonerad){
+            tpright = toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp);
+            tpleft = toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp);
+        }
 
-vector<float> determineBestPoint (vector<vector<float>> intersections, vector<vector<float>> path){
+        /*
+        if (fabs(tpright) > toplinmax){tpright = toplinmax * fabs(tpright) / tpright;}
+        if (fabs(tpleft) > toplinmax){tpleft = toplinmax * fabs(tpleft) / tpleft;}
+        */
 
-    vector<float> lastP = intersections[intersections.size() - 1];
-    vector<float> secLastP = intersections[intersections.size() - 2];
+        lcd::clear_line(3);
+        lcd::set_text(4, std::to_string(toplinmax));
+        lcd::set_text(5, std::to_string(tpright));
+        lcd::set_text(6, std::to_string(tpleft));
+        lcd::set_text(7, std::to_string(toplinerr));
 
-    if (lastP[2] > secLastP[2]){
-
-        return {lastP[0], lastP[1]};
-    }
-    else{
-
-        vector<float> lineEP = path[lastP[2] + 1];
-
-        float distLP = sqrtf(powf(lineEP[0] - lastP[0], 2.0) + powf(lineEP[1] - lastP[1], 2.0));
-        float distSLP = sqrtf(powf(lineEP[0] - secLastP[0], 2.0) + powf(lineEP[1] - secLastP[1], 2.0));
-
-        if (distLP > distSLP){
-            return {secLastP[0], secLastP[1]};
+        if (pauseloop == 0){
+            if (inputvov == 0){
+                rightDrive.move_velocity(tpright);
+                leftDrive.move_velocity(tpleft);
+            }
+            else{
+                rightDrive.move_voltage(20.0 * tpright);
+                leftDrive.move_voltage(20.0 * tpleft);
+            }
         }
         else{
-            return {lastP[0], lastP[1]};
+            loopcounter1 = 0;
         }
+        
+
+        /*
+        lcd::set_text(0, std::to_string(rotkp));
+        lcd::set_text(1, std::to_string(rotki));
+        lcd::set_text(2, std::to_string(rotkd));
+        lcd::set_text(4, std::to_string(toplinkp));
+        lcd::set_text(5, std::to_string(toplinki));
+        lcd::set_text(6, std::to_string(toplinkd));
+        lcd::set_text(7, std::to_string(toplinpow));
+        */
+        
+
+        if(fabs(drive1.get_actual_velocity()) < 20.0 && fabs(drive4.get_actual_velocity() < 20.0)){loopcounter1 += 1;}
+        else{loopcounter1 = 0;}
+
+        /*
+        lcd::set_text(3, std::to_string(rotPow));
+        lcd::set_text(4, std::to_string(tpl2dir));
+        lcd::set_text(5, std::to_string(tpright));
+        lcd::set_text(6, std::to_string(tpleft));
+        lcd::set_text(7, std::to_string(180.0 / pi * ttotar));
+        */
+
+
+        //lcd::set_text(0, std::to_string(xPos));
+        //lcd::set_text(1, std::to_string(yPos));        
+        //lcd::set_text(2, std::to_string(180 / pi * currentTheta));
+        //lcd::set_text(3, std::to_string(tpl2dir));
+        //lcd::set_text(4, std::to_string(toplinpow));
+        //lcd::set_text(5, std::to_string(tpright));
+        //lcd::set_text(6, std::to_string(rotPow));
+        //lcd::set_text(7, std::to_string(loopcounter1));
+        delay(10);
     }
+    rightDrive.brake();
+    leftDrive.brake();
 }
 
+void toPointthe2nd(float targX, float targY){
+    lcd::set_text(3, "entered topointthe2nd");
+    loopcounter1 = 0;
+    dirdec = 0;
+    while(loopcounter1 < 50){
+        lcd::set_text(3, "entered while loop");
+        rotPow = topointloop2(targX, targY);
+        lcd::set_text(3, "exited loop2");
+        dist = sqrtf(powf(targX - xPos, 2.0) + powf(targY - yPos, 2.0));
+        toplinerr = tpl2dir * dist * cos(ttotar - currentTheta);
+        //toplinerr = dist * cos(ttotar - currentTheta);
+        toplinint += toplinerr;
+        if ((fabs(toplinerr) <= toplinintmin) || fabs(toplinerr) >= toplinintmax){toplinint = 0.0;}
+        toplinder = toplinerr - pretoplinerr;
+        pretoplinerr = toplinerr;
+        toplinpow = toplinkp * toplinerr + toplinki * toplinint + toplinkd * toplinder;
 
-vector<vector<float>> path {{-2.8, 2.9},{-1.4, -3.3},{-0.59,3.77},{3.0,-5.0},{3.1,4.01}};
-void PurePursuit (){
+        tpright = toplinpow * linKp - rotPow * rotKp;
+        tpleft = toplinpow * linKp + rotPow * rotKp;
 
-    determineBestPoint( circlePathIntersection(path, xPos, yPos, 10.0) , path );
+        if (dist < deadzonerad){
+            tpright = toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp);
+            tpleft = toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp);
+        }
     
+        if (fabs(tpright) > toplinmax || fabs(tpleft) > toplinmax){
+            tpright = tpright * toplinmax / max(fabs(toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)), fabs(toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)));
+            tpleft = tpleft * toplinmax / max(fabs(toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)), fabs(toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)));
+        }
+
+        /*
+        if (fabs(tpright) > toplinmax){tpright = toplinmax * fabs(tpright) / tpright;}
+        if (fabs(tpleft) > toplinmax){tpleft = toplinmax * fabs(tpleft) / tpleft;}
+        */
+
+        lcd::set_text(4, std::to_string(toplinmax));
+        lcd::set_text(5, std::to_string(tpright));
+        lcd::set_text(6, std::to_string(tpleft));
+        lcd::set_text(7, std::to_string(toplinerr));
+
+        if (pauseloop == 0){
+            if (inputvov == 0){
+                rightDrive.move_velocity(tpright);
+                leftDrive.move_velocity(tpleft);
+            }
+            else{
+                rightDrive.move_voltage(20.0 * tpright);
+                leftDrive.move_voltage(20.0 * tpleft);
+            }
+        }
+        else{
+            loopcounter1 = 0;
+        }
+        
+
+        /*
+        lcd::set_text(0, std::to_string(rotkp));
+        lcd::set_text(1, std::to_string(rotki));
+        lcd::set_text(2, std::to_string(rotkd));
+        lcd::set_text(4, std::to_string(toplinkp));
+        lcd::set_text(5, std::to_string(toplinki));
+        lcd::set_text(6, std::to_string(toplinkd));
+        lcd::set_text(7, std::to_string(toplinpow));
+        */
+        
+
+        if(fabs(drive1.get_actual_velocity()) < 20.0 && fabs(drive4.get_actual_velocity() < 20.0)){loopcounter1 += 1;}
+        else{loopcounter1 = 0;}
+
+        /*
+        lcd::set_text(3, std::to_string(rotPow));
+        lcd::set_text(4, std::to_string(tpl2dir));
+        lcd::set_text(5, std::to_string(tpright));
+        lcd::set_text(6, std::to_string(tpleft));
+        lcd::set_text(7, std::to_string(180.0 / pi * ttotar));
+        */
+
+
+        //lcd::set_text(0, std::to_string(xPos));
+        //lcd::set_text(1, std::to_string(yPos));        
+        //lcd::set_text(2, std::to_string(180 / pi * currentTheta));
+        //lcd::set_text(3, std::to_string(tpl2dir));
+        //lcd::set_text(4, std::to_string(toplinpow));
+        //lcd::set_text(5, std::to_string(tpright));
+        //lcd::set_text(6, std::to_string(rotPow));
+        //lcd::set_text(7, std::to_string(loopcounter1));
+        delay(10);
+    }
+    rightDrive.brake();
+    leftDrive.brake();
+    lcd::set_text(3, "exited pid");
 }

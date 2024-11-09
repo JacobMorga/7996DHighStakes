@@ -17,6 +17,29 @@ void initialize() {
 
 	intake.set_brake_mode(MOTOR_BRAKE_COAST);
 
+	inertial1.reset();
+	inertial2.reset();
+	inertial3.reset();
+	yTracking.reset();
+	xTracking.reset();
+
+	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
+		delay(20);
+	}
+	delay(250);
+
+	pros::Task odomTask (odometry, "odomTask");
+
+	delay(250);
+
+	pros::Task taskDoing (doTask, "taskDoing");
+
+	delay(250);
+
+	pros::Task limitingSpeedandDrop (speedlimitanddrop, "limitingSpeedandDrop");
+
+	delay(250);
+
 }
 
 /**
@@ -24,7 +47,15 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit. 
  */
-void disabled() {}
+void disabled() { 
+	
+	drive1.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive2.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive3.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive4.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drivetrain.brake(); }
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -35,7 +66,9 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	//lastYear();
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -48,7 +81,29 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	STARTTHETIMER = true;
+	//redgoal();
+	rednone();
+	//bluegoal();
+	//bluenone();
+
+	//toPoint(0.0, 24.0);
+
+	/*
+    inputvovfp = 1;
+    rotkp = 500.0; //150.0; //160.0; //150
+    rotki = 81.6922; //!suggested next tune: 77.25221312
+    rotkd = 3350.0; //375.0; //1600
+    lcd::set_text(7, "running auton");
+	facepoint(0.0, -24.0);
+	delay(1000);
+	facepoint(-24.0, 0.0);
+	delay(1000);
+	facepoint(0.0, 24.0);
+    lcd::set_text(7, "ended auton");
+	*/
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -64,6 +119,8 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+
+	//delay(100000);
 	
 	/*
     pros::screen_touch_status_s_t status;
@@ -94,21 +151,20 @@ void opcontrol() {
 	autonSelectorNEW(testingRects);
 	*/
 	
-	inertial1.reset();
-	inertial2.reset();
-	inertial3.reset();
-	yTracking.reset();
-	xTracking.reset();
 
-	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
-		delay(20);
-	}
-
-	delay(500);
-
-	pros::Task odomTask (odometry, "odomTask");
 	
-	facepoint(0.0, -12.0);
+	/*
+	toPoint(-24.0, 72.0);
+	toPoint(-96.0, 48.0);
+	toPoint(-72.0, -24.0);
+	toPoint(0.0, 0.0);
+	*/
+	//rotlinrot(-24.0, 72.0, 0.0);
+	//toPoint(0.0, 48.0);
+	//rotarc(-24.0, 48.0, -pi / 4.0);
+	//facepoint(24.0, 0.0);
+	//toPoint(24.0, -72.0);
+
 
 	while (true) {
 
