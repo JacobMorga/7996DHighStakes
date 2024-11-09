@@ -85,24 +85,24 @@ void rednone(void){
     //toplinmax = 200.0;
     speedmax4 = true;
     toPointthe2nd(-3.0, 17.0);//(0.0, 24.0); //toward first goal
+    //toPointthe2nd(0.0 -);
     toplinmax = 600.0;
     backClaw.set_value(1);
-    //delay(500);
+    delay(500);
     intake.move_voltage(13000.0);
     delay(1000);
     //*intake.move_velocity(0.0);
     //toplinmax = 600.0;
     deadzonerad = 6.0;
     //pauseloop = 1;
-    toPointthe2nd(-24.0, 24.0); //intake first bottom ring
+    toPointthe2nd(-22.0, 22.0); //(-24.0, 24.0); //intake first bottom ring
     intake.move_voltage(13000.0);
-    //*rightDrive.move_velocity(100.0);
-    //*leftDrive.move_velocity(100.0);
-    delay(1000);
-    //*rightDrive.brake();
-    //*leftDrive.brake();
+    toPointthe2nd(-18.0, 18.0);
     //pauseloop = 1;
     toPointthe2nd(-26.75, 38.0); //get second bottom ring
+    delay(500);
+    toPointthe2nd(-26.75, 24.0); //back a tad
+    toPointthe2nd(-21.25, 38.0); //get second second bottom ring
 }
 
 void bluegoal(void){ //?copied and pasted redgoal() and converted points with (x,y) -> (-x,y)

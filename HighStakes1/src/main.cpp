@@ -84,7 +84,7 @@ void competition_initialize() {
 void autonomous() {
 	//STARTTHETIMER = true;
 	//redgoal();
-	//rednone();
+	rednone();
 	//bluegoal();
 	//bluenone();
 
