@@ -22,8 +22,8 @@ void runDriveCont (){
         joystickLXVal = powf(controller.get_analog(ANALOG_LEFT_X) / 127.0 * 100.0, 3.0) / 10000.0 * 6.0; // Scales 127 to 100 then cubes and
 
         if (joysticks == 1){
-            rightDrivePow = joystickRYVal - joystickRXVal;
-            leftDrivePow = joystickRYVal + joystickRXVal;
+            rightDrivePow = joystickRYVal - joystickLXVal;
+            leftDrivePow = joystickRYVal + joystickLXVal;
         }
         if (joysticks == 2){
             rightDrivePow = joystickRYVal - (joystickRXVal + joystickLXVal);
@@ -42,22 +42,22 @@ void runDriveCont (){
         else if (intakeState == 1){intake.move_velocity(600);}
         else{intake.brake();}
 
-        if (controller.get_digital_new_press(DIGITAL_R1) == pressed){
+        if (controller.get_digital_new_press(DIGITAL_R2) == pressed){
             intakeState = abs(intakeState - 1);
         }
-        if (controller.get_digital(DIGITAL_R2) == pressed){
+        if (controller.get_digital(DIGITAL_R1) == pressed){
             intakeState = 2;
         }
-        if (controller.get_digital(DIGITAL_R2) == unpressed && buttonR2Prev == pressed){
+        if (controller.get_digital(DIGITAL_R1) == unpressed && buttonR2Prev == pressed){
             intakeState = 0;
         } 
 
-        buttonR2Prev = controller.get_digital(DIGITAL_R2);
+        buttonR2Prev = controller.get_digital(DIGITAL_R1);
 
-        if (controller.get_digital_new_press(DIGITAL_L1) == pressed){
+        if (controller.get_digital_new_press(DIGITAL_L2) == pressed){
             backClaw.set_value(!backClaw.get_value());
         }
-        if (controller.get_digital_new_press(DIGITAL_L2) == pressed){
+        if (controller.get_digital_new_press(DIGITAL_L1) == pressed){
             ploinker.set_value(!ploinker.get_value());
         }
         if (controller.get_digital_new_press(DIGITAL_LEFT) == pressed){

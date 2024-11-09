@@ -14,7 +14,7 @@ bool speedmax4 = false;
 bool STARTTHETIMER = false;
 
 void redgoal(void){
-	intake.move_velocity(600.0);
+	intake.move_voltage(13000.0);
     stopintake1 = true;
     inputvov = 1;
 	toPoint(25.0, 22.0); //intake bottom ring
@@ -47,13 +47,13 @@ void redgoal(void){
     inputvov = 1;
     startintake2 = true;
 	toPoint(12.0, -6.0); //drive to place first goal
-    intake.move_velocity(600.0);
+    intake.move_voltage(13000.0);
     //!delay(1000); //dropping onto first goal
     //intake.move_velocity(0.0);
     //toPoint(24.0, 0.0); //first topoint
     facepoint(xPos + 12.0, yPos + 12.0); //point to 45deg
     backClaw.set_value(0);
-    intake.move_velocity(600.0);
+    intake.move_voltage(13000.0); //!is this overclocking
     //delay(500); //let the goal fall so you dont drag it?
     //facepoint(36.0, -16.0); //face ring
     stopintake2 = true;
@@ -68,7 +68,7 @@ void redgoal(void){
     backClaw.set_value(1);
     startintake1 = true;
     facepoint(-24.0, 19.0);
-    intake.move_velocity(600.0);
+    intake.move_voltage(13000.0);
     delay(500); //dropping onto second goal
     //intake.move_velocity(0.0);
     ploinker.set_value(1);
@@ -80,24 +80,33 @@ void redgoal(void){
 
 void rednone(void){
     inputvov = 1;
+
     //pauseloop = 1;
     //toplinmax = 200.0;
     speedmax4 = true;
     toPointthe2nd(-3.0, 17.0);//(0.0, 24.0); //toward first goal
     toplinmax = 600.0;
     backClaw.set_value(1);
-    delay(500);
-    intake.move_velocity(600.0);
-    delay(2000);
-    //toplinmax = 600.0;
-    deadzonerad = 1.0;
-    toPointthe2nd(-24.0, 24.0); //intake first bottom ring
+    //delay(500);
+    intake.move_voltage(13000.0);
     delay(1000);
-    backClaw.set_value(0);
+    //*intake.move_velocity(0.0);
+    //toplinmax = 600.0;
+    deadzonerad = 6.0;
+    //pauseloop = 1;
+    toPointthe2nd(-24.0, 24.0); //intake first bottom ring
+    intake.move_voltage(13000.0);
+    //*rightDrive.move_velocity(100.0);
+    //*leftDrive.move_velocity(100.0);
+    delay(1000);
+    //*rightDrive.brake();
+    //*leftDrive.brake();
+    //pauseloop = 1;
+    toPointthe2nd(-26.75, 38.0); //get second bottom ring
 }
 
 void bluegoal(void){ //?copied and pasted redgoal() and converted points with (x,y) -> (-x,y)
-	intake.move_velocity(600.0);
+	intake.move_voltage(13000.0);
     stopintake1 = true;
     inputvov = 1;
 	toPoint(-25.0, 22.0); //intake bottom ring
@@ -130,13 +139,13 @@ void bluegoal(void){ //?copied and pasted redgoal() and converted points with (x
     inputvov = 1;
     startintake2 = true;
 	toPoint(0.0, -6.0); //(-12.0, -6.0); //drive to place first goal //!intentionally different from redgoal
-    intake.move_velocity(600.0);
+    intake.move_voltage(13000.0);
     //!delay(1000); //dropping onto first goal
     //intake.move_velocity(0.0);
     //toPoint(24.0, 0.0); //first topoint
     facepoint(xPos - 12.0, yPos + 12.0); //point to 45deg
     backClaw.set_value(0);
-    intake.move_velocity(600.0);
+    intake.move_voltage(13000.0);
     //delay(500); //let the goal fall so you dont drag it?
     //facepoint(36.0, -16.0); //face ring
     stopintake2 = true;
@@ -151,14 +160,14 @@ void bluegoal(void){ //?copied and pasted redgoal() and converted points with (x
     backClaw.set_value(1);
     startintake1 = true;
     facepoint(24.0, 29.0); //!this is different than redgoal on purpose
-    intake.move_velocity(600.0);
+    intake.move_voltage(13000.0);
     delay(500); //dropping onto second goal
     //intake.move_velocity(0.0);
     ploinker.set_value(1);
     rightDrive.move_velocity(150.0);
     leftDrive.move_velocity(150.0);
     delay(1000);
-    backClaw.set_value(0);
+    //backClaw.set_value(0);
 }
 
 void bluenone(void){
@@ -201,12 +210,12 @@ void doTask(void){
         }
         if (startintake1){
             delay(750);
-            intake.move_velocity(600.0);
+            intake.move_voltage(13000.0);
             startintake1 = false;
         }
         if (startintake2){
             delay(500);
-            intake.move_velocity(600.0);
+            intake.move_voltage(13000.0);
             startintake2 = false;
         }
         if (speedmax4){
@@ -219,26 +228,25 @@ void doTask(void){
 }
 
 void speedlimitanddrop(void){
-    int looped = 0;
+    //int looped = 0;
     float speedmaxdelay = 500.0;
     while(1){
         if (speedmax3){
             delay(speedmaxdelay); //!250; pushed later to get to end faster and drop goal earlier
             toplinmax = 175.0;
             speedmax3 = false;
-            looped += speedmaxdelay;
+            //looped += speedmaxdelay;
         }
+        /*
         if (looped >= 14500){
             backClaw.set_value(0);
         }
-
         if (STARTTHETIMER == true){
             delay(50);
             looped += 50;
         }
-
+        */
         else{delay(10);}
-        
     }
 }
 

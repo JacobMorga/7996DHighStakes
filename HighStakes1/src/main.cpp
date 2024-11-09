@@ -82,7 +82,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	STARTTHETIMER = true;
+	//STARTTHETIMER = true;
 	//redgoal();
 	rednone();
 	//bluegoal();
@@ -165,11 +165,9 @@ void opcontrol() {
 	//facepoint(24.0, 0.0);
 	//toPoint(24.0, -72.0);
 
-
+	ploinker.set_value(0);
 	while (true) {
-
 		runDriveCont();
-		
 		delay(20);
 	}
 	

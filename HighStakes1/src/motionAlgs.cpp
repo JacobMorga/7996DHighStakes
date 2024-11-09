@@ -440,6 +440,9 @@ void toPoint(float targX, float targY){
     leftDrive.brake();
 }
 
+int indeadzone = 0;
+int hitspeedlimit = 0;
+
 void toPointthe2nd(float targX, float targY){
     lcd::set_text(3, "entered topointthe2nd");
     loopcounter1 = 0;
@@ -463,19 +466,33 @@ void toPointthe2nd(float targX, float targY){
         if (dist < deadzonerad){
             tpright = toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp);
             tpleft = toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp);
+            indeadzone = 1;
+
+            if (fabs(tpright) > toplinmax || fabs(tpleft) > toplinmax){
+                tpright = tpright * toplinmax / max(fabs(toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)), fabs(toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)));
+                tpleft = tpleft * toplinmax / max(fabs(toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)), fabs(toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)));
+                hitspeedlimit = 2;
+            }
+            else{hitspeedlimit = 0;}
+        }
+        else{
+            indeadzone = 0;
+            if (fabs(tpright) > toplinmax || fabs(tpleft) > toplinmax){
+                tpright = tpright * toplinmax / max(fabs(toplinpow * linKp - rotPow * rotKp), fabs(toplinpow * linKp + rotPow * rotKp));
+                tpleft = tpleft * toplinmax / max(fabs(toplinpow * linKp - rotPow * rotKp), fabs(toplinpow * linKp + rotPow * rotKp));
+                hitspeedlimit = 2;
+            }
+            else{hitspeedlimit = 0;}
         }
     
-        if (fabs(tpright) > toplinmax || fabs(tpleft) > toplinmax){
-            tpright = tpright * toplinmax / max(fabs(toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)), fabs(toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)));
-            tpleft = tpleft * toplinmax / max(fabs(toplinpow * linKp - (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)), fabs(toplinpow * linKp + (powf(dist, 4.0) / powf(deadzonerad, 4.0)) * (rotPow * rotKp)));
-        }
+
 
         /*
         if (fabs(tpright) > toplinmax){tpright = toplinmax * fabs(tpright) / tpright;}
         if (fabs(tpleft) > toplinmax){tpleft = toplinmax * fabs(tpleft) / tpleft;}
         */
 
-        lcd::set_text(4, std::to_string(toplinmax));
+        lcd::set_text(4, std::to_string(indeadzone + hitspeedlimit));
         lcd::set_text(5, std::to_string(tpright));
         lcd::set_text(6, std::to_string(tpleft));
         lcd::set_text(7, std::to_string(toplinerr));
