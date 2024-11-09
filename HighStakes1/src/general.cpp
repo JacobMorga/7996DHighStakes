@@ -94,24 +94,146 @@ void DisplayBox::handleButtons (){
     
 }
 
-void autonSelectorNEW (vector<DisplayBox> divisions){
-    while (1){
-        screen::erase();
-        delay(5);
-        screen::set_pen(COLOR_WHITE);
+pros::screen_touch_status_s_t status;
 
-        for (DisplayBox div : divisions){
-            screen::draw_rect(div.X1,div.Y1,div.X2,div.Y2); // Draw main Rectangle
+void autonSelectorNEW (vector<DisplayBox> graph){
+    while(1){
+
+        delay(100);
+        screen::erase();
+        delay(5); //? idk if i need this
+        screen::set_pen(COLOR_WHITE);
+        screen::set_eraser(COLOR_BLACK);
+
+        status = pros::screen::touch_status();
+        
+        for (DisplayBox div : graph){
+            screen::draw_rect(div.X1,div.Y1,div.X2,div.Y2); // Draw boxes
+
+            if (status.touch_status == TOUCH_HELD){
+                div.handleButtons();
+            }
 
             div.drawHorizontalLines();
             div.drawVerticalLines();
         }
 
-        while (screen_touch_status_s().touch_status != E_TOUCH_HELD){
-            delay(10);
-        }
+
         screen::fill_rect(1,1,240,240); // Draw main Rectangle
         delay(1000000);
-
     }
+
+
+}
+
+int autonSelector = 0;
+
+void AUTONSELECTOR (void){
+
+	pros::screen_touch_status_s_t status;
+
+    autonSelector = 0;
+
+    screen::set_pen(COLOR_WHITE);
+    screen::set_eraser(COLOR_BLACK);
+	screen::erase();
+
+    delay(20);
+	
+    screen::draw_line(240,0,240,240);
+	screen::draw_line(120,0,120,240);
+	screen::draw_line(360,0,360,240);
+	screen::draw_line(0,120,480,120);
+
+    screen::print(TEXT_MEDIUM,10,10,"Close");
+	screen::print(TEXT_MEDIUM,130,10,"Close AWP");
+	screen::print(TEXT_MEDIUM,250,10,"Close Doal");
+	screen::print(TEXT_MEDIUM,370,10,"Close Rush");
+    screen::print(TEXT_MEDIUM,10,130,"Far AWP");
+	screen::print(TEXT_MEDIUM,130,130,"Far 6");
+	screen::print(TEXT_MEDIUM,250,130,"Far Sh AWP");
+	screen::print(TEXT_MEDIUM,370,130,"Empty");
+    
+    status = pros::screen::touch_status();
+
+    while(status.touch_status != E_TOUCH_HELD){
+        status = pros::screen::touch_status();
+        delay(20);
+    }
+	screen::erase();
+	delay(20);
+	screen::set_pen(COLOR_GREEN);
+
+
+    if(status.y <= 120){
+
+		if (status.x <= 120){
+			screen::draw_rect(0,0,120,120);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,30,30,"Close");
+			autonSelector = 1;
+		}
+		else if (status.x <= 240){
+			screen::draw_rect(120,0,240,120);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,130,10,"Close AWP");
+			autonSelector = 2;
+		}
+		else if (status.x <= 360){
+			screen::draw_rect(240,0,360,120);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,250,10,"Close Doal");
+			autonSelector = 3;
+		}
+		else if (status.x <= 480){
+			screen::draw_rect(360,0,480,120);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,370,10,"Close Rush");
+			autonSelector = 4;
+		}
+		else{
+			screen::draw_rect(120,60,360,180);
+			screen::set_pen(COLOR_RED);
+			screen::print(TEXT_MEDIUM,180,120,"COOOKED");
+			autonSelector = 999;
+		}
+    }
+	else{
+
+		if (status.x <= 120){
+			screen::draw_rect(0,120,120,240);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,10,130,"Far AWP");
+			autonSelector = 5;
+		}
+		else if (status.x <= 240){
+			screen::draw_rect(120,120,240,240);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,130,130,"Far 6");
+			autonSelector = 6;
+		}
+		else if (status.x <= 360){
+			screen::draw_rect(240,120,360,240);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,250,130,"Far Sh AWP");
+			autonSelector = 7;
+		}
+		else if (status.x <= 480){
+			screen::draw_rect(360,120,480,240);
+			screen::set_pen(COLOR_WHITE);
+			screen::print(TEXT_MEDIUM,370,130,"Empty");
+			autonSelector = 8;
+		}
+		else{
+			screen::draw_rect(120,60,360,180);
+			screen::set_pen(COLOR_RED);
+			screen::print(TEXT_MEDIUM,180,120,"COOOKED");
+			autonSelector = 999;
+		}
+    }
+
+	delay(100);
+
+
+
 }
