@@ -22,7 +22,7 @@ void initialize() {
 	inertial3.reset();
 	yTracking.reset();
 	xTracking.reset();
-
+	/*
 	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
 		delay(20);
 	}
@@ -39,7 +39,7 @@ void initialize() {
 	pros::Task limitingSpeedandDrop (speedlimitanddrop, "limitingSpeedandDrop");
 
 	delay(250);
-
+	*/
 }
 
 /**
@@ -67,6 +67,9 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
+	delay(250);
+
+	AUTONSELECTORFUNC();
 	//lastYear();
 }
 
@@ -90,6 +93,13 @@ void autonomous() {
 
 	//toPoint(0.0, 24.0);
 
+	if (autonSelector == 1){redgoal();}
+	else if (autonSelector == 2){bluegoal();}
+	else if (autonSelector == 3){rednone();}
+	else if (autonSelector == 4){bluenone();}
+	else if (autonSelector > 4){screen::print(TEXT_LARGE_CENTER,240,120,"YOU ARE COOOKED");}
+	else{autonSelector = 999;} // you're cooked
+
 	/*
     inputvovfp = 1;
     rotkp = 500.0; //150.0; //160.0; //150
@@ -104,7 +114,6 @@ void autonomous() {
     lcd::set_text(7, "ended auton");
 	*/
 
-	AUTONSELECTOR();
 }
 
 /**
@@ -122,7 +131,7 @@ void autonomous() {
  */
 void opcontrol() {
 
-	//delay(100000);
+
 	
 	/*
     pros::screen_touch_status_s_t status;

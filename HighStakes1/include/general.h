@@ -32,5 +32,5 @@ class DisplayBox{
     void handleButtons ();
 };
 extern void autonSelectorNEW (vector<DisplayBox> divisions);
-extern void AUTONSELECTOR (void);
+extern void AUTONSELECTORFUNC (void);
 extern int autonSelector;
