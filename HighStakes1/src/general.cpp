@@ -149,10 +149,10 @@ void AUTONSELECTORFUNC (void){
 	screen::print(TEXT_MEDIUM,130,10,"Goal Blue");
 	screen::print(TEXT_MEDIUM,250,10,"No Goal Red");
 	screen::print(TEXT_MEDIUM,370,10,"No Goal Blue");
-    screen::print(TEXT_MEDIUM,10,130,"null");
-	screen::print(TEXT_MEDIUM,130,130,"null");
-	screen::print(TEXT_MEDIUM,250,130,"null");
-	screen::print(TEXT_MEDIUM,370,130,"null");
+    screen::print(TEXT_MEDIUM,10,130,"Skills");
+	screen::print(TEXT_MEDIUM,130,130,"Skills");
+	screen::print(TEXT_MEDIUM,250,130,"Skills");
+	screen::print(TEXT_MEDIUM,370,130,"Testing");
     
     status = pros::screen::touch_status();
 
@@ -200,29 +200,30 @@ void AUTONSELECTORFUNC (void){
     }
 	else{
 
+        
 		if (status.x <= 120){
 			screen::draw_rect(0,120,120,240);
 			screen::set_pen(COLOR_WHITE);
-			screen::print(TEXT_MEDIUM,10,130,"Goal Red");
-			autonSelector = 1;
+			screen::print(TEXT_MEDIUM,10,130,"Skills");
+			autonSelector = 5;
 		}
 		else if (status.x <= 240){
 			screen::draw_rect(120,120,240,240);
 			screen::set_pen(COLOR_WHITE);
-			screen::print(TEXT_MEDIUM,130,130,"Goal Blue");
-			autonSelector = 2;
+			screen::print(TEXT_MEDIUM,130,130,"Skills");
+			autonSelector = 5;
 		}
 		else if (status.x <= 360){
 			screen::draw_rect(240,120,360,240);
 			screen::set_pen(COLOR_WHITE);
-			screen::print(TEXT_MEDIUM,250,130,"No Goal Red");
-			autonSelector = 3;
+			screen::print(TEXT_MEDIUM,250,130,"Skills");
+			autonSelector = 5;
 		}
 		else if (status.x <= 480){
 			screen::draw_rect(360,120,480,240);
 			screen::set_pen(COLOR_WHITE);
-			screen::print(TEXT_MEDIUM,370,130,"No Goal Blue");
-			autonSelector = 4;
+			screen::print(TEXT_MEDIUM,370,130,"Testing");
+			autonSelector = 6;
 		}
 		else{
 			screen::draw_rect(120,60,360,180);
@@ -230,6 +231,7 @@ void AUTONSELECTORFUNC (void){
 			screen::print(TEXT_MEDIUM,180,120,"COOOKED");
 			autonSelector = 999;
 		}
+        
     }
 
 	delay(100);

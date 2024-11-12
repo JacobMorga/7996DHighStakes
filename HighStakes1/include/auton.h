@@ -4,6 +4,8 @@ extern void redgoal(void);
 extern void rednone(void);
 extern void bluegoal(void);
 extern void bluenone(void);
+extern void skillsgoat(void);
+extern void testing(void);
 
 extern void doTask(void);
 extern void speedlimitanddrop(void);

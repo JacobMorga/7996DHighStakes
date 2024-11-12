@@ -22,7 +22,7 @@ void initialize() {
 	inertial3.reset();
 	yTracking.reset();
 	xTracking.reset();
-	/*
+	
 	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
 		delay(20);
 	}
@@ -39,7 +39,7 @@ void initialize() {
 	pros::Task limitingSpeedandDrop (speedlimitanddrop, "limitingSpeedandDrop");
 
 	delay(250);
-	*/
+
 }
 
 /**
@@ -87,7 +87,7 @@ void competition_initialize() {
 void autonomous() {
 	//STARTTHETIMER = true;
 	//redgoal();
-	rednone();
+	//rednone();
 	//bluegoal();
 	//bluenone();
 
@@ -97,7 +97,9 @@ void autonomous() {
 	else if (autonSelector == 2){bluegoal();}
 	else if (autonSelector == 3){rednone();}
 	else if (autonSelector == 4){bluenone();}
-	else if (autonSelector > 4){screen::print(TEXT_LARGE_CENTER,240,120,"YOU ARE COOOKED");}
+	else if (autonSelector == 5){skillsgoat();}
+	else if (autonSelector == 6){testing();}
+	else if (autonSelector > 6){screen::print(TEXT_LARGE_CENTER,240,120,"YOU ARE COOOKED");}
 	else{autonSelector = 999;} // you're cooked
 
 	/*

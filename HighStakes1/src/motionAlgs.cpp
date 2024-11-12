@@ -1,8 +1,8 @@
 #include "main.h"
 
-float linkp = 1.0;
-float linki = 0.0;
-float linkd = 0.0;
+float linkp = 12.5 * 2.0; //just stole the toplink values
+float linki = 12.5 * 0.0;
+float linkd = 12.5 * 1.0;
 
 float rotkp = 200.0; //212.5; //150.0
 float rotki = 0.0;
@@ -126,10 +126,11 @@ float arcratetar = 0.0;
 float arcrateact = 0.0;
 float prevTheta = 0.0;
 float arcratedif = 0.0;
-float arcratek = 0.0; //tune this
+float arcratek = -20.0; //tune this
 float rotdir = 0.0;
 
 void rotarc(float xtar, float ytar, float ttar){
+    lcd::set_text(0, "entered rotarc");
     mtar = tanf(ttar);
     xsol = (((powf(xPos, 2.0) - powf(xtar, 2.0)) / (2.0 * (yPos - ytar))) + ((yPos - ytar) / 2.0) - (xtar / mtar)) / (((xPos - xtar) / (yPos - ytar)) - (1.0 / mtar));
     ysol = -1.0 * ((xPos - xtar) / (yPos - ytar)) * (xsol - ((xPos + xtar) / 2.0)) + ((yPos + ytar) / 2.0);
@@ -137,9 +138,14 @@ void rotarc(float xtar, float ytar, float ttar){
     xint = (-1.0 * mtar * xtar - (xPos * ((xPos - xsol) / (yPos - ysol))) - yPos + ytar) / (-1.0 * ((xPos - xsol) / (yPos - ysol)) - mtar);
     yint = -1.0 * ((xPos - xsol) / (yPos - ysol)) * (xtar - xPos) + yPos;
 
+    cout << "mtar: " << mtar << "\n" << "xsol: " << xsol << "\n" << "ysol: " << ysol << "\n" << "xint: " << xint << "\n" << "yint: " << yint << "\n" << "xPos: " << xPos << "\n" << "yPos: " << yPos << "\n";
+
+
     loopcount = 0;
     while (loopcount < 10){
+        lcd::set_text(0, "entered loop 1");
         ttotar = (2 * (xint - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
+        //ttotar = (2 * 1 - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
         terror = ttotar - currentTheta;
         rotint += terror;
         if ((fabs(terror) <= rotintmin) || fabs(rotint) >= rotintmax){rotint = 0.0;}
@@ -151,17 +157,32 @@ void rotarc(float xtar, float ytar, float ttar){
         if (fabs(terror) <= 1.0){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
+        lcd::set_text(1, "loopcount:");
+        lcd::set_text(2, std::to_string(loopcount));
+        lcd::set_text(3, "xsol:");
+        lcd::set_text(4, std::to_string(xsol));
+        lcd::set_text(5, "ysol:");
+        lcd::set_text(6, std::to_string(ysol));
+        lcd::set_text(7, std::to_string(terror));
+    
+        //delay(1000);
     }
     rightDrive.brake();
     leftDrive.brake();
+    lcd::set_text(0, "exited loop 1");
     delay(1000);
 
     loopcount = 0;
     prevTheta = currentTheta; //just so it's not 0 on the first loop?
+    arcrotpow = 10.0;
     while (loopcount < 10){
+        lcd::set_text(0, "entered loop 2");
         mtar = tanf(ttar);
         xsol = (((powf(xPos, 2.0) - powf(xtar, 2.0)) / (2.0 * (yPos - ytar))) + ((yPos - ytar) / 2.0) - (xtar / mtar)) / (((xPos - xtar) / (yPos - ytar)) - (1.0 / mtar));
         ysol = -1.0 * ((xPos - xtar) / (yPos - ytar)) * (xsol - ((xPos + xtar) / 2.0)) + ((yPos + ytar) / 2.0);
+        
+        xint = (-1.0 * mtar * xtar - (xPos * ((xPos - xsol) / (yPos - ysol))) - yPos + ytar) / (-1.0 * ((xPos - xsol) / (yPos - ysol)) - mtar);
+        yint = -1.0 * ((xPos - xsol) / (yPos - ysol)) * (xtar - xPos) + yPos;
         arcr = sqrtf(powf(xtar - xsol, 2.0) + powf(ytar - ysol, 2.0));
 
         arcerr = arcr * fabsf((arctan2(xtar - xsol, ytar - ysol) - arctan2(xPos - xsol, yPos - ysol)));
@@ -173,19 +194,42 @@ void rotarc(float xtar, float ytar, float ttar){
         prearcerr = arcerr;
         arclinpow = linkp * arcerr + linki * arcint + linkd * arcder;
 
+        /*
         arcratetar = (ttotar - currentTheta) / arcerr;
         arcrateact = (currentTheta - prevTheta) / arcder;
         prevTheta = currentTheta;
         arcratedif = arcratetar - arcrateact;
         arcrotpow += arcratek * arcratedif;
-
+    
         rightDrive.move_velocity(arclinpow - rotdir * arcrotpow);
         leftDrive.move_velocity(arclinpow + rotdir * arcrotpow);
+        */
+
+        ttotar = (2 * (xint - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
+        //ttotar = (2 * 1 - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
+        terror = ttotar - currentTheta;
+        rotint += terror;
+        if ((fabs(terror) <= rotintmin) || fabs(rotint) >= rotintmax){rotint = 0.0;}
+        rotder = terror - preterror;
+        preterror = terror;
+        rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
+
+        rightDrive.move_velocity(arclinpow + rotpow);
+        leftDrive.move_velocity(arclinpow - rotpow);
+
+
+        /*
+        rightDrive.move_velocity(arclinpow);
+        leftDrive.move_velocity(drive1.get_actual_velocity() * (arcr - (13.75/2.0)) / (arcr + (13.75/2.0)));
+        */
+
         if (arcerr <= 1.0){loopcount += 1;}
         else{loopcount = 0;}
         delay(10);
+        lcd::set_text(0, "loopcount2:");
+        lcd::set_text(1, std::to_string(loopcount));
     }
-
+    lcd::set_text(0, "exited loop 2");
 }
 
 
@@ -447,7 +491,7 @@ void toPointthe2nd(float targX, float targY){
     lcd::set_text(3, "entered topointthe2nd");
     loopcounter1 = 0;
     dirdec = 0;
-    while(loopcounter1 < 50){
+    while(loopcounter1 < 10){ //!THIS WAS 50 SO IF IT IS BROKEN CHANGE IT BACK
         lcd::set_text(3, "entered while loop");
         rotPow = topointloop2(targX, targY);
         lcd::set_text(3, "exited loop2");
