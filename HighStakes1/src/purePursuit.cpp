@@ -19,8 +19,10 @@ float intX1 = 0.0;
 float intX2 = 0.0;
 float intY1 = 0.0;
 float intY2 = 0.0;
+
+float lookAheadDis = 10.0;
     
-vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLinePath, float robotX, float robotY, float lookAheadDis){
+vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLinePath, float robotX, float robotY){
 
     // move the robot center to the origin (easier math)
     for (vector<float> point : straightLinePath){
@@ -78,12 +80,19 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
 
 vector<float> determineBestPoint (vector<vector<float>> intersections, vector<vector<float>> path){
 
+    float distanceToFinalPoint = 0.0;
+
+    if (distanceToFinalPoint < lookAheadDis){
+
+        return path[path.size() - 1];
+    }
+
     vector<float> lastP = intersections[intersections.size() - 1];
     vector<float> secLastP = intersections[intersections.size() - 2];
 
     if (lastP[2] > secLastP[2]){
 
-        return {lastP[0], lastP[1]};
+        return lastP;
     }
     else{
 
@@ -93,20 +102,48 @@ vector<float> determineBestPoint (vector<vector<float>> intersections, vector<ve
         float distSLP = sqrtf(powf(lineEP[0] - secLastP[0], 2.0) + powf(lineEP[1] - secLastP[1], 2.0));
 
         if (distLP > distSLP){
-            return {secLastP[0], secLastP[1]};
+            return secLastP;
         }
         else{
-            return {lastP[0], lastP[1]};
+            return lastP;
         }
     }
 }
 
 
 vector<vector<float>> path {{-9.0,9.6},{-5.9,-6.4},{0.66,6.84},{0.0,5.0},{6.0,2.78}};
+
+float targX = 0.0;
+float targY = 0.0;
+float linErrorPP = 0.0;
+float rotErrorPP = 0.0;
+float linKPPP = 3.1;
+float rotKPPP = 3.1;
+float linPowPP = 0.0;
+float rotPowPP = 0.0;
+vector<float> followPoint = {};
+
 void PurePursuit (){
 
-    vector<float> followPoint = determineBestPoint(circlePathIntersection(path, xPos, yPos, 10.0) , path);
-    toPoint(followPoint[0], followPoint[1]);
+    while(1){
+
+    followPoint = determineBestPoint(circlePathIntersection(path, xPos, yPos) , path);
+
+    targX = followPoint[0];
+    targY = followPoint[1];
+
+    linErrorPP = sqrtf(powf(xPos - targX,2.0) + powf(yPos - targY,2.0));
+    rotErrorPP = (2.0 * (targX - xPos >= 0.0) - 1) * pi / 2.0 - atanf((targY - yPos) / (targX - xPos)) - currentTheta;
+    while (rotErrorPP > pi){rotErrorPP -= 2.0 * pi;}
+    while (rotErrorPP < -pi){rotErrorPP += 2.0 * pi;}
+
+    linPowPP = linErrorPP * linKPPP;
+    rotPowPP = rotErrorPP * rotKPPP;
+
+    rightDrive.move_voltage(linErrorPP - rotPowPP);
+    leftDrive.move_voltage(linErrorPP + rotPowPP);
+    }
+
 }
 
 

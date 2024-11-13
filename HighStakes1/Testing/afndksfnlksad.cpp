@@ -91,7 +91,7 @@ float py1 = 0.0;
 float px2 = 0.0;
 float py2 = 0.0;
 
-int counter = 0;
+int counter = 1;
     
 vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLinePath, float robotX, float robotY, float lookAheadDis){
 
@@ -107,7 +107,7 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
 
     cout << "\n";
 
-    while (counter < straightLinePath.size() - 1){
+    while (counter < straightLinePath.size()){
 
         px1 = straightLinePath[counter][0];
         py1 = straightLinePath[counter][1];
