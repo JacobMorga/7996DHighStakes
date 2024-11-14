@@ -74,9 +74,9 @@ void odometry(void){
         yPos += deltaYGlobal;
 
         
-        //*lcd::set_text(0, std::to_string(xPos));
-        //*lcd::set_text(1, std::to_string(yPos));
-        //*lcd::set_text(2, std::to_string(180.0 / pi * currentTheta));
+        lcd::set_text(0, std::to_string(xPos));
+        lcd::set_text(1, std::to_string(yPos));
+        lcd::set_text(2, std::to_string(180.0 / pi * currentTheta));
         
 
         //lcd::set_text(3, std::to_string();

@@ -17,6 +17,7 @@ extern float topointloop2(float targetx, float targety);
 extern void toPoint(float targX, float targY);
 extern void toPointthe2nd(float targX, float targY);
 extern void rotarc(float xtar, float ytar, float ttar);
+extern void pgrarc(float xcen, float ycen, float arcrad, float arctheta, float gamma, float sigma);
 extern float toplinmax;
 extern float rotkp;
 extern float rotki;

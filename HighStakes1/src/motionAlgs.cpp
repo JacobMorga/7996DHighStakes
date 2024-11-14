@@ -128,6 +128,7 @@ float prevTheta = 0.0;
 float arcratedif = 0.0;
 float arcratek = -20.0; //tune this
 float rotdir = 0.0;
+float rotarcrotk = 10.0;
 
 void rotarc(float xtar, float ytar, float ttar){
     lcd::set_text(0, "entered rotarc");
@@ -205,17 +206,18 @@ void rotarc(float xtar, float ytar, float ttar){
         leftDrive.move_velocity(arclinpow + rotdir * arcrotpow);
         */
 
-        ttotar = (2 * (xint - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
+        //ttotar = (2 * (xint - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
         //ttotar = (2 * 1 - 1) * pi / 2.0 - atanf((yint - yPos) / (xint - xPos)); //check if condition returns boolean
-        terror = ttotar - currentTheta;
+        ttotar = (2 * (xtar - xPos >= 0.0) - 1) * pi / 2.0 - atanf((ytar - yPos) / (xtar - xPos)); //check if condition returns boolean
+        terror = 0.5 * (ttotar - currentTheta);
         rotint += terror;
         if ((fabs(terror) <= rotintmin) || fabs(rotint) >= rotintmax){rotint = 0.0;}
         rotder = terror - preterror;
         preterror = terror;
         rotpow = rotkp * terror + rotki * rotint + rotkd * rotder;
 
-        rightDrive.move_velocity(arclinpow + rotpow);
-        leftDrive.move_velocity(arclinpow - rotpow);
+        rightDrive.move_velocity(arclinpow - rotarcrotk * rotpow);
+        leftDrive.move_velocity(arclinpow + rotarcrotk * rotpow);
 
 
         /*
@@ -592,4 +594,88 @@ void toPointthe2nd(float targX, float targY){
     rightDrive.brake();
     leftDrive.brake();
     lcd::set_text(3, "exited pid");
+}
+
+
+
+float avar = 1.0;
+float bvar = 1.0;
+float wvar1 = 1.0;
+float wvar2 = 1.0;
+float lambda = 1.0;
+float epsilon = 0.001;
+float km = 0.5; // 0<=km<=1
+float cm = 1.0; // 0<cm
+float vm = 1.0; //i have no idea what this variable does
+float econ = 2.718281828459045;
+float alpha = 0.0;
+float xloccen = 0.0;
+float yloccen = 0.0;
+float mu = 0.0;
+float xloc = 0.0;
+float yloc = 0.0;
+float philoc = 0.0;
+int pgralc = 0;
+
+float arcypos(float x){
+    if (x <= (-pi + bvar) / avar){return wvar1;}
+    else if ((-pi + bvar) / avar < x && x <= bvar / avar){return wvar1 / 2.0 * (1 - cos(avar * x - bvar));}
+    else{return 0;}
+}
+float arcyneg(float x){
+    if (x <= (-pi + bvar) / avar){return -wvar2;}
+    else if ((-pi + bvar) / avar < x && x <= bvar / avar){return -wvar2 / 2.0 * (1 - cos(avar * x - bvar));}
+    else{return 0.0;}
+}
+float phitar(float y){
+    if (0.0 <= y){return atan(-avar * sqrt((wvar1 - y) * y));}
+    else{return atan(avar * sqrt(-(wvar2 + y) * y));}
+}
+float delphitar(float y){
+    if (0.0 <= y){return -(avar * (wvar1 - 2.0 * y) * sqrt((wvar1 - y) * y)) / (2.0 * y * (1 + pow(avar, 2.0) * (wvar1 - y) * y) * (wvar1 - y));}
+    else{return (avar * (wvar2 + 2.0 * y) * sqrt(-(wvar2 + y) * y)) / (2.0 * y * (1 - powf(avar, 2.0) * (wvar2 + y) * y) * (wvar2 + y));}
+}
+float transvel(float y, float phi){
+    return -(1 - km * pow(econ, -cm * pow(y, 2.0))) * (1 - pow(econ, -cm * y * sin(phi))) / (1 + pow(econ, -cm * y * sin(phi))) * vm + km * pow(econ, -cm * pow(y, 2.0)) * vm;
+}
+float gyphi1(float y, float phi){
+    return -lambda * (phi + atan(avar * sqrt((wvar1 - y) * y))) - ((avar * (wvar1 - 2.0 * y) * sqrt((wvar1 - y) * y)) / (2.0 * y * (1 + pow(avar, 2.0) * (wvar1 - y) * y) * (wvar1 - y))) * (transvel(y, phi) * sin(phi));
+}
+float gyphi2(float y, float phi){
+    return -lambda * (phi - atan(avar * sqrt(-(wvar2 + y) * y))) + ((avar * (wvar2 + 2.0 * y) * sqrt(-(wvar2 + y) * y)) / (2.0 * y * (1 - pow(avar, 2.0) * (wvar2 + y) * y) * (wvar2 + y))) * (transvel(y, phi) * sin(phi));
+}
+float steerang(float y, float phi){
+    if (0.0 <= y && y < wvar1 - epsilon){return gyphi1(y, phi);}
+    else if (-wvar2 + epsilon < y && y <= 0.0){return gyphi2(y, phi);}
+    else{return 0.0;} //you're cooked
+}
+void pgrarc(float xcen, float ycen, float arcrad, float arctheta, float gamma, float sigma){
+    while(pgralc < 10){
+        alpha = atan((yPos - ycen) / (xPos - xcen));
+        xloccen = xcen + arcrad * cos(alpha);
+        yloccen = ycen + arcrad * sin(alpha);
+        mu = pi / 2.0 + alpha;
+
+        xloc = xPos * cos(mu) + yPos * sin(mu) - xloccen * cos(mu) - yloccen * sin(mu);
+        yloc = -xPos * sin(mu) + yPos * cos(mu) + xloccen * sin(mu) - yloccen * cos(mu);
+        philoc = currentTheta - mu;
+
+        rightDrive.move_voltage(12000.0 * (transvel(yloc, philoc) + steerang(yloc, philoc)));
+        leftDrive.move_voltage(12000.0 * (transvel(yloc, philoc) - steerang(yloc, philoc)));
+
+        if (yloc < 0.1){pgralc += 1;}
+        else{pgralc = 0;}
+        delay(10);
+        lcd::set_text(0, std::to_string(transvel(yloc, philoc)));
+        lcd::set_text(1, std::to_string(steerang(yloc, philoc)));
+        lcd::set_text(2, std::to_string(xloccen));
+        lcd::set_text(3, std::to_string(yloccen));
+        lcd::set_text(4, std::to_string(philoc));
+        lcd::set_text(5, std::to_string(alpha));
+        lcd::set_text(6, std::to_string(mu));
+        lcd::set_text(7, std::to_string(yloc));
+
+    }
+    rightDrive.brake();
+    leftDrive.brake();
 }

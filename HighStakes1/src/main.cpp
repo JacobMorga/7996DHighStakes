@@ -8,6 +8,7 @@
  */
 void initialize() {
 	pros::lcd::initialize();
+	lcd::set_text(1, "we made it here at least");
 	drive1.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive2.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive3.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -25,11 +26,13 @@ void initialize() {
 	
 	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
 		delay(20);
+		lcd::set_text(2, "calibrating still");
 	}
+	lcd::set_text(2, "finished calibrating");
 	delay(250);
 
 	pros::Task odomTask (odometry, "odomTask");
-
+	lcd::set_text(3, "initialized odometry");
 	delay(250);
 
 	pros::Task taskDoing (doTask, "taskDoing");
@@ -93,6 +96,7 @@ void autonomous() {
 
 	//toPoint(0.0, 24.0);
 
+
 	if (autonSelector == 1){redgoal();}
 	else if (autonSelector == 2){bluegoal();}
 	else if (autonSelector == 3){rednone();}
@@ -101,6 +105,7 @@ void autonomous() {
 	else if (autonSelector == 6){testing();}
 	else if (autonSelector > 6){screen::print(TEXT_LARGE_CENTER,240,120,"YOU ARE COOOKED");}
 	else{autonSelector = 999;} // you're cooked
+
 
 	/*
     inputvovfp = 1;
