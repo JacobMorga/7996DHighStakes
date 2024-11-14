@@ -38,6 +38,9 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
         px2 = straightLinePath[counter + 1][0];
         py2 = straightLinePath[counter + 1][1];
 
+        cout << "(" << px1 << ", " << py1 << "), " << "\n";
+        cout << "(" << px2 << ", " << py2 << "), " << "\n";
+
         // begining of calculations
         diffX = px2-px1;
         diffY = py2-py1;
