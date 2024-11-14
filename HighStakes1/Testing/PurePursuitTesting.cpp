@@ -27,7 +27,7 @@ float intY1 = 0.0;
 float intY2 = 0.0;
 
 float xPos = 0.01;
-float yPos = 0.01;
+float yPos = 0.01;  
 float currentTheta = 100.0;
 
 float lookAheadDis = 4.0;
