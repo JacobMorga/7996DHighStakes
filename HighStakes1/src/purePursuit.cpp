@@ -38,8 +38,8 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
         px2 = straightLinePath[counter + 1][0];
         py2 = straightLinePath[counter + 1][1];
 
-        cout << "(" << px1 << ", " << py1 << "), " << "\n";
-        cout << "(" << px2 << ", " << py2 << "), " << "\n";
+        cout << "Calculated Point:(" << px1 << ", " << py1 << "), " << "\n";
+        cout << "Calculated Point:(" << px2 << ", " << py2 << "), " << "\n";
 
         // begining of calculations
         diffX = px2-px1;
@@ -140,7 +140,7 @@ void PurePursuit (void){
 
         for (float value : point){
 
-            cout << "(" << point[0] << ", " << point[1] << "), " << "\n";
+            cout << "Intersection: (" << point[0] << ", " << point[1] << ") " << "\n";
         }
     }
 
