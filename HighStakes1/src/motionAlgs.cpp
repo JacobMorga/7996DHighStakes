@@ -598,15 +598,15 @@ void toPointthe2nd(float targX, float targY){
 
 
 
-float avar = 1.0;
-float bvar = 1.0;
-float wvar1 = 1.0;
-float wvar2 = 1.0;
+float avar = 0.25; //just kinda picked this
+float bvar = 3.0; //just kinda picked this
+float wvar1 = 24.0; //seems right
+float wvar2 = 24.0; //seems right
 float lambda = 1.0;
 float epsilon = 0.001;
 float km = 0.5; // 0<=km<=1
 float cm = 1.0; // 0<cm
-float vm = 1.0; //i have no idea what this variable does
+float vm = 12000.0; //this might be motor max
 float econ = 2.718281828459045;
 float alpha = 0.0;
 float xloccen = 0.0;
@@ -616,6 +616,12 @@ float xloc = 0.0;
 float yloc = 0.0;
 float philoc = 0.0;
 int pgralc = 0;
+float betavar = 0.0;
+float cendist = 0.0;
+float xlocprime = 0.0;
+float ylocprime = 0.0;
+float philocprime = 0.0;
+float muprime = 0.0;
 
 float arcypos(float x){
     if (x <= (-pi + bvar) / avar){return wvar1;}
@@ -660,9 +666,24 @@ void pgrarc(float xcen, float ycen, float arcrad, float arctheta, float gamma, f
         yloc = -xPos * sin(mu) + yPos * cos(mu) + xloccen * sin(mu) - yloccen * cos(mu);
         philoc = currentTheta - mu;
 
-        rightDrive.move_voltage(12000.0 * (transvel(yloc, philoc) + steerang(yloc, philoc)));
-        leftDrive.move_voltage(12000.0 * (transvel(yloc, philoc) - steerang(yloc, philoc)));
+        cendist = sqrtf(powf(xPos - xcen, 2.0) + powf(yPos - ycen, 2.0));
+        betavar = acos(arcrad / cendist);
 
+        xlocprime = xPos + cendist * sin(betavar) * cos(3.0 * pi / 2.0 - betavar - alpha);
+        ylocprime = yPos + cendist * sin(betavar) * sin(3.0 * pi / 2.0 - betavar - alpha);
+        muprime = pi / 2.0 + alpha + betavar;
+        philocprime = currentTheta - muprime;
+
+        if (cendist > arcrad){
+            rightDrive.move_voltage(transvel(ylocprime, philocprime) + steerang(ylocprime, philocprime));
+            leftDrive.move_voltage(transvel(ylocprime, philocprime) - steerang(ylocprime, philocprime));
+        }
+        else{
+            rightDrive.move_voltage(transvel(yloc, philoc) + steerang(yloc, philoc));
+            leftDrive.move_voltage(transvel(yloc, philoc) - steerang(yloc, philoc));
+        }
+
+        /*
         if (yloc < 0.1){pgralc += 1;}
         else{pgralc = 0;}
         delay(10);
@@ -674,6 +695,7 @@ void pgrarc(float xcen, float ycen, float arcrad, float arctheta, float gamma, f
         lcd::set_text(5, std::to_string(alpha));
         lcd::set_text(6, std::to_string(mu));
         lcd::set_text(7, std::to_string(yloc));
+        */
 
     }
     rightDrive.brake();
