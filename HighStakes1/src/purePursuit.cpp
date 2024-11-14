@@ -20,7 +20,7 @@ float intX2 = 0.0;
 float intY1 = 0.0;
 float intY2 = 0.0;
 
-float lookAheadDis = 10.0;
+float lookAheadDis = 20.0;
     
 vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLinePath, float robotX, float robotY){
 
@@ -111,19 +111,20 @@ vector<float> determineBestPoint (vector<vector<float>> intersections, vector<ve
 }
 
 
-vector<vector<float>> path {{-9.0,9.6},{-5.9,-6.4},{0.66,6.84},{0.0,5.0},{6.0,2.78}};
+//vector<vector<float>> path {{-9.0,9.6},{-5.9,-6.4},{0.66,6.84},{0.0,5.0},{6.0,2.78}};
+vector<vector<float>> path {{0.0, 0.0}, {96.0, 0.0}, {96.0, 48.0}};
 
 float targX = 0.0;
 float targY = 0.0;
 float linErrorPP = 0.0;
 float rotErrorPP = 0.0;
-float linKPPP = 3.1;
-float rotKPPP = 3.1;
+float linKPPP = 250.0; //why is this 3.1
+float rotKPPP = 5000.0;
 float linPowPP = 0.0;
 float rotPowPP = 0.0;
 vector<float> followPoint = {};
 
-void PurePursuit (){
+void PurePursuit (void){
 
     while(1){
 
@@ -140,10 +141,14 @@ void PurePursuit (){
     linPowPP = linErrorPP * linKPPP;
     rotPowPP = rotErrorPP * rotKPPP;
 
-    rightDrive.move_voltage(linErrorPP - rotPowPP);
-    leftDrive.move_voltage(linErrorPP + rotPowPP);
+    //rightDrive.move_voltage(linPowPP - rotPowPP);
+    //leftDrive.move_voltage(linPowPP + rotPowPP);
+
+    lcd::set_text(6, std::to_string(linPowPP - rotPowPP));
+    lcd::set_text(7, std::to_string(linPowPP + rotPowPP));
+    lcd::set_text(4, std::to_string(targX));
+    lcd::set_text(5, std::to_string(targY));
+    delay(10);
     }
 
 }
-
-
