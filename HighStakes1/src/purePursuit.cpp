@@ -73,6 +73,7 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
             }
         }
         counter++;
+        delay(20);
     }
 
     return intersectionPoints;
@@ -80,7 +81,7 @@ vector<vector<float>> circlePathIntersection (vector<vector<float>> straightLine
 
 vector<float> determineBestPoint (vector<vector<float>> intersections, vector<vector<float>> path){
 
-    float distanceToFinalPoint = 0.0;
+    float distanceToFinalPoint = sqrtf(powf(xPos - path[path.size() - 1][0], 2.0) + powf(yPos - path[path.size() - 1][1], 2.0));
 
     if (distanceToFinalPoint < lookAheadDis){
 
@@ -111,14 +112,13 @@ vector<float> determineBestPoint (vector<vector<float>> intersections, vector<ve
 }
 
 
-//vector<vector<float>> path {{-9.0,9.6},{-5.9,-6.4},{0.66,6.84},{0.0,5.0},{6.0,2.78}};
 vector<vector<float>> path {{0.0, 0.0}, {96.0, 0.0}, {96.0, 48.0}};
 
 float targX = 0.0;
 float targY = 0.0;
 float linErrorPP = 0.0;
 float rotErrorPP = 0.0;
-float linKPPP = 250.0; //why is this 3.1
+float linKPPP = 250.0;
 float rotKPPP = 5000.0;
 float linPowPP = 0.0;
 float rotPowPP = 0.0;
