@@ -122,6 +122,9 @@ float linKPPP = 250.0;
 float rotKPPP = 5000.0;
 float linPowPP = 0.0;
 float rotPowPP = 0.0;
+float rightPowPP = 0.0;
+float leftPowPP = 0.0;
+
 vector<float> followPoint = {};
 
 void PurePursuit (void){
@@ -140,6 +143,20 @@ void PurePursuit (void){
 
     linPowPP = linErrorPP * linKPPP;
     rotPowPP = rotErrorPP * rotKPPP;
+
+    rightPowPP = linPowPP - rotPowPP;
+    leftPowPP = linPowPP + rotPowPP;
+
+    if (fabs(rightPowPP) >= 600.0 || fabs(leftPowPP) >= 600.0){
+        if (fabs(rightPowPP) > fabs(leftPowPP)){
+            rightPowPP *= 600.0 / fabs(linPowPP - rotPowPP);
+            leftPowPP *= 600.0 / fabs(linPowPP - rotPowPP);
+        }
+        else{
+            rightPowPP *= 600.0 / fabs(linPowPP + rotPowPP);
+            leftPowPP *= 600.0 / fabs(linPowPP + rotPowPP);       
+        }
+    }
 
     //rightDrive.move_voltage(linPowPP - rotPowPP);
     //leftDrive.move_voltage(linPowPP + rotPowPP);
