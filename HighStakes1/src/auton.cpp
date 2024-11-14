@@ -385,7 +385,7 @@ void skillsgoat(void){
 
 void testing(void){
     //rotarc(-48.0, 24.0, -pi);
-    //pgrarc(24.0, 24.0, 42.0, 1, 1, 1);
-    PurePursuit();
+    pgrarc(0.0, 48.0, 48.0, 2.0 * pi, 0.0, 1.0);
+    //PurePursuit();
     lcd::set_text(0, "finished");
 }
