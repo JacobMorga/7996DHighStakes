@@ -130,6 +130,14 @@ void PurePursuit (void){
 
     followPoint = determineBestPoint(circlePathIntersection(path, xPos, yPos) , path);
 
+    for (vector<float> point : circlePathIntersection(path, xPos, yPos)){
+
+        for (float value : point){
+
+            cout << "(" << point[0] << ", " << point[1] << "), " << "\n";
+        }
+    }
+
     targX = followPoint[0];
     targY = followPoint[1];
 
