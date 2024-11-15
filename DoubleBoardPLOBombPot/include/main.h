@@ -36,6 +36,12 @@
 
 #include "api.h"
 
+#include "iostream"
+#include "math.h"
+#include "vector"
+
+#include "general.h"
+
 /**
  * You should add more #includes here
  */
