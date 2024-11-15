@@ -39,8 +39,13 @@
 #include "iostream"
 #include "math.h"
 #include "vector"
+//#include "string"
 
+#include "autonSelector.h"
+#include "driverCont.h"
 #include "general.h"
+#include "motionAlgs.h"
+#include "odometry.h"
 
 /**
  * You should add more #includes here
