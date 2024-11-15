@@ -41,8 +41,8 @@ void odometry(void){
         currentYPosition = yTracking.get_position();
         tPos = getAngle();
 
-        deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / (36000.0); //inches
-        deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / (36000.0);
+        deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / 36000.0; //inches
+        deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / 36000.0;
         deltaTheta = tPos - previousTheta; //radians
         if (deltaTheta == 0.0){
             deltaXLocal = deltaXWheel;
