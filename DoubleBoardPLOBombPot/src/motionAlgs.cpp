@@ -69,6 +69,42 @@ void turnBy(float angle){
     }
 }
 
+
+const float linKP = 1.0; //*tune this
+const float linKI = 0.0; //*tune this
+const float linKD = 0.0; //*tune this
+const float lErrorMin = 1.0; //*tune after tuning linKI
+const float lIntMax = 1000.0; //*tune after tuning linKI
+
+float lError = 0.0;
+float lInt = 0.0;
+float lDer = 0.0;
+float lPrevError = 0.0;
+float lPow = 0.0;
+
+int linearLoops = 0;
+float initPos = 0.0;
+float currentPos = 0.0;
+
+void linear(float distance){ //no angle correction currently...
+    linearLoops = 0;
+    initPos = yTracking.get_position() * yWheelDiameter * pi / 36000.0;
+    while (linearLoops < 10){
+        currentPos = yTracking.get_position() * yWheelDiameter * pi / 36000.0 - initPos;
+        lError = distance - currentPos;
+        lInt += lError;
+        //if (fabs(lError) <= lErrorMin || fabs(lInt) >= lIntMax){lInt = 0.0;} //*tune linKI first
+        lDer = lError - lPrevError;
+        lPrevError = lError;
+        lPow = linKP * lError + linKI * lInt + linKD * lDer;
+        rightDrive.move_voltage(lPow);
+        leftDrive.move_voltage(lPow);
+        if (fabs(lError) <= 0.5){linearLoops += 1;}
+        else {linearLoops = 0;}
+        delay(10);
+    }
+}
+
 void rotLinRot(float xTar, float yTar, float tTar){
     facePoint(xTar, yTar);
     //then to the point somehow
