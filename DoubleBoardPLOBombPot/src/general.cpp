@@ -1,4 +1,3 @@
-//%                         GENERAL.cpp                          
 #include "main.h"
 using namespace std;
 
@@ -47,24 +46,6 @@ anyVar getDir(anyVar input){
     }
 }
 
-template <typename anyVar>
-anyVar printToBrain(int lineNum, anyVar input){
-
-    lcd::set_text(linNum, to_string(input));
-}
-
-template <typename anyVar>
-anyVar printToConsole(string name, anyVar input){
-
-    cout << name << ": " << input << "\n";
-}
-
-template <typename anyVar>
-anyVar printPointToConsole(string name, anyVar x, anyVar y){
-
-    cout << name << ": " << "{" << x << ", " << y << "}" << "\n"
-}
-
 // Get Angle Function 
 float dif12, dif23, dif13;
 float leastDif, angle;
@@ -102,4 +83,27 @@ float arctan2(float x, float y){
         else{a = 0.0;}
     }
     return a;
+}
+
+template <typename anyVar>
+void printToBrain(int lineNum, anyVar input){
+    
+    lcd::set_text(lineNum, to_string(input));
+}
+
+template <typename anyVar>
+void printToConsole(anyVar name, anyVar input){
+
+    cout << name << ": " << input << "\n";
+}
+
+template <typename anyVar>
+void printPointToConsole(anyVar name, anyVar x, anyVar y){
+
+    cout << name << ": " << "{" << x << ", " << y << "}" << "\n";
+}
+
+void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
+
+    pros::c::screen_print_at(txtFmt,x,y,text);
 }

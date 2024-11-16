@@ -35,15 +35,18 @@ extern const bool off;
 template <typename anyVar>
 extern anyVar getDir(anyVar input);
 extern float arctan2(float x, float y);
+extern float getAngle(void);
 
 template <typename anyVar>
-anyVar printToBrain(int lineNum, anyVar input);
+void printToBrain(int lineNum, anyVar input);
 
 template <typename anyVar>
-anyVar printToConsole(string name, anyVar input);
+void printToConsole(anyVar name, anyVar input);
 
 template <typename anyVar>
-anyVar printPointToConsole(string name, anyVar x, anyVar y);
+void printPointToConsole(anyVar name, anyVar x, anyVar y);
+
+void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text);
 
 extern float getAngle(void);
 extern const float xWheelDiameter;

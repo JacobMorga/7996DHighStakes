@@ -39,7 +39,10 @@
 #include "iostream"
 #include "math.h"
 #include "vector"
+//#include "string"
 
+#include "autonSelector.h"
+#include "driverCont.h"
 #include "general.h"
 #include "autonSelector.h"
 #include "driverCont.h"
