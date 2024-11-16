@@ -45,4 +45,8 @@ anyVar printToConsole(string name, anyVar input);
 template <typename anyVar>
 anyVar printPointToConsole(string name, anyVar x, anyVar y);
 
+extern float getAngle(void);
+extern const float xWheelDiameter;
+extern const float yWheelDiameter;
+
 #endif

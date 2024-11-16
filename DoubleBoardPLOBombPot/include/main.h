@@ -41,6 +41,10 @@
 #include "vector"
 
 #include "general.h"
+#include "autonSelector.h"
+#include "driverCont.h"
+#include "motionAlgs.h"
+#include "odometry.h"
 
 /**
  * You should add more #includes here
