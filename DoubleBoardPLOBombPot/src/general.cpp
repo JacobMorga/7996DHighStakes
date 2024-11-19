@@ -37,6 +37,26 @@ const bool off = 0;
 const float reverse = 1.0;
 
 template <typename anyVar>
+float to_float (anyVar num){
+
+    return static_cast<float>(num);
+}
+
+template <typename anyVar>
+anyVar returnSmaller (anyVar x, anyVar y){
+
+    if (x < y){ return x; } // x is smaller
+    else { return y; } // y is smaller or equal
+}
+
+template <typename anyVar>
+anyVar returnBigger (anyVar x, anyVar y){
+
+    if (x > y){ return x; } // x is bigger
+    else { return y; } // y is bigger or equal
+}
+
+template <typename anyVar>
 anyVar getDir(anyVar input){
 
     if (input >= 0.0){
@@ -67,6 +87,11 @@ float getAngle(void){
     angle = (pi / 2.0) - (angle / 180.0 * pi); // Convert to radians and have zero heading pi/2 rad
 
     return angle;
+}
+
+float distance(float x1, float y1, float x2, float y2){
+
+    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0));
 }
 
 // Arc Tan 2 Function
@@ -112,4 +137,30 @@ void printPointToConsole(anyVar name, anyVar x, anyVar y){
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 
     pros::c::screen_print_at(txtFmt,x,y,text);
+}
+
+float timer; // ms
+void motorTesting (){
+
+    timer = 0;
+
+    drive1.move_voltage(13000); // PORT 13
+    drive1.set_encoder_units(MOTOR_ENCODER_DEGREES);
+
+    while(timer < 300000){ // ms
+
+        cout << time << ",";
+        cout << drive1.get_actual_velocity() << ",";
+        cout << drive1.get_current_draw() << ",";
+        cout << drive1.get_efficiency() << ",";
+        cout << drive1.get_position() << ",";
+        cout << drive1.get_power() << ",";
+        cout << drive1.get_temperature() << ",";
+        cout << drive1.get_torque() << ",";
+        cout << drive1.get_voltage() << "," << "\n";
+
+        delay(10);
+        timer += 10;
+    }
+
 }
