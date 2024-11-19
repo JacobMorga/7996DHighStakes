@@ -36,6 +36,26 @@ const bool on = 1;
 const bool off = 0;
 
 template <typename anyVar>
+float to_float (anyVar num){
+
+    return static_cast<float>(num);
+}
+
+template <typename anyVar>
+anyVar returnSmaller (anyVar x, anyVar y){
+
+    if (x < y){ return x; } // x is smaller
+    else { return y; } // y is smaller or equal
+}
+
+template <typename anyVar>
+anyVar returnBigger (anyVar x, anyVar y){
+
+    if (x > y){ return x; } // x is bigger
+    else { return y; } // y is bigger or equal
+}
+
+template <typename anyVar>
 anyVar getDir(anyVar input){
 
     if (input >= 0.0){
@@ -66,6 +86,11 @@ float getAngle(void){
     angle = (pi / 2.0) - (angle / 180.0 * pi); // Convert to radians and have zero heading pi/2 rad
 
     return angle;
+}
+
+float distance(float x1, float y1, float x2, float y2){
+
+    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0));
 }
 
 // Arc Tan 2 Function

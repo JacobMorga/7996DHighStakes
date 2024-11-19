@@ -46,6 +46,7 @@
 #include "general.h"
 #include "motionAlgs.h"
 #include "odometry.h"
+#include "purePursuit.h"
 
 /**
  * You should add more #includes here

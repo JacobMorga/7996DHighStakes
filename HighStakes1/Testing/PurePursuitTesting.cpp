@@ -190,6 +190,28 @@ int main(){
     
     cout << "starting \n \n";
 
-    PurePursuit();    
+    px1 = 10.0;
+    py1 = 10.0;
+    px2 = -10.0;
+    py2 = 9.0;
+
+    // begining of calculations
+    diffX = px2-px1 ;
+    diffY = py2-py1;
+
+    diffR = sqrtf(powf(diffX, 2.0) + powf(diffY, 2.0));
+    diffD = px1*py2 - px2*py1;
+
+    intersectionCount = powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0);
+
+    intX1 = (diffD * diffY + fabs(diffY) / diffY * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
+    intX2 = (diffD * diffY - fabs(diffY) / diffY * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
+
+    intY1 = (-diffD * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
+    intY2 = (-diffD * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(diffR, 2.0) - powf(diffD, 2.0))) / powf(diffR, 2.0);
+
+    cout << intersectionCount << "\n";
+    cout << intX1 << " : " << intY1 << "\n";
+    cout << intX1 << " : " << intY1 << "\n";
     return 1;
 }
