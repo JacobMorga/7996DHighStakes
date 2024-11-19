@@ -62,4 +62,6 @@ extern float getAngle(void);
 extern const float xWheelDiameter;
 extern const float yWheelDiameter;
 
+void motorTesting ();
+
 #endif

@@ -119,6 +119,8 @@ void autonomous() {
  */
 void opcontrol() {
 
+	void motorTesting ();
+
 	screen::erase(); // Erases auton selector
 	screen::set_pen(teamColor);
 	screen::fill_rect(0,0,480,240);

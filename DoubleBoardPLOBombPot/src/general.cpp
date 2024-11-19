@@ -132,3 +132,29 @@ void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 
     pros::c::screen_print_at(txtFmt,x,y,text);
 }
+
+float timer; // ms
+void motorTesting (){
+
+    timer = 0;
+
+    drive1.move_voltage(13000); // PORT 13
+    drive1.set_encoder_units(MOTOR_ENCODER_DEGREES);
+
+    while(timer < 150000){ // ms
+
+        cout << time << ",";
+        cout << drive1.get_actual_velocity() << ",";
+        cout << drive1.get_current_draw() << ",";
+        cout << drive1.get_efficiency() << ",";
+        cout << drive1.get_position() << ",";
+        cout << drive1.get_power() << ",";
+        cout << drive1.get_temperature() << ",";
+        cout << drive1.get_torque() << ",";
+        cout << drive1.get_voltage() << "," << "\n";
+
+        delay(10);
+        timer += 10;
+    }
+
+}
