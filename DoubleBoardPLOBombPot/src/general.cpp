@@ -96,20 +96,16 @@ float distance(float x1, float y1, float x2, float y2){
 // Arc Tan 2 Function
 float a;
 float arctan2(float x, float y){
-
-    if (x > 0.0){
-        a = (atan(y / x));
-    }
+    a = 0.0;
+    if (x > 0.0){a = atan(y / x);}
     else if (x < 0.0){
-        a = (atan(y / x) + pi);
+        if (y >= 0.0){a = atan(y / x) + pi;}
+        else{a = atan(y / x) - pi;}
     }
-    else{ // x == 0.0
-        if (y > 0.0){
-            a = (pi / 2.0);
-        }
-        if (y < 0.0){
-            a = (1.5 * pi);
-        }
+    else{
+        if (y > 0.0){a = pi / 2.0;}
+        else if (y < 0.0){a = -3.0 * pi / 2.0;}
+        else{a = 0.0;}
     }
     return a;
 }

@@ -69,7 +69,6 @@ void turnBy(float angle){
     }
 }
 
-
 const float linKP = 1.0; //*tune this
 const float linKI = 0.0; //*tune this
 const float linKD = 0.0; //*tune this

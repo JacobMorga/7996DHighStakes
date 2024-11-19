@@ -58,4 +58,8 @@ void printPointToConsole(anyVar name, anyVar x, anyVar y);
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text);
 
+extern float getAngle(void);
+extern const float xWheelDiameter;
+extern const float yWheelDiameter;
+
 #endif
