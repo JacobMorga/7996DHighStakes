@@ -103,12 +103,13 @@ void linear(float distance){ //no angle correction currently...
         delay(10);
     }
 }
-
+/*
 void rotLinRot(float xTar, float yTar, float tTar){
     facePoint(xTar, yTar);
     toPoint(xTar, yTar);
     faceHeading(tTar);
 }
+*/
 
 int toPointLoops = 0;
 float maxDist = 0.0;
