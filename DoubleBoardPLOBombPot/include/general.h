@@ -36,6 +36,8 @@ template <typename anyVar>
 extern anyVar getDir(anyVar input);
 extern float arctan2(float x, float y);
 extern float getAngle(void);
+extern float normAngle(float angle);
+extern const float reverse;
 
 template <typename anyVar>
 void printToBrain(int lineNum, anyVar input);

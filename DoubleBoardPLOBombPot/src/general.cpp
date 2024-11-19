@@ -34,6 +34,7 @@ const bool pressed = 1;
 const bool unpressed = 0;
 const bool on = 1;
 const bool off = 0;
+const float reverse = 1.0;
 
 template <typename anyVar>
 anyVar getDir(anyVar input){
@@ -83,6 +84,11 @@ float arctan2(float x, float y){
         else{a = 0.0;}
     }
     return a;
+}
+
+float normAngle(float angle){
+    while (angle > pi){angle -= 2.0 * pi;}
+    while (angle < -pi){angle += 2.0 * pi;}
 }
 
 template <typename anyVar>
