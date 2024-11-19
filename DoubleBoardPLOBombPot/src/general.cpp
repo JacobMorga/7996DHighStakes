@@ -139,7 +139,7 @@ void motorTesting (){
     timer = 0;
 
     drive1.move_voltage(13000); // PORT 13
-    drive1.set_brake_mode(MOTOR_BRAKE_COAST)
+    drive1.set_brake_mode(MOTOR_BRAKE_COAST);
     drive1.set_encoder_units(MOTOR_ENCODER_DEGREES);
 
     while(timer < 300000){ // ms
