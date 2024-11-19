@@ -139,7 +139,7 @@ void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
     pros::c::screen_print_at(txtFmt,x,y,text);
 }
 
-float timer; // ms
+int timer; // ms
 void motorTesting (){
 
     timer = 0;
@@ -148,9 +148,9 @@ void motorTesting (){
     drive1.set_brake_mode(MOTOR_BRAKE_COAST);
     drive1.set_encoder_units(MOTOR_ENCODER_DEGREES);
 
-    while(timer < 300000){ // ms
+    while(timer < 30000){ // ms
 
-        cout << time << ",";
+        cout << timer << ",";
         cout << drive1.get_actual_velocity() << ",";
         cout << drive1.get_current_draw() << ",";
         cout << drive1.get_efficiency() << ",";
