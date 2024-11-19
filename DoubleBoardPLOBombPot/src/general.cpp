@@ -141,7 +141,7 @@ void motorTesting (){
     drive1.move_voltage(13000); // PORT 13
     drive1.set_encoder_units(MOTOR_ENCODER_DEGREES);
 
-    while(timer < 150000){ // ms
+    while(timer < 300000){ // ms
 
         cout << time << ",";
         cout << drive1.get_actual_velocity() << ",";
