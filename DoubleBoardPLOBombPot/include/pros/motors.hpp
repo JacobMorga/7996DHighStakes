@@ -1019,7 +1019,7 @@ class Motor_Group {
 	 */
 	std::int32_t brake(void);
 
-	/* 
+	/** 
 	 * Gets the voltages delivered to the motors in millivolts.
 	 *
 	 * This function uses the following values of errno when an error state is
@@ -1049,7 +1049,7 @@ class Motor_Group {
 	 */
 	std::vector<std::uint32_t> get_voltages(void);
 
-	/* 
+	/** 
 	 * Get the voltage limits of the motors set by the user.
 	 *
 	 * This function uses the following values of errno when an error state is
@@ -1078,7 +1078,7 @@ class Motor_Group {
 	 */
 	std::vector<std::uint32_t> get_voltage_limits(void);
 
-	/* 
+	/**
 	 * Gets the raw encoder positions of a motor group at a given timestamp.
 	 *
 	 * This function uses the following values of errno when an error state is
