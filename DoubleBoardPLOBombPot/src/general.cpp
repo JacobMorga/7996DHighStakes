@@ -7,16 +7,18 @@ Controller controller (CONTROLLER_MASTER);
 Motor drive1 (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive2 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive3 (12, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor_Group rightDrive ({drive1,drive2,drive3});
+Motor_Group rightDrive ({drive1, drive2, drive3});
 
 Motor drive4 (11, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive5 (15, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive6 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor_Group leftDrive ({drive4,drive5,drive6});
+Motor_Group leftDrive ({drive4, drive5, drive6});
 
-Motor_Group drivetrain ({drive1,drive2,drive3, drive4,drive5,drive6});
+Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
-Motor intake (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor intakeTop (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor intakeBottom (18, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor_Group intake ({intakeTop, intakeBottom});
 
 Rotation xTracking (18);
 Rotation yTracking (9);
@@ -27,6 +29,9 @@ IMU inertial3 (3);
 
 ADIPort backClaw ('A', ADI_DIGITAL_OUT);
 ADIPort ploinker ('B', ADI_DIGITAL_OUT);
+
+Optical opticalSensor(10);
+Distance distanceSensor(8);
 
 //Constants
 const float pi = 3.1415927410125732421875; // Cir/Dia
@@ -119,7 +124,7 @@ float normAngle(float angle){
 template <typename anyVar>
 void printToBrain(int lineNum, anyVar input){
     
-    lcd::set_text(lineNum, to_string(input));
+    lcd::set_text(lineNum, std::to_string(input));
 }
 
 template <typename anyVar>

@@ -6,6 +6,13 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+
+	drive1.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive2.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive3.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive4.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	/*
 	delay(200);
 	screen::erase();
@@ -48,6 +55,11 @@ void initialize() {
 
 	screen::erase();
 	*/
+
+	pros::lcd::initialize();
+
+	Task intakeTask (runIntake, "intakeTask");
+	//Task intakeTask (firstTryColorSorting, "intakeTask");
 }
 
 /**
@@ -67,8 +79,8 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-
-	autonSelector();
+	delay(2500);
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!autonSelector();
 }
 
 /**
@@ -83,13 +95,15 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-
+	/*
+	//!this was maybe important idrk
 	screen::erase(); // Erases auton selector
 
 	screen::set_pen(teamColor);
 	screen::fill_rect(0,0,480,240);
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
+	
 
 	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton1"); } // Runs each auton based on 
 	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton2"); }
@@ -101,7 +115,7 @@ void autonomous() {
 	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton8"); }
 	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton9"); }
 	else { printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED"); }
-	
+	*/
 
 }
 
@@ -130,11 +144,13 @@ void opcontrol() {
 		delay(10);
 	}
 
-	motorTesting ();
+	//pros::lcd::initialize();
+	//motorTesting ();
+	
 
-	screen::erase(); // Erases auton selector
-	screen::set_pen(teamColor);
-	screen::fill_rect(0,0,480,240);
+	//!screen::erase(); // Erases auton selector
+	//!screen::set_pen(teamColor);
+	//!screen::fill_rect(0,0,480,240);
 
 	runDriveCont();
 }

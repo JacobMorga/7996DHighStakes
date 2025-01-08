@@ -14,7 +14,9 @@ extern Motor drive6;
 extern Motor_Group rightDrive;
 extern Motor_Group leftDrive;
 extern Motor_Group drivetrain;
-extern Motor intake;
+extern Motor intakeTop;
+extern Motor intakeBottom;
+extern Motor_Group intake;
 
 extern Rotation xTracking;
 extern Rotation yTracking;
@@ -25,6 +27,9 @@ extern IMU inertial3;
 
 extern ADIPort backClaw;
 extern ADIPort ploinker;
+
+extern Optical opticalSensor;
+extern Distance distanceSensor;
 
 extern const float pi;
 extern const bool pressed;
