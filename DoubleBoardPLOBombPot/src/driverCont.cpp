@@ -32,7 +32,7 @@ void runDriveCont (){
         rightDrive.move_voltage(rightDrivePow); // Sets motors to move
         leftDrive.move_voltage(leftDrivePow);
 
-        if (fabs(rightDrivePow) < 120.0 && fabs(leftDrivePow) < 120.0){ // Brakes drive when joytsick hits zero (1% power)
+        if (abs(rightDrivePow) < 120.0 && fabs(leftDrivePow) < 120.0){ // Brakes drive when joytsick hits zero (1% power)
             rightDrive.brake();
             leftDrive.brake();
         }

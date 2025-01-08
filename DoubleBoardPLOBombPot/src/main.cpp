@@ -125,7 +125,17 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+float tempvar = 0;
 void opcontrol() {
+
+	while (1){
+		drive1.move_velocity(600 * tempvar);
+		drive2.move_velocity(-600 * tempvar);
+		if (controller.get_digital_new_press(DIGITAL_R1) == pressed){ // Toggles backclaw
+            tempvar = abs(tempvar - 1.0);
+        }
+		delay(10);
+	}
 
 	//pros::lcd::initialize();
 	//motorTesting ();
