@@ -12,9 +12,9 @@ float sortDistance = 110.0;
 float sortDelay1 = 100.0;
 float sortDelay2 = 200.0;
 
-float redLowLimit = 20.0;
-float redHighLimit = 355.0;
-float blueLowLimit = 80.0;
+float redLowLimit = 25.0;
+float redHighLimit = 359.0;
+float blueLowLimit = 220.0;
 float blueHighLimit = 350.0;
 
 void runDriveCont (){
@@ -129,6 +129,7 @@ void secondTryColorSorting (){
 }
 
 float colorSensed = 0.0;
+float distanceSensed = 0.0;
 void runIntake(){
     float intakeVoltage = 13000.0; // mV
     while(true){
@@ -162,6 +163,7 @@ void runIntake(){
             opticalSensor.set_led_pwm(100);
         }
         else if(intakeState == 4){
+            std::cout << "RING ENTERED AT: " << distanceSensed << "\n";
             exitcode = 0;
             /*
             while(exitcode == 0 || (distanceSensor.get() <= sortDistance && ((teamBool == 0 && (opticalSensor.get_hue() <= blueLowLimit || opticalSensor.get_hue() >= blueHighLimit)) || (teamBool == 1 && opticalSensor.get_hue() >= redLowLimit && opticalSensor.get_hue() <= redHighLimit)) && controller.get_digital(DIGITAL_R1) == 0 && controller.get_digital(DIGITAL_R2) == 0 && controller.get_digital(DIGITAL_LEFT) == 0)){
@@ -174,17 +176,21 @@ void runIntake(){
             }
             */
             while(exitcode == 0){
-                if(distanceSensor.get() > sortDistance){exitcode = 1;}
                 colorSensed = opticalSensor.get_hue();
+                distanceSensed = distanceSensor.get();
+                if(distanceSensor.get() > sortDistance){exitcode = 1;}
                 if((teamColor == COLOR_RED && colorSensed <= blueHighLimit && colorSensed >= blueLowLimit) || (teamColor == COLOR_BLUE && (colorSensed <= redLowLimit || colorSensed >= redHighLimit))){exitcode = 2;}
                 if(controller.get_digital(DIGITAL_R1)){exitcode = 3;}
                 if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
                 if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
+                std::cout << "NOW CHECKING RING: " << colorSensed << "\n";
+                std::cout << "RING DISTANCE: " << distanceSensed << "\n";
                 delay(10);
             }
             if(exitcode == 1){
                 intakeState = 3;
                 std::cout << "KEPT THIS ONE: " << colorSensed << "\n";
+                std::cout << "RING ESCAPED AT: " << distanceSensed << "\n" << "\n";
             }
             else if(exitcode == 2){
                 delay(sortDelay1);
@@ -192,6 +198,7 @@ void runIntake(){
                 delay(sortDelay2);
                 intakeState = 3;
                 std::cout << "CHUCKED THIS ONE: " << colorSensed << "\n";
+                std::cout << "RING IDENTIFIED AT: " << distanceSensed << "\n" << "\n";
             }
             else if(exitcode > 2){intakeState = exitcode - 3;}
 
