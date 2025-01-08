@@ -13,7 +13,7 @@ void initialize() {
 	drive4.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	/*
+	
 	delay(200);
 	screen::erase();
 	screen::set_eraser(COLOR_BLACK);
@@ -32,7 +32,8 @@ void initialize() {
 	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
 
-	intake.set_brake_mode(MOTOR_BRAKE_COAST);
+	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
 	
 	inertial1.reset();
 	inertial2.reset();
@@ -41,11 +42,8 @@ void initialize() {
 	xTracking.reset();
 
 	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){
-
 		delay(20);
-	}
-	delay(250);
-	
+	}	
 
 	delay(3000);
 
@@ -54,12 +52,10 @@ void initialize() {
 	delay(250);
 
 	screen::erase();
-	*/
 
 	pros::lcd::initialize();
 
 	Task intakeTask (runIntake, "intakeTask");
-	//Task intakeTask (firstTryColorSorting, "intakeTask");
 }
 
 /**
@@ -79,8 +75,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-	delay(2500);
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!autonSelector();
+	autonSelector();
 }
 
 /**
@@ -95,8 +90,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	/*
-	//!this was maybe important idrk
+
 	screen::erase(); // Erases auton selector
 
 	screen::set_pen(teamColor);
@@ -104,7 +98,6 @@ void autonomous() {
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
 	
-
 	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton1"); } // Runs each auton based on 
 	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton2"); }
 	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton3"); }
@@ -115,7 +108,7 @@ void autonomous() {
 	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton8"); }
 	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton9"); }
 	else { printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED"); }
-	*/
+
 
 }
 
