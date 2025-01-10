@@ -1,6 +1,6 @@
 #include "main.h"
 
-const float rotKP = 20000.0; //*tune this
+const float rotKP = 200.0; //*tune this
 const float rotKI = 0.0; //*tune this
 const float rotKD = 1625.0; //*tune this
 const float tErrorMin = 1.0; //*tune after tuning rotKI
@@ -25,8 +25,8 @@ void faceHeading(float tTar){
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(tPow);
-        leftDrive.move_voltage(-tPow);
+        rightDrive.move_voltage(20.0 * tPow);
+        leftDrive.move_voltage(-20.0 * tPow);
         if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
         else{faceHeadingLoops = 0;}
         delay(10);
@@ -46,8 +46,8 @@ void faceHeading2 (float tTar){ //$ THIS IS NOT MATH HEADING IT WILL TRY TO FACE
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(-tPow);
-        leftDrive.move_voltage(tPow);  
+        rightDrive.move_voltage(-20.0 * tPow);
+        leftDrive.move_voltage(-20.0 * tPow); 
         if (fabs(tError) <= 0.01){exitLoops += 1;} //about 0.5 degrees
         else{exitLoops = 0;}
         delay(10);
@@ -65,8 +65,8 @@ void facePoint(float xTar, float yTar){
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(tPow);
-        leftDrive.move_voltage(-tPow);
+        rightDrive.move_voltage(20.0 * tPow);
+        leftDrive.move_voltage(-20.0 * tPow);
         if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
         else{faceHeadingLoops = 0;}
         delay(10);
@@ -88,8 +88,8 @@ void facePoint2(float xTar, float yTar){
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(tPow);
-        leftDrive.move_voltage(-tPow);
+        rightDrive.move_voltage(20.0 * tPow); //! might need to switch which one is negative
+        leftDrive.move_voltage(-20.0 * tPow);
 
         if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
         else{faceHeadingLoops = 0;}
@@ -107,8 +107,8 @@ void turnBy(float angle){
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(tPow);
-        leftDrive.move_voltage(-tPow);
+        rightDrive.move_voltage(20.0 * tPow);
+        leftDrive.move_voltage(-20.0 * tPow);
         if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
         else{faceHeadingLoops = 0;}
         delay(10);
