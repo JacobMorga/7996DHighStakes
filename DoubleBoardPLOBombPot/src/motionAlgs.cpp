@@ -1,8 +1,8 @@
 #include "main.h"
 
-const float rotKP = 1.0; //*tune this
+const float rotKP = 200.0; //*tune this
 const float rotKI = 0.0; //*tune this
-const float rotKD = 0.0; //*tune this
+const float rotKD = 1625.0; //*tune this
 const float tErrorMin = 1.0; //*tune after tuning rotKI
 const float tIntMax = 1000.0; //*tune after tuning rotKI
 

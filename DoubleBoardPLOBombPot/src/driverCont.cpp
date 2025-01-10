@@ -12,10 +12,10 @@ float sortDistance = 110.0;
 float sortDelay1 = 100.0;
 float sortDelay2 = 200.0;
 
-float redLowLimit = 25.0;
+float redLowLimit = 48.999;
 float redHighLimit = 359.0;
-float blueLowLimit = 220.0;
-float blueHighLimit = 350.0;
+float blueLowLimit = 49.0;
+float blueHighLimit = 200.0; //350
 
 void runDriveCont (){
 
@@ -32,10 +32,12 @@ void runDriveCont (){
         rightDrive.move_voltage(rightDrivePow); // Sets motors to move
         leftDrive.move_voltage(leftDrivePow);
 
+        /*
         if (abs(rightDrivePow) < 120.0 && fabs(leftDrivePow) < 120.0){ // Brakes drive when joytsick hits zero (1% power)
             rightDrive.brake();
             leftDrive.brake();
         }
+        */
 
         /*
         if (intakeState == 2){intake.move_voltage(-13000.0);} // Spins backward
@@ -128,12 +130,13 @@ void secondTryColorSorting (){
     
 }
 
+/*
 float colorSensed = 0.0;
 float distanceSensed = 0.0;
 void runIntake(){
     float intakeVoltage = 13000.0; // mV
     while(true){
-        pros::lcd::clear();
+        //pros::lcd::clear();
         if(controller.get_digital_new_press(DIGITAL_UP)){ // turns on and off light
             if(opticalSensor.get_led_pwm() >= 50){opticalSensor.set_led_pwm(0);}
             else{opticalSensor.set_led_pwm(100);}
@@ -163,7 +166,7 @@ void runIntake(){
             opticalSensor.set_led_pwm(100);
         }
         else if(intakeState == 4){
-            std::cout << "RING ENTERED AT: " << distanceSensed << "\n";
+            //std::cout << "RING ENTERED AT: " << distanceSensed << "\n";
             exitcode = 0;
             /*
             while(exitcode == 0 || (distanceSensor.get() <= sortDistance && ((teamBool == 0 && (opticalSensor.get_hue() <= blueLowLimit || opticalSensor.get_hue() >= blueHighLimit)) || (teamBool == 1 && opticalSensor.get_hue() >= redLowLimit && opticalSensor.get_hue() <= redHighLimit)) && controller.get_digital(DIGITAL_R1) == 0 && controller.get_digital(DIGITAL_R2) == 0 && controller.get_digital(DIGITAL_LEFT) == 0)){
@@ -174,7 +177,7 @@ void runIntake(){
                 if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
                 delay(10);
             }
-            */
+            *
             while(exitcode == 0){
                 colorSensed = opticalSensor.get_hue();
                 distanceSensed = distanceSensor.get();
@@ -183,14 +186,14 @@ void runIntake(){
                 if(controller.get_digital(DIGITAL_R1)){exitcode = 3;}
                 if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
                 if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
-                std::cout << "NOW CHECKING RING: " << colorSensed << "\n";
-                std::cout << "RING DISTANCE: " << distanceSensed << "\n";
+                //std::cout << "NOW CHECKING RING: " << colorSensed << "\n";
+                //std::cout << "RING DISTANCE: " << distanceSensed << "\n";
                 delay(10);
             }
             if(exitcode == 1){
                 intakeState = 3;
                 std::cout << "KEPT THIS ONE: " << colorSensed << "\n";
-                std::cout << "RING ESCAPED AT: " << distanceSensed << "\n" << "\n";
+                //std::cout << "RING ESCAPED AT: " << distanceSensed << "\n" << "\n";
             }
             else if(exitcode == 2){
                 delay(sortDelay1);
@@ -198,7 +201,7 @@ void runIntake(){
                 delay(sortDelay2);
                 intakeState = 3;
                 std::cout << "CHUCKED THIS ONE: " << colorSensed << "\n";
-                std::cout << "RING IDENTIFIED AT: " << distanceSensed << "\n" << "\n";
+                //std::cout << "RING IDENTIFIED AT: " << distanceSensed << "\n" << "\n";
             }
             else if(exitcode > 2){intakeState = exitcode - 3;}
 
@@ -232,7 +235,7 @@ void runIntake(){
                 }
                 intakeState = 3;
             }
-            */
+            *
             /*
             if((((opticalSensor.get_hue() >= redLowLimit1 && opticalSensor.get_hue() <= redLowLimit) || (opticalSensor.get_hue() >= redHighLimit && opticalSensor.get_hue() <= redHighLimit2)) && (teamBool == 1)) || ((opticalSensor.get_hue() >= blueLowLimit && opticalSensor.get_hue() <= blueHighLimit) && (teamBool == 1))){
                 pros::lcd::set_text(3, "THIS RING IS OUTTA HERE!");
@@ -242,14 +245,89 @@ void runIntake(){
             }
             delay(2500);
             intakeState = 3;
-            */
+            *
         }
-
+        /*
         lcd::set_text(0, std::to_string(intakeState));
         lcd::set_text(1, std::to_string(distanceSensor.get()));
         lcd::set_text(2, std::to_string(opticalSensor.get_hue()));
         lcd::set_text(4, std::to_string(teamColor));
         lcd::set_text(6, std::to_string(exitcode));
+        *
+        delay(10);
+    }
+}
+*/
+
+float colorSensed = 250.0;
+float distanceSensed = 0.0;
+pros::c::optical_raw_s_t raw_values;
+void runIntake(){
+    float intakeVoltage = 13000.0; // mV
+    while(true){
+        //pros::lcd::clear();
+        if(controller.get_digital_new_press(DIGITAL_UP)){ // turns on and off light
+            if(opticalSensor.get_led_pwm() >= 50){opticalSensor.set_led_pwm(0);}
+            else{opticalSensor.set_led_pwm(100);}
+        }
+        if(controller.get_digital_new_press(DIGITAL_B)){
+            if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
+            else{teamColor = COLOR_RED;}
+        }
+        if(distanceSensor.get() <= sortDistance && intakeState == 3){intakeState = 4;}
+
+        if(controller.get_digital_new_press(DIGITAL_R1)){
+            if(intakeState == 3){intakeState = 0;}
+            else{intakeState = 3;}
+        }
+        if(controller.get_digital_new_press(DIGITAL_LEFT)){
+            if(intakeState == 2){intakeState = 0;}
+            else{intakeState = 2;}
+        }
+        if(controller.get_digital(DIGITAL_R2)){intakeState = 1;}
+        if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;}
+
+        if(intakeState == 0){intake.brake();}
+        else if(intakeState == 1){intake.move_voltage(-intakeVoltage);}
+        else if(intakeState == 2){intake.move_voltage(intakeVoltage);}
+        else if(intakeState == 3){
+            intake.move_voltage(intakeVoltage);
+            opticalSensor.set_led_pwm(100);
+        }
+        else if(intakeState == 4){
+            //std::cout << "RING ENTERED AT: " << distanceSensed << "\n";
+            exitcode = 0;
+            while(exitcode == 0){
+                raw_values = opticalSensor.get_raw();
+                distanceSensed = distanceSensor.get();
+                if(distanceSensor.get() > sortDistance){exitcode = 1;}
+                if((teamColor == COLOR_RED && colorSensed <= blueHighLimit && colorSensed >= blueLowLimit) || (teamColor == COLOR_BLUE && (colorSensed <= redLowLimit || colorSensed >= redHighLimit))){exitcode = 2;}
+                if(controller.get_digital(DIGITAL_R1)){exitcode = 3;}
+                if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
+                if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
+                //std::cout << "NOW CHECKING RING: " << colorSensed << "\n";
+                //std::cout << "RING DISTANCE: " << distanceSensed << "\n";
+                std::cout << "RED VAL: " << raw_values.red  << "\n";
+                std::cout << "BLUE VAL: " << raw_values.blue << "\n";
+                std::cout << "GREEN VAL: " << raw_values.green << "\n";
+                delay(10);
+            }
+            if(exitcode == 1){
+                intakeState = 3;
+                std::cout << "KEPT THIS ONE: " << colorSensed << "\n";
+                //std::cout << "RING ESCAPED AT: " << distanceSensed << "\n" << "\n";
+            }
+            else if(exitcode == 2){
+                delay(sortDelay1);
+                intake.move_voltage(-intakeVoltage);
+                delay(sortDelay2);
+                intakeState = 3;
+                std::cout << "CHUCKED THIS ONE: " << colorSensed << "\n";
+                //std::cout << "RING IDENTIFIED AT: " << distanceSensed << "\n" << "\n";
+            }
+            else if(exitcode > 2){intakeState = exitcode - 3;}
+    
+        }
         delay(10);
     }
 }

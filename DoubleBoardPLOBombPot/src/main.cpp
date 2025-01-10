@@ -23,7 +23,7 @@ void initialize() {
 	screen::fill_rect(0,0,480,240);
 	screen::set_eraser(COLOR_YELLOW);
 	screen::set_pen(COLOR_BLACK);
-	screen::print(TEXT_MEDIUM_CENTER, 120, 118, "Calibrating Intertal & Odom");
+	screen::print(TEXT_MEDIUM_CENTER, 120, 118, "Calibrating Inertial & Odom");
 	
 	drive1.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive2.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -34,10 +34,13 @@ void initialize() {
 
 	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
-	
+
+
 	inertial1.reset();
 	inertial2.reset();
 	inertial3.reset();
+	yTracking.set_reversed(1);
+	xTracking.set_reversed(1);
 	yTracking.reset();
 	xTracking.reset();
 
@@ -45,15 +48,15 @@ void initialize() {
 		delay(20);
 	}	
 
-	delay(3000);
+	delay(250);
+
+	pros::lcd::initialize();
 
 	pros::Task odomTask (odometry, "odomTask");
 
 	delay(250);
 
 	screen::erase();
-
-	pros::lcd::initialize();
 
 	Task intakeTask (runIntake, "intakeTask");
 }
@@ -98,7 +101,7 @@ void autonomous() {
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
 	
-	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton1"); } // Runs each auton based on 
+	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton1"); bluePositive();} // Runs each auton based on 
 	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton2"); }
 	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton3"); }
 	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton4"); }
@@ -125,25 +128,13 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-float tempvar = 0;
+
 void opcontrol() {
 
-	while (1){
-		drive1.move_velocity(600 * tempvar);
-		drive2.move_velocity(-600 * tempvar);
-		if (controller.get_digital_new_press(DIGITAL_R1) == pressed){ // Toggles backclaw
-            tempvar = abs(tempvar - 1.0);
-        }
-		delay(10);
-	}
-
-	//pros::lcd::initialize();
-	//motorTesting ();
-	
-
-	//!screen::erase(); // Erases auton selector
-	//!screen::set_pen(teamColor);
-	//!screen::fill_rect(0,0,480,240);
-
-	runDriveCont();
+	//runDriveCont();
+	//ploinker.set_value(1);
+	//calculateOffsets();
+	lcd::set_text(7, "we're in driver now yo");
+	facePoint(24.0, 24.0);
+	lcd::set_text(7, "freaky time");
 }

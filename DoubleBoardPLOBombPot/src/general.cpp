@@ -4,31 +4,31 @@ using namespace std;
 // Devices
 Controller controller (CONTROLLER_MASTER);
 
-Motor drive1 (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive1 (18, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive2 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive3 (12, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive3 (1, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor_Group rightDrive ({drive1, drive2, drive3});
 
-Motor drive4 (11, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive5 (15, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive6 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive4 (9, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive5 (6, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive6 (7, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor_Group leftDrive ({drive4, drive5, drive6});
 
 Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
-Motor intakeTop (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor intakeBottom (18, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor intakeTop (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
-Rotation xTracking (18);
-Rotation yTracking (9);
+Rotation xTracking (20);
+Rotation yTracking (3);
 
-IMU inertial1 (1);
-IMU inertial2 (2);
-IMU inertial3 (3);
+IMU inertial1 (5);
+IMU inertial2 (12);
+IMU inertial3 (16);
 
 ADIPort backClaw ('A', ADI_DIGITAL_OUT);
-ADIPort ploinker ('B', ADI_DIGITAL_OUT);
+ADIPort ploinker ('H', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(10);
 Distance distanceSensor(8);
@@ -73,23 +73,29 @@ anyVar getDir(anyVar input){
 }
 
 // Get Angle Function 
+float inertial1value, inertial2value, inertial3value;
 float dif12, dif23, dif13;
 float leastDif, angle;
 int difSelect;
 float getAngle(void){
-    dif12 = fabs(inertial1.get_rotation() - inertial2.get_rotation()); // Find differnce between each inertial value
-    dif23 = fabs(inertial2.get_rotation() - inertial3.get_rotation());
-    dif13 = fabs(inertial1.get_rotation() - inertial3.get_rotation());
+    inertial1value = inertial1.get_rotation();
+    inertial2value = inertial2.get_rotation();
+    inertial3value = inertial3.get_rotation();
+    
+    dif12 = fabs(inertial1value - inertial2value); // Find differnce between each inertial value
+    dif23 = fabs(inertial2value - inertial3value);
+    dif13 = fabs(inertial1value - inertial3value);
 
     leastDif = dif12; difSelect = 1; // Select smallest difference
     if (dif23 <= leastDif){leastDif = dif23; difSelect = 2;}
     if (dif13 <= leastDif){leastDif = dif13; difSelect = 3;}
     
-    if (difSelect == 1){angle = 0.5 * (inertial1.get_rotation() + inertial2.get_rotation());} // Evaluate average of the two closest sensors
-    else if (difSelect == 2){angle = 0.5 * (inertial2.get_rotation() + inertial3.get_rotation());}
-    else{angle = 0.5 * (inertial1.get_rotation() + inertial3.get_rotation());}
+    if (difSelect == 1){angle = 0.5 * (inertial1value + inertial2value);} // Evaluate average of the two closest sensors
+    else if (difSelect == 2){angle = 0.5 * (inertial2value + inertial3value);}
+    else{angle = 0.5 * (inertial1value + inertial3value);}
 
-    angle = (pi / 2.0) - (angle / 180.0 * pi); // Convert to radians and have zero heading pi/2 rad
+    //angle = (pi / 2.0) - (angle / 180.0 * pi); // Convert to radians and have zero heading pi/2 rad
+    angle = angle / 180.0 * pi;
 
     return angle;
 }
