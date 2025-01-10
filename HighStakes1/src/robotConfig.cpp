@@ -16,10 +16,10 @@ Motor_Group drivetrain ({drive1,drive2,drive3, drive4,drive5,drive6});
 
 Motor intake (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 
-Rotation xTracking (18);
-Rotation yTracking (9);
+Rotation xTracking (18); 
+Rotation yTracking (19); 
 
-IMU inertial1 (1);
+IMU inertial1 (1); 
 IMU inertial2 (2);
 IMU inertial3 (3);
 

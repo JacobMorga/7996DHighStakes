@@ -7,7 +7,7 @@ const float xWheelSprocketRatio = 1.0;
 const float yWheelSprocketRatio = 1.0;
 
 float xWheelOffset = 0.599545; //0.4786865;
-float yWheelOffset = 1.71108; //1.8125;
+float yWheelOffset = 1.71108;  //1.8125; 
 float deltaXWheel = 0.0;
 float deltaYWheel = 0.0;
 float currentXPosition = 0.0;

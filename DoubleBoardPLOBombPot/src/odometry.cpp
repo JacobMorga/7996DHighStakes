@@ -60,7 +60,7 @@ void odometry(void){
         previousXPosition = currentXPosition;
         previousYPosition = currentYPosition;
 
-        deltaRLocal = sqrt((pow(deltaXLocal, 2.0)) + pow(deltaYLocal, 2.0));
+        deltaRLocal = sqrtf((powf(deltaXLocal, 2.0)) + powf(deltaYLocal, 2.0));
         deltaThetaLocal = arctan2(deltaXLocal, deltaYLocal);
         modTheta = deltaThetaLocal - avgTheta;
         previousTheta = tPos;
@@ -73,7 +73,7 @@ void odometry(void){
 
         lcd::set_text(0, std::to_string(xPos));
         lcd::set_text(1, std::to_string(yPos));
-        lcd::set_text(2, std::to_string(180.0 / pi * tPos));
+        lcd::set_text(2, std::to_string(tPos));
 
         /*
         calXDia = 120.0 / (currentXPosition / 36000.0) / pi;

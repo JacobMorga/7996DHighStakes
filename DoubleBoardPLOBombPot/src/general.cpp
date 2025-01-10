@@ -106,6 +106,7 @@ float distance(float x1, float y1, float x2, float y2){
 }
 
 // Arc Tan 2 Function
+
 float a;
 float arctan2(float x, float y){
     a = 0.0;
@@ -122,10 +123,31 @@ float arctan2(float x, float y){
     return a;
 }
 
+/*
+float arctan2(float x, float y){
+    float a = 0.0;
+    if (x > 0.0){
+        a = (atan(y / x));
+    }
+    else if (x < 0.0){
+        a = (atan(y / x) + pi);
+    }
+    else if (x == 0.0){
+        if (y > 0){
+            a = (pi / 2.0);
+        }
+        if (y < 0){
+            a = (1.5 * pi);
+        }
+    }
+    return a;
+}
+*/
+
 float normAngle(float angle){
     while (angle > pi){angle -= 2.0 * pi;}
     while (angle < -pi){angle += 2.0 * pi;}
-    return angle;
+    //return angle;
 }
 
 template <typename anyVar>
