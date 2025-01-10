@@ -21,7 +21,7 @@ Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
 Rotation xTracking (20);
-Rotation yTracking (3);
+Rotation yTracking (21);
 
 IMU inertial1 (5);
 IMU inertial2 (12);
@@ -125,6 +125,7 @@ float arctan2(float x, float y){
 float normAngle(float angle){
     while (angle > pi){angle -= 2.0 * pi;}
     while (angle < -pi){angle += 2.0 * pi;}
+    return angle;
 }
 
 template <typename anyVar>

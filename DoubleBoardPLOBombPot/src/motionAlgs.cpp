@@ -1,6 +1,6 @@
 #include "main.h"
 
-const float rotKP = 200.0; //*tune this
+const float rotKP = 20000.0; //*tune this
 const float rotKI = 0.0; //*tune this
 const float rotKD = 1625.0; //*tune this
 const float tErrorMin = 1.0; //*tune after tuning rotKI
@@ -32,7 +32,7 @@ void faceHeading(float tTar){
         delay(10);
     }
 }
-
+int tampvarb = 0;
 void facePoint(float xTar, float yTar){
     facePointLoops = 0;
     while (facePointLoops < 10){
@@ -48,6 +48,10 @@ void facePoint(float xTar, float yTar){
         if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
         else{faceHeadingLoops = 0;}
         delay(10);
+        tampvarb +=1;
+        lcd::set_text(4, std::to_string(tPow));
+        lcd::set_text(5, std::to_string(tError));
+        std::cout << "freak" << tampvarb << "\n"; 
     }
 }
 

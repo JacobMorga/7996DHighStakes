@@ -71,9 +71,9 @@ void odometry(void){
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
 
-        //lcd::set_text(0, std::to_string(xPos));
-        //lcd::set_text(1, std::to_string(yPos));
-        //lcd::set_text(2, std::to_string(180.0 / pi * tPos));
+        lcd::set_text(0, std::to_string(xPos));
+        lcd::set_text(1, std::to_string(yPos));
+        lcd::set_text(2, std::to_string(180.0 / pi * tPos));
 
         /*
         calXDia = 120.0 / (currentXPosition / 36000.0) / pi;
@@ -83,12 +83,12 @@ void odometry(void){
         lcd::set_text(5, std::to_string(calYDia));
         */
 
-        /*
+        
         lcd::set_text(4, std::to_string(deltaXLocal));
         lcd::set_text(5, std::to_string(deltaYLocal));
         lcd::set_text(6, std::to_string(deltaXGlobal));
         lcd::set_text(7, std::to_string(deltaYGlobal));
-        */
+        
 
         delay(10);
     }

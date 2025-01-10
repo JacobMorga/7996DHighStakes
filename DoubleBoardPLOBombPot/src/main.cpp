@@ -131,10 +131,10 @@ void autonomous() {
 
 void opcontrol() {
 
-	//runDriveCont();
+	runDriveCont();
 	//ploinker.set_value(1);
 	//calculateOffsets();
 	lcd::set_text(7, "we're in driver now yo");
-	facePoint(24.0, 24.0);
+	//facePoint(24.0, 24.0);
 	lcd::set_text(7, "freaky time");
 }
