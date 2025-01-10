@@ -32,6 +32,28 @@ void faceHeading(float tTar){
         delay(10);
     }
 }
+
+int exitLoops = 0;
+void faceHeading2 (float tTar){ //$ THIS IS NOT MATH HEADING IT WILL TRY TO FACE WHAT EVER
+                                //$ DEGREES YOU PUT IN 0 BEING HEADING YOU CALIBRATED AT
+    exitLoops = 0;
+    tTar = tTar / 180.0 * pi;
+    while (exitLoops < 30){
+
+        tError = tTar - getAngle();
+        tInt += tError;
+        if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;}
+        tDer = tError - tPrevError;
+        tPrevError = tError;
+        tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
+        rightDrive.move_voltage(-tPow);
+        leftDrive.move_voltage(tPow);  
+        if (fabs(tError) <= 0.01){exitLoops += 1;} //about 0.5 degrees
+        else{exitLoops = 0;}
+        delay(10);
+    }
+}
+
 int tampvarb = 0;
 void facePoint(float xTar, float yTar){
     facePointLoops = 0;
@@ -55,13 +77,33 @@ void facePoint(float xTar, float yTar){
     }
 }
 
+void facePoint2(float xTar, float yTar){
+    facePointLoops = 0;
+    while (facePointLoops < 10){
+        tPos = (pi / 2.0) - (tPos / 180.0 * pi);
+        tTarget = arctan2(xTar - xPos, yTar - yPos);
+        tError = normAngle(tTarget - tPos);
+        tInt += tError;
+        if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
+        tDer = tError - tPrevError;
+        tPrevError = tError;
+        tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
+        rightDrive.move_voltage(tPow);
+        leftDrive.move_voltage(-tPow);
+
+        if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
+        else{faceHeadingLoops = 0;}
+        delay(10);
+    }
+}
+
 void turnBy(float angle){
     turnByLoops = 0;
     tTarget = tPos + angle;
     while (turnByLoops < 10){
         tError = tTarget - tPos;
         tInt += tError;
-        //if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
+        if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
@@ -181,7 +223,7 @@ float yTan = 0.0;
 float xCen = 0.0;
 float yCen = 0.0;
 float arcRad = 0.0;
-
+/*
 void rotArc(float xTar, float yTar, float tTar){
     xTan = xTar + cos(tTar);
     yTan = yTar + sin(tTar);
@@ -191,3 +233,4 @@ void rotArc(float xTar, float yTar, float tTar){
 
     
 }
+*/
