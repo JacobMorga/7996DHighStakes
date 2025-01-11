@@ -157,6 +157,12 @@ float normAngle2(float angle){
     return angle;
 }
 
+float normAngle3(float angle){
+    while (angle > pi){angle -= 2.0 * pi;}
+    while (angle < -pi){angle += 2.0 * pi;}
+    return angle;
+}
+
 template <typename anyVar>
 void printToBrain(int lineNum, anyVar input){
     

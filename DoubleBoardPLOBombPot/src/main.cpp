@@ -50,7 +50,6 @@ void initialize() {
 
 	delay(3000);
 
-
 	pros::lcd::initialize();
 
 	pros::Task odomTask (odometry, "odomTask");
@@ -130,12 +129,10 @@ void autonomous() {
 
 void opcontrol() {
 
-	delay(5000000);
-
 	//runDriveCont();
 	//ploinker.set_value(1);
 	//calculateOffsets();
 	lcd::set_text(7, "we're in driver now yo");
-	//facePoint(24.0, 24.0);
+	facePoint2(24.0, 0.0);
 	lcd::set_text(7, "freaky time");
 }

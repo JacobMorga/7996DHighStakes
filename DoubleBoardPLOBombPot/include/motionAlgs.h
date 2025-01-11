@@ -3,6 +3,8 @@
 
 extern void faceHeading(float tTar);
 extern void facePoint(float xTar, float yTar);
+extern void faceHeading2(float tTar);
+extern void facePoint2(float xTar, float yTar);
 extern void turnBy(float angle);
 extern void linear(float distance);
 extern void toPoint(float xTar, float yTar, float reversed, bool smooth);

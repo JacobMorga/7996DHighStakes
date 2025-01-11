@@ -1,10 +1,11 @@
 #include "main.h"
 
-const float rotKP = 200.0; //*tune this
-const float rotKI = 0.0; //*tune this
-const float rotKD = 1625.0; //*tune this
-const float tErrorMin = 1.0; //*tune after tuning rotKI
-const float tIntMax = 1000.0; //*tune after tuning rotKI
+const float rotKP = 190.0; // 205
+const float rotKI = 0.0; // 150
+const float rotKD = 0.0; // 250
+const float tErrorMin = -1.0; //*tune after tuning rotKI
+const float tErrorMax = 5.0 / 180.0 * pi; //*tune after tuning rotKI
+const float tIntMax = 2000.0; //*tune after tuning rotKI
 
 float tError = 0.0;
 float tInt = 0.0;
@@ -48,7 +49,7 @@ void faceHeading2 (float tTar){ //$ THIS IS NOT MATH HEADING IT WILL TRY TO FACE
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
         rightDrive.move_voltage(-20.0 * tPow);
         leftDrive.move_voltage(-20.0 * tPow); 
-        if (fabs(tError) <= 0.01){exitLoops += 1;} //about 0.5 degrees
+        if (fabs(tError) <= 0.1){exitLoops += 1;} //about 0.5 degrees
         else{exitLoops = 0;}
         delay(10);
     }
@@ -79,22 +80,24 @@ void facePoint(float xTar, float yTar){
 
 void facePoint2(float xTar, float yTar){
     facePointLoops = 0;
-    while (facePointLoops < 10){
-        tPos = (pi / 2.0) - (tPos / 180.0 * pi);
+    while (facePointLoops < 100000000){
+        tPos = (pi / 2.0) - tPos;
         tTarget = arctan2(xTar - xPos, yTar - yPos);
-        tError = normAngle(tTarget - tPos);
+        tError = normAngle3(tTarget - tPos);
         tInt += tError;
-        if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
+        if (fabs(tError) >= tErrorMax || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
+        lcd::set_text(3, std::to_string(tError / pi * 180.0));
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(20.0 * tPow); //! might need to switch which one is negative
-        leftDrive.move_voltage(-20.0 * tPow);
+        rightDrive.move_velocity((20.0 * tPow) / 12000.0 * 600.0); //! might need to switch which one is negative
+        leftDrive.move_velocity((-20.0 * tPow) / 12000.0 * 600.0);
 
-        if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
-        else{faceHeadingLoops = 0;}
+        if (fabs(tError / pi * 180.0) <= 0.5){facePointLoops += 1;} //about 0.5 degrees
+        else{facePointLoops = 0;}
         delay(10);
     }
+        lcd::set_text(7, "freaky time");
 }
 
 void turnBy(float angle){
