@@ -176,7 +176,7 @@ float tWeight = 0.0;
 void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
     toPointLoops = 0;
     maxDist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
-    while (toPointLoops < 10){
+    while (toPointLoops < 100){
         tTarget = arctan2(xTar - xPos, yTar - yPos);
         tError = normAngle(tTarget - tPos + pi * reversed);
         tInt += tError;
@@ -200,19 +200,19 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         rightPow = lPow + tWeight * tPow;
         leftPow = lPow - tWeight * tPow;
 
-        if (fabs(rightPow) >= 12000.0 || fabs(leftPow) >= 12000.0){
+        if (fabs(rightPow) >= 600.0 || fabs(leftPow) >= 600.0){ //! CHANGED ALL 12000 TO 600 FOR RPM INSTEAD OF VOLTS
             if (fabs(rightPow) > fabs(leftPow)){
-                rightPow = getDir(lPow + tWeight * tPow) * 12000.0;
-                leftPow = getDir(lPow - tWeight * tPow) * fabs(12000.0 * (lPow - tWeight * tPow) / (lPow + tWeight * tPow));
+                rightPow = getDir(lPow + tWeight * tPow) * 600.0;
+                leftPow = getDir(lPow - tWeight * tPow) * fabs(600.0 * (lPow - tWeight * tPow) / (lPow + tWeight * tPow));
             }
             else{
-                rightPow = getDir(lPow + tWeight * tPow) * fabs(12000.0 * (lPow + tWeight * tPow) / (lPow - tWeight * tPow));
-                leftPow = getDir(lPow - tWeight * tPow) * 12000.0;
+                rightPow = getDir(lPow + tWeight * tPow) * fabs(600.0 * (lPow + tWeight * tPow) / (lPow - tWeight * tPow));
+                leftPow = getDir(lPow - tWeight * tPow) * 600.0;
             }
         }
 
-        rightDrive.move_voltage(rightPow);
-        leftDrive.move_voltage(leftPow);
+        rightDrive.move_velocity(rightPow);
+        leftDrive.move_velocity(leftPow);
 
         if (dist < 0.5){
             if (smooth == 0){toPointLoops += 1;}

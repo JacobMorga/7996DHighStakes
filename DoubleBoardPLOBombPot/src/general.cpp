@@ -61,8 +61,7 @@ anyVar returnBigger (anyVar x, anyVar y){
     else { return y; } // y is bigger or equal
 }
 
-template <typename anyVar>
-anyVar getDir(anyVar input){
+float getDir(float input){
 
     if (input >= 0.0){
         return 1.0;

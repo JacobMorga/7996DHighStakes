@@ -133,6 +133,6 @@ void opcontrol() {
 	//ploinker.set_value(1);
 	//calculateOffsets();
 	lcd::set_text(7, "we're in driver now yo");
-	linear(48.0);
+	toPoint(0.0, 24.0, 0.0, false);
 	lcd::set_text(7, "freaky time");
 }

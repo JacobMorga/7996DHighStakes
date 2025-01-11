@@ -46,8 +46,7 @@ anyVar returnSmaller (anyVar x, anyVar y);
 template <typename anyVar>
 anyVar returnBigger (anyVar x, anyVar y);
 
-template <typename anyVar>
-extern anyVar getDir(anyVar input);
+extern float getDir(float input);
 extern float arctan2(float x, float y);
 extern float getAngle(void);
 extern float distance(float x1, float y1, float x2, float y2);
