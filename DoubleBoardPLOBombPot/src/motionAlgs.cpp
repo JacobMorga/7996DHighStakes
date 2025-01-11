@@ -2,7 +2,7 @@
 
 const float rotKP = 190.0; // 205
 const float rotKI = 0.0; // 150
-const float rotKD = 0.0; // 250
+const float rotKD = 1250.0; // 250
 const float tErrorMin = -1.0; //*tune after tuning rotKI
 const float tErrorMax = 5.0 / 180.0 * pi; //*tune after tuning rotKI
 const float tIntMax = 2000.0; //*tune after tuning rotKI
@@ -78,9 +78,10 @@ void facePoint(float xTar, float yTar){
     }
 }
 
-void facePoint2(float xTar, float yTar){
+void facePoint2(float xTar, float yTar){ //$ DONE #################################################################################################################
+                                         //! chcek if it can turn the right direction when its more than 90 degrees an maybe tune more its not perfect
     facePointLoops = 0;
-    while (facePointLoops < 100000000){
+    while (facePointLoops < 25){
         tPos = (pi / 2.0) - tPos;
         tTarget = arctan2(xTar - xPos, yTar - yPos);
         tError = normAngle3(tTarget - tPos);
@@ -93,11 +94,12 @@ void facePoint2(float xTar, float yTar){
         rightDrive.move_velocity((20.0 * tPow) / 12000.0 * 600.0); //! might need to switch which one is negative
         leftDrive.move_velocity((-20.0 * tPow) / 12000.0 * 600.0);
 
-        if (fabs(tError / pi * 180.0) <= 0.5){facePointLoops += 1;} //about 0.5 degrees
+        if (fabs(tError / pi * 180.0) <= 0.75){facePointLoops += 1;} //about 0.5 degrees
         else{facePointLoops = 0;}
         delay(10);
     }
-        lcd::set_text(7, "freaky time");
+    drivetrain.brake();
+    lcd::set_text(7, "freaky time");
 }
 
 void turnBy(float angle){
