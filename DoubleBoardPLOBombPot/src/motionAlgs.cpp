@@ -1,6 +1,6 @@
 #include "main.h"
 
-const float rotKP = 190.0; // 205
+float rotKP = 190.0; // 100.0 for straight
 const float rotKI = 0.0; // 150
 const float rotKD = 1250.0; // 250
 const float tErrorMin = -1.0; //*tune after tuning rotKI
@@ -87,7 +87,6 @@ void facePoint2(float xTar, float yTar){ //$ DONE ##############################
         tError = normAngle3(tTarget - tPos);
         tInt += tError;
         if (fabs(tError) >= tErrorMax || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
-        lcd::set_text(3, std::to_string(tError / pi * 180.0));
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
@@ -96,6 +95,9 @@ void facePoint2(float xTar, float yTar){ //$ DONE ##############################
 
         if (fabs(tError / pi * 180.0) <= 0.75){facePointLoops += 1;} //about 0.5 degrees
         else{facePointLoops = 0;}
+
+        lcd::set_text(3, std::to_string(tError / pi * 180.0));
+
         delay(10);
     }
     drivetrain.brake();
@@ -120,7 +122,7 @@ void turnBy(float angle){
     }
 }
 
-const float linKP = 15.0; //*tune this
+float linKP = 15.0; //*tune this
 const float linKI = 0.0; //*tune this
 const float linKD = 10.0; //* 12.5
 const float lErrorMin = 1.0; //*tune after tuning linKI
@@ -168,17 +170,52 @@ float maxDist = 0.0;
 float dist = 0.0;
 float rightPow = 0.0;
 float leftPow = 0.0;
-const float tWeightK = 10.0; //*tune this
+const float tWeightK = 0.257; //*tune this
 float tWeightA = 0.0;
 float tWeightB = 0.0;
 float tWeight = 0.0;
+float deadZoneRadius = 12.0;
+float ttotara = 0.0;
+float ttotarb = 0.0;
+float ttotaraerr = 0.0;
+float ttotarberr = 0.0;
+float tpl2dir = 0.0;
+float ttotar = 0.0;
+float distLimit = 5.0;
 
 void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
     toPointLoops = 0;
     maxDist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
-    while (toPointLoops < 100){
+    while (toPointLoops < 50){
+
+        /*
+        ttotara = (2 * (xTar - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yTar - yPos) / (xTar - xPos));
+        if (ttotara >= 0.0){ttotarb = (2 * (xTar - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yTar - yPos) / (xTar - xPos)) - pi;}
+        else{ttotarb = (2 * (xTar - xPos >= 0.0) - 1) * pi / 2.0 - atanf((yTar - yPos) / (xTar - xPos)) + pi;}
+        ttotaraerr = ttotara - tPos;
+        ttotarberr = ttotarb - tPos;
+        while (ttotaraerr > pi){ttotaraerr -= 2.0 * pi;}
+        while (ttotaraerr < -pi){ttotaraerr += 2.0 * pi;}    
+        while (ttotarberr > pi){ttotarberr -= 2.0 * pi;}
+        while (ttotarberr < -pi){ttotarberr += 2.0 * pi;}
+        if (fabs(ttotaraerr) > fabs(ttotarberr)){
+            tpl2dir = -1.0;
+            ttotar = ttotarb;
+        }
+        else{
+            tpl2dir = 1.0;
+            ttotar = ttotara;
+        }
+        tError = ttotar - tPos;
+        while (tError > pi){tError -= 2.0 * pi;}
+        while (tError < -pi){tError += 2.0 * pi;}
+        */
+
+        tPos = (pi / 2.0) - tPos + pi * reversed;
         tTarget = arctan2(xTar - xPos, yTar - yPos);
-        tError = normAngle(tTarget - tPos + pi * reversed);
+        tError = normAngle3(tTarget - tPos);
+
+
         tInt += tError;
         //if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
         tDer = tError - tPrevError;
@@ -186,7 +223,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
 
         dist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
-        lError = dist * cos(tError);
+        lError = (1 - 2.0 * reversed) * dist * cos(tError);
         lInt += lError;
         //if (fabs(lError) <= lErrorMin || fabs(lInt) >= lIntMax){lInt = 0.0;} //*tune linKI first
         lDer = lError - lPrevError;
@@ -196,6 +233,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         tWeightA = (1.0 + sqrt(1.0 + 4.0 / tWeightK)) / 2.0;
         tWeightB = 1.0 / (tWeightK * (tWeightA - 1.0));
         tWeight = 1.0 / (tWeightK * (1.0 - (dist / maxDist) - tWeightA)) + tWeightB;
+        //if (dist < deadZoneRadius){tWeight = 0.0;}
 
         rightPow = lPow + tWeight * tPow;
         leftPow = lPow - tWeight * tPow;
@@ -211,10 +249,16 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
             }
         }
 
-        rightDrive.move_velocity(rightPow);
-        leftDrive.move_velocity(leftPow);
+        //if(reversed == 1.0){rightPow *= -1.0; leftPow *= -1.0;}
 
-        if (dist < 0.5){
+        rightDrive.move_voltage(rightPow / 600.0 * 12000.0);
+        leftDrive.move_voltage(leftPow / 600.0 * 12000.0);
+
+        lcd::set_text(4, std::to_string(tPos));
+        lcd::set_text(6, std::to_string(rightPow));
+        lcd::set_text(7, std::to_string(tError));
+
+        if (dist < distLimit || (fabs(rightPow) < 100.0 && fabs(leftPow) < 100.0)){
             if (smooth == 0){toPointLoops += 1;}
             else{toPointLoops += 10;}
         }
@@ -222,6 +266,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
 
         delay(10);
     }
+    drivetrain.brake();
 }
 
 float xTan = 0.0;

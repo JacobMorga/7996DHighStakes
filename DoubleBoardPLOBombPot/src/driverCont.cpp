@@ -9,13 +9,20 @@ bool buttonR2Prev = 0;
 int intakeState = 0;
 int exitcode = 0;
 float sortDistance = 110.0;
-float sortDelay1 = 100.0;
+float sortDelay1 = 150.0;
 float sortDelay2 = 200.0;
 
+float redLowLimit = 25.0;
+float redHighLimit = 359.0;
+float blueLowLimit = 80.0;
+float blueHighLimit = 350.0;
+
+/* school tuning
 float redLowLimit = 48.999;
 float redHighLimit = 359.0;
 float blueLowLimit = 49.0;
 float blueHighLimit = 200.0; //350
+*/
 
 void runDriveCont (){
 
@@ -259,11 +266,11 @@ void runIntake(){
 }
 */
 
-float colorSensed = 250.0;
+float colorSensed = 0.0;
 float distanceSensed = 0.0;
 pros::c::optical_raw_s_t raw_values;
 void runIntake(){
-    float intakeVoltage = 13000.0; // mV
+    float intakeVoltage = 12000.0; // mV
     while(true){
         //pros::lcd::clear();
         if(controller.get_digital_new_press(DIGITAL_UP)){ // turns on and off light
@@ -275,6 +282,7 @@ void runIntake(){
             else{teamColor = COLOR_RED;}
         }
         if(distanceSensor.get() <= sortDistance && intakeState == 3){intakeState = 4;}
+        if(distanceSensor.get() <= sortDistance && intakeState == 5){intakeState = 0;}
 
         if(controller.get_digital_new_press(DIGITAL_R1)){
             if(intakeState == 3){intakeState = 0;}
@@ -289,7 +297,8 @@ void runIntake(){
 
         if(intakeState == 0){intake.brake();}
         else if(intakeState == 1){intake.move_voltage(-intakeVoltage);}
-        else if(intakeState == 2){intake.move_voltage(intakeVoltage);}
+        else if(intakeState == 2 || intakeState == 5){intake.move_voltage(intakeVoltage);}
+        else if(intakeState == 6){intakeTop.move_voltage(intakeVoltage); intakeBottom.move_voltage(-intakeVoltage);}
         else if(intakeState == 3){
             intake.move_voltage(intakeVoltage);
             opticalSensor.set_led_pwm(100);
@@ -299,6 +308,7 @@ void runIntake(){
             exitcode = 0;
             while(exitcode == 0){
                 raw_values = opticalSensor.get_raw();
+                colorSensed = opticalSensor.get_hue();
                 distanceSensed = distanceSensor.get();
                 if(distanceSensor.get() > sortDistance){exitcode = 1;}
                 if((teamColor == COLOR_RED && colorSensed <= blueHighLimit && colorSensed >= blueLowLimit) || (teamColor == COLOR_BLUE && (colorSensed <= redLowLimit || colorSensed >= redHighLimit))){exitcode = 2;}

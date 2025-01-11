@@ -83,15 +83,15 @@ void autonSelector (){
         }
         
         screen::set_pen(COLOR_WHITE);
-        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,0   + yTxtOffset,"Auton1");
-        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,0   + yTxtOffset,"Auton2");
-        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,0   + yTxtOffset,"Auton3");
-        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,80  + yTxtOffset,"Auton4");
-        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,80  + yTxtOffset,"Auton5");
-        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,80  + yTxtOffset,"Auton6");
-        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,160 + yTxtOffset,"Auton7");
-        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,160 + yTxtOffset,"Auton8");
-        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,160 + yTxtOffset,"Auton9");
+        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,0   + yTxtOffset,"Red Pos");
+        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,0   + yTxtOffset,"Red Neg");
+        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,0   + yTxtOffset,"Blue Pos");
+        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,80  + yTxtOffset,"Blue Neg");
+        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,80  + yTxtOffset,"Skills");
+        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,80  + yTxtOffset,"Skills");
+        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,160 + yTxtOffset,"Skills");
+        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,160 + yTxtOffset,"Skills");
+        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,160 + yTxtOffset,"Skills");
 
         while(status.touch_status == E_TOUCH_HELD){
             status = pros::screen::touch_status();

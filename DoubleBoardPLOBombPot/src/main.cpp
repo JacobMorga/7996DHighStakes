@@ -99,15 +99,15 @@ void autonomous() {
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
 	
-	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton1"); bluePositive();} // Runs each auton based on 
-	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton2"); }
-	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton3"); }
-	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton4"); }
-	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton5"); }
-	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton6"); }
-	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton7"); }
-	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton8"); }
-	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Auton9"); }
+	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos"); redPositive();} // Runs each auton based on 
+	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg"); redNegative();}
+	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos"); bluePositive();}
+	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg"); blueNegative();}
+	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"); skills();}
+	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"); skills();}
+	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"); skills();}
+	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"); skills();}
+	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"); skills();}
 	else { printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED"); }
 
 
@@ -129,10 +129,18 @@ void autonomous() {
 
 void opcontrol() {
 
-	//runDriveCont();
+
+	runDriveCont();
 	//ploinker.set_value(1);
 	//calculateOffsets();
-	lcd::set_text(7, "we're in driver now yo");
-	toPoint(0.0, 24.0, 0.0, false);
-	lcd::set_text(7, "freaky time");
+	//lcd::set_text(7, "we're in driver now yo");
+	//toPoint(48.0, 48.0, 0.0, false);
+	//lcd::set_text(7, "freaky time");
+	//teamColor = COLOR_RED;
+	//redPositive();
+	//redNegative();
+	//skills();
+
+	//toPoint(0.0, 48.0, 0, 0);
+	//toPoint(0.0, 0.0, 1, 0);
 }
