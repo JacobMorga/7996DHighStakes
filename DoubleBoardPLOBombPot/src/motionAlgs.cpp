@@ -120,13 +120,13 @@ void turnBy(float angle){
     }
 }
 
-const float linKP = 1.0; //*tune this
+const float linKP = 15.0; //*tune this
 const float linKI = 0.0; //*tune this
-const float linKD = 0.0; //*tune this
+const float linKD = 10.0; //* 12.5
 const float lErrorMin = 1.0; //*tune after tuning linKI
 const float lIntMax = 1000.0; //*tune after tuning linKI
 
-float lError = 0.0;
+float lError = 0;
 float lInt = 0.0;
 float lDer = 0.0;
 float lPrevError = 0.0;
@@ -139,16 +139,17 @@ float currentPos = 0.0;
 void linear(float distance){ //no angle correction currently...
     linearLoops = 0;
     initPos = yTracking.get_position() * yWheelDiameter * pi / 36000.0;
-    while (linearLoops < 10){
+    while (linearLoops < 1000){
         currentPos = yTracking.get_position() * yWheelDiameter * pi / 36000.0 - initPos;
         lError = distance - currentPos;
+        lcd::set_text(3, std::to_string(lError));
         lInt += lError;
         //if (fabs(lError) <= lErrorMin || fabs(lInt) >= lIntMax){lInt = 0.0;} //*tune linKI first
         lDer = lError - lPrevError;
         lPrevError = lError;
         lPow = linKP * lError + linKI * lInt + linKD * lDer;
-        rightDrive.move_voltage(lPow);
-        leftDrive.move_voltage(lPow);
+        rightDrive.move_velocity(lPow);
+        leftDrive.move_velocity(lPow);
         if (fabs(lError) <= 0.5){linearLoops += 1;}
         else {linearLoops = 0;}
         delay(10);
