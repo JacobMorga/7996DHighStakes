@@ -22,6 +22,18 @@ void autonSelector (){
 
         status = screen::touch_status();
 
+                       if (teamColor == COLOR_RED){
+		std::cout << "RED";
+	}
+	else if (teamColor == COLOR_BLUE){
+		std::cout << "BLUE";
+	}
+	else{
+		std::cout << "NO COLOR";
+	}
+
+	std::cout << " : " << autonSelected << "\n";
+
         screen::set_pen(COLOR_WHITE);
         screen::set_eraser(COLOR_BLACK);
 
@@ -93,6 +105,17 @@ void autonSelector (){
         screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,160 + yTxtOffset,"Skills");
         screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,160 + yTxtOffset,"Skills");
 
+                               if (teamColor == COLOR_RED){
+		std::cout << "RED";
+	}
+	else if (teamColor == COLOR_BLUE){
+		std::cout << "BLUE";
+	}
+	else{
+		std::cout << "NO COLOR";
+	}
+    	std::cout << " : " << autonSelected << "\n";
+
         while(status.touch_status == E_TOUCH_HELD){
             status = pros::screen::touch_status();
             delay(20);
@@ -111,6 +134,8 @@ void autonSelector (){
         screen::erase();
 
         delay(20);
+
+        
     }
 
 }

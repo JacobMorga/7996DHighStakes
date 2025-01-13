@@ -12,9 +12,9 @@ float sortDistance = 110.0;
 float sortDelay1 = 150.0;
 float sortDelay2 = 200.0;
 
-float redLowLimit = 25.0;
+float redLowLimit = 45.0;
 float redHighLimit = 359.0;
-float blueLowLimit = 80.0;
+float blueLowLimit = 45.1;
 float blueHighLimit = 350.0;
 
 /* school tuning
@@ -270,9 +270,11 @@ float colorSensed = 0.0;
 float distanceSensed = 0.0;
 pros::c::optical_raw_s_t raw_values;
 void runIntake(){
-    float intakeVoltage = 12000.0; // mV
+    float intakeVoltage = 11000.0; // mV
     while(true){
         //pros::lcd::clear();
+        //! I JUST COMMENTED THIS 2 SECONDS BEFORE THE COMP
+        /*
         if(controller.get_digital_new_press(DIGITAL_UP)){ // turns on and off light
             if(opticalSensor.get_led_pwm() >= 50){opticalSensor.set_led_pwm(0);}
             else{opticalSensor.set_led_pwm(100);}
@@ -281,12 +283,14 @@ void runIntake(){
             if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
             else{teamColor = COLOR_RED;}
         }
+        */
         if(distanceSensor.get() <= sortDistance && intakeState == 3){intakeState = 4;}
         if(distanceSensor.get() <= sortDistance && intakeState == 5){intakeState = 0;}
+        if(distanceSensor.get() <= sortDistance && intakeState == 8){intakeState = 7;}
 
         if(controller.get_digital_new_press(DIGITAL_R1)){
-            if(intakeState == 3){intakeState = 0;}
-            else{intakeState = 3;}
+            if(intakeState == 2){intakeState = 0;}
+            else{intakeState = 2;}
         }
         if(controller.get_digital_new_press(DIGITAL_LEFT)){
             if(intakeState == 2){intakeState = 0;}
@@ -297,8 +301,9 @@ void runIntake(){
 
         if(intakeState == 0){intake.brake();}
         else if(intakeState == 1){intake.move_voltage(-intakeVoltage);}
-        else if(intakeState == 2 || intakeState == 5){intake.move_voltage(intakeVoltage);}
+        else if(intakeState == 2 || intakeState == 5 || intakeState == 8){intake.move_voltage(intakeVoltage);}
         else if(intakeState == 6){intakeTop.move_voltage(intakeVoltage); intakeBottom.move_voltage(-intakeVoltage);}
+        else if(intakeState == 7){intakeTop.move_voltage(3000.0);}
         else if(intakeState == 3){
             intake.move_voltage(intakeVoltage);
             opticalSensor.set_led_pwm(100);
@@ -317,9 +322,9 @@ void runIntake(){
                 if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
                 //std::cout << "NOW CHECKING RING: " << colorSensed << "\n";
                 //std::cout << "RING DISTANCE: " << distanceSensed << "\n";
-                std::cout << "RED VAL: " << raw_values.red  << "\n";
-                std::cout << "BLUE VAL: " << raw_values.blue << "\n";
-                std::cout << "GREEN VAL: " << raw_values.green << "\n";
+                //std::cout << "RED VAL: " << raw_values.red  << "\n";
+                //std::cout << "BLUE VAL: " << raw_values.blue << "\n";
+                //std::cout << "GREEN VAL: " << raw_values.green << "\n";
                 delay(10);
             }
             if(exitcode == 1){
