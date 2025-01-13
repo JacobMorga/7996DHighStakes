@@ -5,4 +5,6 @@ extern void runDriveCont ();
 extern void runIntake();
 extern void firstTryColorSorting();
 extern int intakeState;
+extern void runColorCalibration();
+extern void testColorCalibration();
 #endif

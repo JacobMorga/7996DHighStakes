@@ -24,6 +24,10 @@ float blueLowLimit = 49.0;
 float blueHighLimit = 200.0; //350
 */
 
+// for new rgbc color sort, both are lower limits
+const float redLimit = 180.0;
+const float blueLimit = 85.0;
+
 void runDriveCont (){
 
     while (1){
@@ -268,10 +272,12 @@ void runIntake(){
 
 float colorSensed = 0.0;
 float distanceSensed = 0.0;
-pros::c::optical_raw_s_t raw_values;
 void runIntake(){
+    pros::c::optical_raw_s_t raw_values;
+    pros::c::optical_raw_s_t rawColors;
     float intakeVoltage = 11000.0; // mV
     while(true){
+
         //pros::lcd::clear();
         //! I JUST COMMENTED THIS 2 SECONDS BEFORE THE COMP
         /*
@@ -284,27 +290,46 @@ void runIntake(){
             else{teamColor = COLOR_RED;}
         }
         */
-        if(distanceSensor.get() <= sortDistance && intakeState == 3){intakeState = 4;}
-        if(distanceSensor.get() <= sortDistance && intakeState == 5){intakeState = 0;}
-        if(distanceSensor.get() <= sortDistance && intakeState == 8){intakeState = 7;}
+
+        //? Intake State guide:
+        //? 0: both stages stopped
+        //? 1: reverse both stages
+        //? 2: intake both stages blindly
+        //? 3: intake both stages, old color sort (move to 4 when ring detected)
+        //? 4: old color sort (move to 3 when exited)
+        //? 5: intake both stages, then pause when ring detected (moves to 0)
+        //? 6: intake top stage and reverse bottom stage
+        //? 7: run top stage at 3V (brings ring to top of intake but doesn't score it)
+        //? 8: intake both stages, slow down when detected (moves to 7)
+        //? 9: intake both stages, new color sort (moves to 10 when ring detected)
+        //? 10: new color sort (moves to 9 when exited)
+
+        if(distanceSensor.get() <= sortDistance && intakeState == 3){intakeState = 4;} //old color sort
+        if(distanceSensor.get() <= sortDistance && intakeState == 5){intakeState = 0;} //stop intake once ring detected
+        if(distanceSensor.get() <= sortDistance && intakeState == 8){intakeState = 7;} //slow intake to 3V once ring detected
+        if(distanceSensor.get() <= sortDistance && intakeState == 9){intakeState = 10;} //new color sort
 
         if(controller.get_digital_new_press(DIGITAL_R1)){
-            if(intakeState == 2){intakeState = 0;}
-            else{intakeState = 2;}
+            if(intakeState == 9){intakeState = 0;}
+            else{intakeState = 9;}
         }
         if(controller.get_digital_new_press(DIGITAL_LEFT)){
             if(intakeState == 2){intakeState = 0;}
             else{intakeState = 2;}
         }
+        if(controller.get_digital_new_press(DIGITAL_DOWN)){
+            if(intakeState == 3){intakeState = 0;}
+            else{intakeState = 3;}
+        }
         if(controller.get_digital(DIGITAL_R2)){intakeState = 1;}
         if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;}
 
         if(intakeState == 0){intake.brake();}
-        else if(intakeState == 1){intake.move_voltage(-intakeVoltage);}
-        else if(intakeState == 2 || intakeState == 5 || intakeState == 8){intake.move_voltage(intakeVoltage);}
-        else if(intakeState == 6){intakeTop.move_voltage(intakeVoltage); intakeBottom.move_voltage(-intakeVoltage);}
-        else if(intakeState == 7){intakeTop.move_voltage(3000.0);}
-        else if(intakeState == 3){
+        else if(intakeState == 1){intake.move_voltage(-intakeVoltage); opticalSensor.set_led_pwm(0);}
+        else if(intakeState == 2 || intakeState == 5 || intakeState == 8){intake.move_voltage(intakeVoltage); opticalSensor.set_led_pwm(0);}
+        else if(intakeState == 6){intakeTop.move_voltage(intakeVoltage); intakeBottom.move_voltage(-intakeVoltage); opticalSensor.set_led_pwm(0);}
+        else if(intakeState == 7){intakeTop.move_voltage(3000.0); opticalSensor.set_led_pwm(0);}
+        else if(intakeState == 3 || intakeState == 9){
             intake.move_voltage(intakeVoltage);
             opticalSensor.set_led_pwm(100);
         }
@@ -343,6 +368,89 @@ void runIntake(){
             else if(exitcode > 2){intakeState = exitcode - 3;}
     
         }
+        else if(intakeState == 10){
+            exitcode = 0;
+            while(exitcode == 0){
+                rawColors = opticalSensor.get_raw();
+                distanceSensed = distanceSensor.get();
+                if(distanceSensor.get() > sortDistance){exitcode = 1;}
+                else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;}
+                else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;}
+                else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
+                else if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
+                delay(10);
+            }
+            if(exitcode == 1){intakeState = 9;}
+            else if(exitcode == 2){
+                delay(sortDelay1);
+                intake.move_voltage(-intakeVoltage);
+                delay(sortDelay2);
+                intakeState = 9;
+            }
+            else if(exitcode > 2){intakeState = exitcode - 3;}
+        }
         delay(10);
     }
+}
+
+
+//* COLOR CALIBRATION STEPS:
+//* 1: Comment intake task in main.cpp >> initialize().
+//* 2: Uncomment calibrate function in main.cpp >> opcontrol().
+//* 3: Download and run with brain terminal printing to a new window.
+//* 4: Feed ~20 rings of one color through the intake, verifying the output is printing to the terminal.
+//*    Note: it might be helpful to feed them through while rotating the robot to face different directions.
+//* 5: Copy output into a blank Google Sheet and auto-format the columns, which are distance and RGBC values.
+//* 6: Repeat 3-5 with the other color.
+//* 7: Make graphs of at least R and B outputs for both data sets.
+//* 8: Identify minimum R and B values that indicate ring detection over ambient color or other ring color.
+//* 9: Input these values into the variables redLimit and blueLimit above.
+//* 10: Run test calibration function in main.cpp >> opcontrol(), ensuring brain terminal output functioning.
+//* 11: Feed ~20 rings of each color through the intake, verifying correct identification.
+//* 12: Repeat calibration if necessary.
+//* 13: Comment both run and test calibration functions; uncomment intake task in main.cpp >> initialize().
+
+void runColorCalibration(){
+    pros::c::optical_raw_s_t rawVals;
+	intake.move_voltage(11000.0);
+	opticalSensor.set_led_pwm(100.0);
+	float distanceMeasured = 0.0;
+	while(1){
+		rawVals = opticalSensor.get_raw();
+		distanceMeasured = distanceSensor.get();
+		std::cout << distanceMeasured << ", " << rawVals.red << ", " << rawVals.green << ", " << rawVals.blue << ", " << rawVals.clear << "\n";
+		delay(10);
+	}
+}
+
+void testColorCalibration(){
+    pros::c::optical_raw_s_t rawVals;
+	intake.move_voltage(11000.0);
+	opticalSensor.set_led_pwm(100.0);
+	float distanceMeasured = 0.0;
+	float prevDistance = 0.0;
+	int ringColor = 0;
+	bool colorDecided = 0;
+	while(1){
+		rawVals = opticalSensor.get_raw();
+		distanceMeasured = distanceSensor.get();
+		if(distanceMeasured < 100){
+			if(prevDistance >= 100){std::cout << "ring detected." << "\n";}
+			if(colorDecided == 0 && rawVals.red >= redLimit){colorDecided = 1; ringColor = 1;}
+			if(colorDecided == 0 && rawVals.blue >= blueLimit){colorDecided = 1; ringColor = 2;}
+			std::cout << distanceMeasured << ", " << rawVals.red << ", " << rawVals.green << ", " << rawVals.blue << ", " << rawVals.clear << "\n";
+		}
+		else if(distanceMeasured >= 100 && prevDistance < 100){
+			std::cout << "ring left." << "\n";
+			if(colorDecided == 0){std::cout << "couldn't tell what color it was though." << "\n" << "\n";}
+			else{
+				if(ringColor == 1){std::cout << "it was a RED ring." << "\n" << "\n";}
+				else if(ringColor == 2){std::cout << "it was a BLUE ring." << "\n" << "\n";}
+			}
+			colorDecided = 0;
+			ringColor = 0;
+		}
+		prevDistance = distanceMeasured;
+		delay(10);
+	}
 }
