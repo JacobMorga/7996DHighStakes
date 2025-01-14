@@ -1,3 +1,4 @@
+
 #include "main.h"
 using namespace pros;
 
@@ -274,22 +275,9 @@ float colorSensed = 0.0;
 float distanceSensed = 0.0;
 void runIntake(){
     pros::c::optical_raw_s_t raw_values;
-    pros::c::optical_raw_s_t rawColors;
+    pros::c::optical_raw_s_t rawColors = opticalSensor.get_raw();
     float intakeVoltage = 11000.0; // mV
     while(true){
-
-        //pros::lcd::clear();
-        //! I JUST COMMENTED THIS 2 SECONDS BEFORE THE COMP
-        /*
-        if(controller.get_digital_new_press(DIGITAL_UP)){ // turns on and off light
-            if(opticalSensor.get_led_pwm() >= 50){opticalSensor.set_led_pwm(0);}
-            else{opticalSensor.set_led_pwm(100);}
-        }
-        if(controller.get_digital_new_press(DIGITAL_B)){
-            if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
-            else{teamColor = COLOR_RED;}
-        }
-        */
 
         //? Intake State guide:
         //? 0: both stages stopped
@@ -372,6 +360,7 @@ void runIntake(){
             exitcode = 0;
             while(exitcode == 0){
                 rawColors = opticalSensor.get_raw();
+                std::cout << rawColors.red << ", " << rawColors.blue;
                 distanceSensed = distanceSensor.get();
                 if(distanceSensor.get() > sortDistance){exitcode = 1;}
                 else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;}
@@ -386,6 +375,7 @@ void runIntake(){
                 intake.move_voltage(-intakeVoltage);
                 delay(sortDelay2);
                 intakeState = 9;
+                std::cout << "sorted this one out";
             }
             else if(exitcode > 2){intakeState = exitcode - 3;}
         }

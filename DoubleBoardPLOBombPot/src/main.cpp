@@ -5,6 +5,7 @@
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
 void initialize() {
 
 	drive1.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -58,7 +59,7 @@ void initialize() {
 
 	//!THIS TASK MUST BE COMMENTED TO RUN OR TEST COLOR CALIBRATION.
 	//!MAKE SURE IT IS UNCOMMENTED AFTER COLOR CALIBRATION.
-	//!Task intakeTask (runIntake, "intakeTask");
+	//Task intakeTask (runIntake, "intakeTask");
 }
 
 /**
@@ -147,6 +148,6 @@ void opcontrol() {
 
 	//!TO RUN OR TEST COLOR CALIBRATION THE INTAKE TASK IN THIS FILE MUST BE COMMENTED.
 	//!MAKE SURE TO RE-ENABLE IT AFTER COLOR CALIBRATION.
-	//runColorCalibration();
-	testColorCalibration();
+	runColorCalibration();
+	//testColorCalibration();
 }
