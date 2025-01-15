@@ -297,9 +297,9 @@ void runIntake(){
         if(distanceSensor.get() <= sortDistance && intakeState == 8){intakeState = 7;} //slow intake to 3V once ring detected
         if(distanceSensor.get() <= sortDistance && intakeState == 9){intakeState = 10;} //new color sort
 
-        if(controller.get_digital_new_press(DIGITAL_R1)){
-            if(intakeState == 9){intakeState = 0;}
-            else{intakeState = 9;}
+        if(controller.get_digital_new_press(DIGITAL_R1)){ //! TURNED OFF COLOR SORTING
+            if(intakeState == 2){intakeState = 0;}
+            else{intakeState = 2;}
         }
         if(controller.get_digital_new_press(DIGITAL_LEFT)){
             if(intakeState == 2){intakeState = 0;}
@@ -401,14 +401,15 @@ void runIntake(){
 //* 13: Comment both run and test calibration functions; uncomment intake task in main.cpp >> initialize().
 
 void runColorCalibration(){
-    pros::c::optical_raw_s_t rawVals;
+    pros::c::optical_rgb_s_t rawVals;
 	intake.move_voltage(11000.0);
 	opticalSensor.set_led_pwm(100.0);
 	float distanceMeasured = 0.0;
 	while(1){
-		rawVals = opticalSensor.get_raw();
+		rawVals = opticalSensor.get_rgb();
 		distanceMeasured = distanceSensor.get();
-		std::cout << distanceMeasured << ", " << rawVals.red << ", " << rawVals.green << ", " << rawVals.blue << ", " << rawVals.clear << "\n";
+		std::cout << distanceMeasured << ", " << rawVals.red / opticalSensor.get_brightness() << ", " << rawVals.green / opticalSensor.get_brightness() << ", " << rawVals.blue / opticalSensor.get_brightness() << "\n";
+        lcd::set_text(6, std::to_string(rawVals.red));
 		delay(10);
 	}
 }

@@ -131,7 +131,14 @@ void skills(){
     goaldist = 12.0;
     distLimit = 12.0;
     toPoint(-66.0 - goaldist * cos(arctan2(-66.0 - xPos, -18.0 - yPos)), -18.0 - goaldist * sin(arctan2(-66.0 - xPos, -18.0 - yPos)), 1, 0); //score first goal
-    delay(2000); //put all the rings on the goal before you leave
+    delay(2000); //put all the rings on the goal before you leave 
+
+    //! ADDED ON LEAGUE DAY
+    intakeState = 1;
+    delay(150);
+    intakeState = 2;
+    //! ADDED ON LEAGUE DAY
+
     distLimit = 5.0;
     backClaw.set_value(0);
     toPoint(xPos, yPos + 12.0, 0, 1); // leave scoring first goal (remember the time it took it out with it 💀)
@@ -149,6 +156,13 @@ void skills(){
     goaldist = 6.0;
     toPoint(66.0 - goaldist * cos(arctan2(66.0 - xPos, -18.0 - yPos)), -18.0 - goaldist * sin(arctan2(66.0 - xPos, -18.0 - yPos)), 1, 0); //score second goal
     delay(2000);
+
+    //! ADDED ON LEAGUE DAY
+    intakeState = 1;
+    delay(150);
+    intakeState = 2;
+    //! ADDED ON LEAGUE DAY
+
     backClaw.set_value(0);
     intakeState = 5;
     linKP = 18.0;

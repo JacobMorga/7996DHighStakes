@@ -59,7 +59,7 @@ void initialize() {
 
 	//!THIS TASK MUST BE COMMENTED TO RUN OR TEST COLOR CALIBRATION.
 	//!MAKE SURE IT IS UNCOMMENTED AFTER COLOR CALIBRATION.
-	//Task intakeTask (runIntake, "intakeTask");
+	Task intakeTask (runIntake, "intakeTask");
 }
 
 /**
@@ -132,7 +132,7 @@ void autonomous() {
 
 void opcontrol() {
 
-	//runDriveCont();
+	runDriveCont();
 	//ploinker.set_value(1);
 	//calculateOffsets();
 	//lcd::set_text(7, "we're in driver now yo");
@@ -148,6 +148,6 @@ void opcontrol() {
 
 	//!TO RUN OR TEST COLOR CALIBRATION THE INTAKE TASK IN THIS FILE MUST BE COMMENTED.
 	//!MAKE SURE TO RE-ENABLE IT AFTER COLOR CALIBRATION.
-	runColorCalibration();
+	//runColorCalibration();
 	//testColorCalibration();
 }
