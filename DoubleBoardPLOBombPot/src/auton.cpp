@@ -5,7 +5,7 @@ float goaldist = 5.0; //3.0;
 
 void bluePositive(){ //currently copied and pasted from redpositive then all x coordinates' signs switched
     teamColor = COLOR_BLUE;
-	intakeState = 8; //5 to stop, 8 to go to 3V
+	intakeState = 5; //5 to stop, 8 to go to 3V //!CHANGE THIS JOHN TO 5
     rotKP = 350.0;
     linKP = 25.0;
 	toPoint(-27.0, 22.0, 0, 0); //(25.0, 22.0); //intake bottom ring
@@ -23,7 +23,7 @@ void bluePositive(){ //currently copied and pasted from redpositive then all x c
     rotKP = 220.0;
     backClaw.set_value(0);
     facePoint2(xPos - 12.0, yPos); //point left
-    intakeState = 8;
+    intakeState = 5; //! THIS ONE TOO
     toPoint(-28.0, -8.5, 0, 0); //intake preload
     delay(500);
     linKP = 10.0; //usually 15.0
