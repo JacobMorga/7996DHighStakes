@@ -16,8 +16,9 @@ void initialize() {
 	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
-
+	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST); //? is this on purpose?
+	wallMech.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	
 	inertial1.reset();
 	inertial2.reset();
 	inertial3.reset();
@@ -33,7 +34,7 @@ void initialize() {
 	pros::screen::erase();
 
 	Task odomTask (odometry, "odomTask");
-	Task intakeTask (runIntake, "intakeTask");
+	Task intakeAndWallMechTask (runIntakeAndWallMech, "intakeAndWallMechTask");
 }
 
 void disabled() {}

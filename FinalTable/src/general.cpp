@@ -20,6 +20,9 @@ Motor intakeTop (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
+Motor wallMech (2, MOTOR_GEAR_200, false, MOTOR_ENCODER_DEGREES);
+ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); //! second argument declares potentiometer type
+
 Rotation xTracking (20);
 Rotation yTracking (21);
 
@@ -28,7 +31,8 @@ IMU inertial2 (12);
 IMU inertial3 (16);
 
 ADIPort backClaw ('A', ADI_DIGITAL_OUT);
-ADIPort clearer ('H', ADI_DIGITAL_OUT);
+ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
+ADIPort leftClearer ('H', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(10);
 Distance distanceSensor(8);
