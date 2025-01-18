@@ -1,16 +1,26 @@
 #include "main.h"
 using namespace pros;
 
-float JRYValue, JRXValue, JLYValue, JLXValue;
+float JRYValue, JRXValue, JLYValue, JLXValue; //joystick right y, right x, left y, left x values
 
-int intakeState = 0;
-int exitcode = 0;
-float sortDistance = 110.0;
-float sortDelay1 = 150.0;
-float sortDelay2 = 200.0;
+int intakeState = 0; //current intake state (0-5)
+float intakeVoltage = 11000.0; // mV
+int exitcode = 0; //indicator for why color sorting state (4) exited
+float sortDistance = 110.0; //mm
+float sortDelay1 = 150.0; //ms
+float sortDelay2 = 200.0; //ms
 
-const float redLimit = 180.0;
+const float redLimit = 180.0; //lower limits for rgbc sort
 const float blueLimit = 85.0;
+
+int wallMechState = 0; //current wall mech state (0-3)
+float idleHighLimit = 20.0; //upper limit for potentiometer value in idle state
+float loadingALowLimit = 50.0; //lower limit for potentiometer value in loading A state
+float loadingAHighLimit = 51.0; //upper limit for potentiometer value in loading A state
+float loadingBLowLimit = 60.0; //lower limit for potentiometer value in loading B state
+float loadingBHighLimit = 61.0; //upper limit for potentiometer value in loading B state
+float scoringLowLimit = 250.0; //lower limit for potentiometer value in scoring state
+float wallMechVoltage = 12000.0; //mV
 
 void runDriveCont (){
     while (1){
@@ -22,20 +32,20 @@ void runDriveCont (){
         rightDrive.move_voltage(JRYValue - JLXValue); // Sets motors to move
         leftDrive.move_voltage(JRYValue + JLXValue);
 
-        if (controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());}
-        if (controller.get_digital_new_press(DIGITAL_L1)){clearer.set_value(!clearer.get_value());}
+        if (controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());} //toggles back claw
+        if (controller.get_digital_new_press(DIGITAL_LEFT)){leftClearer.set_value(!leftClearer.get_value());} //toggles left clearer
+        if (controller.get_digital_new_press(DIGITAL_UP)){rightClearer.set_value(!rightClearer.get_value());} //toggles right clearer
 
         delay(10);
     }
 }
 
 float distanceSensed = 0.0;
-void runIntake(){
+void runIntakeAndWallMech(){
     pros::c::optical_raw_s_t rawColors = opticalSensor.get_raw();
-    float intakeVoltage = 11000.0; // mV
     while(true){
 
-        //& New Intake State Guide:
+        //& Intake State Guide:
         //& 0: both stages stopped
         //& 1: reverse both stages
         //& 2: intake both stages blindly
@@ -43,52 +53,85 @@ void runIntake(){
         //& 4: perform color sort
         //& 5: intake until ring detected
 
-        if(distanceSensor.get() <= sortDistance){
+        //* intake state transition control
+        if(distanceSensor.get() <= sortDistance){ //when ring seen
             if (intakeState == 3){intakeState = 4;} //color sort
-            else if (intakeState == 5){intakeState = 0;} //pause when ring seen
+            else if (intakeState == 5){intakeState = 0;} //pause
         }
-
-        if(controller.get_digital_new_press(DIGITAL_R1)){
+        if(controller.get_digital_new_press(DIGITAL_R1)){ //toggle color sort and off
             if(intakeState == 3){intakeState = 0;}
             else{intakeState = 3;}
         }
-        if(controller.get_digital_new_press(DIGITAL_LEFT)){
+        if(controller.get_digital_new_press(DIGITAL_LEFT)){ //toggle blind intake and off
             if(intakeState == 2){intakeState = 0;}
             else{intakeState = 2;}
         }
-        if(controller.get_digital(DIGITAL_R2)){intakeState = 1;}
+        if(controller.get_digital(DIGITAL_R2)){intakeState = 1;} //button hold to outtake
         if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;}
 
-        if(intakeState == 0){intake.brake(); opticalSensor.set_led_pwm(0);}
-        else if(intakeState == 1){intake.move_voltage(-intakeVoltage); opticalSensor.set_led_pwm(0);}
-        else if(intakeState == 2 || intakeState == 5){intake.move_voltage(intakeVoltage); opticalSensor.set_led_pwm(0);}
-        else if(intakeState == 3){
-            intake.move_voltage(intakeVoltage);
-            opticalSensor.set_led_pwm(100);
-        }
-        else if(intakeState == 4){
+        //* intake state execution control
+        if(intakeState == 3 || intakeState == 4){opticalSensor.set_led_pwm(100);} //optical led control
+        else{opticalSensor.set_led_pwm(0);}
+
+        if(intakeState == 0){intake.brake();} //0: off
+        else if(intakeState == 1){intake.move_voltage(-intakeVoltage);} //1: reverse
+        else if(intakeState == 2 || intakeState == 3 || intakeState == 5){intake.move_voltage(intakeVoltage);} //2: blind intake; 3: color sort; 5: wait until ring
+        else if(intakeState == 4){ //4: color sorting
             exitcode = 0;
             while(exitcode == 0){
                 rawColors = opticalSensor.get_raw();
                 std::cout << rawColors.red << ", " << rawColors.blue;
                 distanceSensed = distanceSensor.get();
-                if(distanceSensor.get() > sortDistance){exitcode = 1;}
-                else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;}
-                else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;}
+                if(distanceSensed > sortDistance){exitcode = 1;} //ring passed color sorting
+                else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
+                else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
                 else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
                 else if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
                 delay(10);
             }
-            if(exitcode == 1){intakeState = 9;}
-            else if(exitcode == 2){
+            if(exitcode == 1){intakeState = 3;} //ring passed color sorting
+            else if(exitcode == 2){ //sort flagged ring
                 delay(sortDelay1);
                 intake.move_voltage(-intakeVoltage);
                 delay(sortDelay2);
-                intakeState = 9;
-                std::cout << "sorted this one out";
+                intakeState = 3;
             }
-            else if(exitcode > 2){intakeState = exitcode - 3;}
+            else if(exitcode > 2){intakeState = exitcode - 3;} //button exit to corresponding state
         }
+
+
+        //& Wall Mech State Guide:
+        //& 0: idle
+        //& 1: loading A
+        //& 2: loading B
+        //& 3: scoring
+
+        //* wall mech state transition control
+        if(controller.get_digital_new_press(DIGITAL_L1)){ //forward one state
+            if(wallMechState < 3){wallMechState += 1;}
+            else{wallMechState = 0;}
+        }
+
+        //* wall mech state execution control
+        if(wallMechState == 0){
+            if(wallMechPotentiometer.get_angle() > idleHighLimit){wallMech.move_voltage(-wallMechVoltage);}
+            else{wallMech.brake();}
+        }
+        else if(wallMechState == 1){
+            if(wallMechPotentiometer.get_angle() < loadingALowLimit){wallMech.move_voltage(wallMechVoltage);}
+            else if(wallMechPotentiometer.get_angle() > loadingAHighLimit){wallMech.move_voltage(-wallMechVoltage);}
+            else{wallMech.brake();}
+        }
+        else if(wallMechState == 2){
+            if(wallMechPotentiometer.get_angle() < loadingBLowLimit){wallMech.move_voltage(wallMechVoltage);}
+            else if(wallMechPotentiometer.get_angle() > loadingBHighLimit){wallMech.move_voltage(-wallMechVoltage);}
+            else{wallMech.brake();}
+        }
+        else if(wallMechState == 3){
+            if(wallMechPotentiometer.get_angle() < scoringLowLimit){wallMech.move_voltage(wallMechVoltage);}
+            else{wallMech.brake();}
+        }
+
         delay(10);
     }
 }

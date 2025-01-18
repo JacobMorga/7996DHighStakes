@@ -17,6 +17,8 @@ extern Motor_Group drivetrain;
 extern Motor intakeTop;
 extern Motor intakeBottom;
 extern Motor_Group intake;
+extern Motor wallMech;
+extern ADIPotentiometer wallMechPotentiometer;
 
 extern Rotation xTracking;
 extern Rotation yTracking;
@@ -26,7 +28,8 @@ extern IMU inertial2;
 extern IMU inertial3;
 
 extern ADIPort backClaw;
-extern ADIPort clearer;
+extern ADIPort rightClearer;
+extern ADIPort leftClearer;
 
 extern Optical opticalSensor;
 extern Distance distanceSensor;
