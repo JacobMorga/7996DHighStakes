@@ -113,21 +113,21 @@ void runIntakeAndWallMech(){
         }
 
         //* wall mech state execution control
-        if(wallMechState == 0){
+        if(wallMechState == 0){ //move until in idle zone
             if(wallMechPotentiometer.get_angle() > idleHighLimit){wallMech.move_voltage(-wallMechVoltage);}
             else{wallMech.brake();}
         }
-        else if(wallMechState == 1){
+        else if(wallMechState == 1){ //move until in loading A zone
             if(wallMechPotentiometer.get_angle() < loadingALowLimit){wallMech.move_voltage(wallMechVoltage);}
             else if(wallMechPotentiometer.get_angle() > loadingAHighLimit){wallMech.move_voltage(-wallMechVoltage);}
             else{wallMech.brake();}
         }
-        else if(wallMechState == 2){
+        else if(wallMechState == 2){ //move until in loading B zone
             if(wallMechPotentiometer.get_angle() < loadingBLowLimit){wallMech.move_voltage(wallMechVoltage);}
             else if(wallMechPotentiometer.get_angle() > loadingBHighLimit){wallMech.move_voltage(-wallMechVoltage);}
             else{wallMech.brake();}
         }
-        else if(wallMechState == 3){
+        else if(wallMechState == 3){ //move until in scoring zone
             if(wallMechPotentiometer.get_angle() < scoringLowLimit){wallMech.move_voltage(wallMechVoltage);}
             else{wallMech.brake();}
         }
