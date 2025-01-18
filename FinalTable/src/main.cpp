@@ -16,9 +16,9 @@ void initialize() {
 	drive5.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST); //? is this on purpose?
+	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
 	wallMech.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	
+
 	inertial1.reset();
 	inertial2.reset();
 	inertial3.reset();
