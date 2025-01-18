@@ -41,24 +41,9 @@ const bool on = 1;
 const bool off = 0;
 const float reverse = 1.0;
 
-template <typename anyVar>
-float to_float (anyVar num){
-
-    return static_cast<float>(num);
-}
-
-template <typename anyVar>
-anyVar returnSmaller (anyVar x, anyVar y){
-
+float returnSize (float x, float y){
     if (x < y){ return x; } // x is smaller
     else { return y; } // y is smaller or equal
-}
-
-template <typename anyVar>
-anyVar returnBigger (anyVar x, anyVar y){
-
-    if (x > y){ return x; } // x is bigger
-    else { return y; } // y is bigger or equal
 }
 
 float getDir(float input){
@@ -122,68 +107,12 @@ float arctan2(float x, float y){
     return a;
 }
 
-/*
-float arctan2(float x, float y){
-    float a = 0.0;
-    if (x > 0.0){
-        a = (atan(y / x));
-    }
-    else if (x < 0.0){
-        a = (atan(y / x) + pi);
-    }
-    else if (x == 0.0){
-        if (y > 0){
-            a = (pi / 2.0);
-        }
-        if (y < 0){
-            a = (1.5 * pi);
-        }
-    }
-    return a;
-}
-*/
-
 float normAngle(float angle){
     while (angle > pi){angle -= 2.0 * pi;}
     while (angle < -pi){angle += 2.0 * pi;}
-    //return angle;
-}
-
-float normAngle2(float angle){
-    angle = (pi / 2.0) - (angle / 180.0 * pi);
-    while (angle > (2.0 * pi)) { angle -= 2.0 * pi; } 
-    while (angle < 0.0) { angle += 2.0 * pi; }
     return angle;
 }
 
-float normAngle3(float angle){
-    while (angle > pi){angle -= 2.0 * pi;}
-    while (angle < -pi){angle += 2.0 * pi;}
-    return angle;
-}
-
-template <typename anyVar>
-void printToBrain(int lineNum, anyVar input){
-    
-    lcd::set_text(lineNum, std::to_string(input));
-}
-
-template <typename anyVar>
-void printToConsole(anyVar name, anyVar input){
-
-    cout << name << ": " << input << "\n";
-}
-
-template <typename anyVar>
-void printPointToConsole(anyVar name, anyVar x, anyVar y){
-
-    cout << name << ": " << "{" << x << ", " << y << "}" << "\n";
-}
-
-void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
-
-    pros::c::screen_print_at(txtFmt,x,y,text);
-}
 
 int timer; // ms
 void motorTesting (){

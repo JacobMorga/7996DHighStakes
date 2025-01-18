@@ -5,27 +5,29 @@ const float yWheelDiameter = 2.739546; //calculated
 
 const float xWheelOffset = 3.069875; //calculated
 const float yWheelOffset = -4.126149; //calculated
-float deltaXWheel = 0.0;
-float deltaYWheel = 0.0;
-float currentXPosition = 0.0;
-float currentYPosition = 0.0;
-float previousXPosition = 0.0;
-float previousYPosition = 0.0;
-float tPos = 0.0;
-float previousTheta = 0.0;
-float deltaTheta = 0.0;
-float deltaXLocal = 0.0;
-float deltaYLocal = 0.0;
-float avgTheta = 0.0;
-float deltaRLocal = 0.0;
-float deltaThetaLocal = 0.0;
-float modTheta = 0.0;
-float deltaXGlobal = 0.0;
-float deltaYGlobal = 0.0;
-float xPos = 0.0;
-float yPos = 0.0;
-float calXDia = 0.0;
-float calYDia = 0.0;
+
+// Initialization variables
+    float deltaXWheel = 0.0;
+    float deltaYWheel = 0.0;
+    float currentXPosition = 0.0;
+    float currentYPosition = 0.0;
+    float previousXPosition = 0.0;
+    float previousYPosition = 0.0;
+    float tPos = 0.0;
+    float previousTheta = 0.0;
+    float deltaTheta = 0.0;
+    float deltaXLocal = 0.0;
+    float deltaYLocal = 0.0;
+    float avgTheta = 0.0;
+    float deltaRLocal = 0.0;
+    float deltaThetaLocal = 0.0;
+    float modTheta = 0.0;
+    float deltaXGlobal = 0.0;
+    float deltaYGlobal = 0.0;
+    float xPos = 0.0;
+    float yPos = 0.0;
+    float calXDia = 0.0;
+    float calYDia = 0.0;
 
 void odometry(void){
     previousXPosition = 0.0;

@@ -1,6 +1,6 @@
 #include "main.h"
 using namespace std;
-/*
+
 int counter;
 vector<vector<float>> shiftedPath = {};
 vector<vector<float>> intersectionPoints = {};
@@ -88,4 +88,3 @@ vector<float> bestIntersection (vector<vector<float>> path){
 
     return intersectionPoints.back(); // Returns last point in list
 }
-*/

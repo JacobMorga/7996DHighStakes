@@ -17,23 +17,6 @@ int faceHeadingLoops = 0; //i think these could all be one counter
 int facePointLoops = 0;
 int turnByLoops = 0;
 
-void faceHeading(float tTar){
-    faceHeadingLoops = 0;
-    while (faceHeadingLoops < 10){
-        tError = normAngle(tTar - tPos);
-        tInt += tError;
-        //if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
-        tDer = tError - tPrevError;
-        tPrevError = tError;
-        tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_voltage(20.0 * tPow);
-        leftDrive.move_voltage(-20.0 * tPow);
-        if (fabs(tError) <= 0.01){faceHeadingLoops += 1;} //about 0.5 degrees
-        else{faceHeadingLoops = 0;}
-        delay(10);
-    }
-}
-
 int exitLoops = 0;
 void faceHeading2 (float tTar){ //$ THIS IS NOT MATH HEADING IT WILL TRY TO FACE WHAT EVER
                                 //$ DEGREES YOU PUT IN 0 BEING HEADING YOU CALIBRATED AT
@@ -84,7 +67,7 @@ void facePoint2(float xTar, float yTar){ //$ DONE ##############################
     while (facePointLoops < 25){
         tPos = (pi / 2.0) - tPos;
         tTarget = arctan2(xTar - xPos, yTar - yPos);
-        tError = normAngle3(tTarget - tPos);
+        tError = normAngle(tTarget - tPos);
         tInt += tError;
         if (fabs(tError) >= tErrorMax || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
         tDer = tError - tPrevError;
@@ -213,7 +196,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
 
         tPos = (pi / 2.0) - tPos + pi * reversed;
         tTarget = arctan2(xTar - xPos, yTar - yPos);
-        tError = normAngle3(tTarget - tPos);
+        tError = normAngle(tTarget - tPos);
 
 
         tInt += tError;
