@@ -36,6 +36,21 @@
 
 #include "api.h"
 
+#include "iostream"
+#include "math.h"
+#include "vector"
+//#include "string"
+
+#include "autonSelector.h"
+#include "driverCont.h"
+#include "general.h"
+#include "autonSelector.h"
+#include "driverCont.h"
+#include "motionAlgs.h"
+#include "odometry.h"
+#include "purePursuit.h"
+#include "auton.h"
+
 /**
  * You should add more #includes here
  */

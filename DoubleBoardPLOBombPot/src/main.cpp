@@ -36,7 +36,6 @@ void initialize() {
 	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
 
-
 	inertial1.reset();
 	inertial2.reset();
 	inertial3.reset();
