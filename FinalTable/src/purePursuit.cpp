@@ -1,90 +1,96 @@
 #include "main.h"
 using namespace std;
 
-int counter;
-vector<vector<float>> shiftedPath = {};
-vector<vector<float>> intersectionPoints = {};
-float x1,y1,x2,y2;
-float intersectionX1,intersectionY1,intersectionX2,intersectionY2;
+int index;
+vector<coordinate> shiftedPath = {};
+vector<coordinate> intersectionPoints = {};
+
 float diffX,diffY,R,D;
 
 float lookAheadDis = 8.0;
 float intersectionCount;
+float int1Dist,int2Dist;
 
 bool intersection1Check, intersection2Check = true;
 
-vector<float> bestIntersection (vector<vector<float>> path){
+struct coordinate {
+
+    float x;
+    float y;
+};
+
+coordinate findBestIntersections (vector<coordinate> path){
 
     shiftedPath.clear();
 
-    for (vector<float> point : path){
+    for (coordinate point : path){
 
-        shiftedPath.push_back({point[0] - xPos, point[1] - yPos}); // Shifts the point to put the robot on the origin
+        coordinate shiftedPoint;
+        shiftedPoint.x = point.x - xPos;
+        shiftedPoint.y = point.y - yPos;
+
+        shiftedPath.push_back(shiftedPoint); // Shifts the point to put the robot position on the origin
     }
 
-    counter = 0;
+    index = 0; // Lines distance along the path
 
     intersectionPoints.clear(); // Erases points
 
-    while(counter < shiftedPath.size() - 1){ // Checks intersections for each pair of lines
+    while(index < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
         intersection1Check = true;  // All good on intersection checks
         intersection2Check = true;
 
-        x1 = shiftedPath[counter][0]; // Retrives x and y for each point and the next one
-        y1 = shiftedPath[counter][1];
-        x2 = shiftedPath[counter + 1][0];
-        y2 = shiftedPath[counter + 1][1];
+        coordinate startPoint;
+        startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point 
+        startPoint.y = shiftedPath[index].y; 
 
-        diffX = x2-x1;
-        diffY = y2-y1;
+        coordinate endPoint;
+        endPoint.x = shiftedPath[index + 1].x;
+        endPoint.y = shiftedPath[index + 1].y;
 
-        R = distance(x1,y1,x2,y2);
-        D = x1*y2 - x2*y1;
+        diffX = endPoint.x-startPoint.x;
+        diffY = endPoint.y-startPoint.y;
+        R = distance(startPoint.x,startPoint.y,endPoint.x,endPoint.y);
+        D = startPoint.x*endPoint.y - endPoint.x*startPoint.y;
 
-        intersectionX1 = (D * diffY + getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0); // Calculates intersection points
-        intersectionY1 = (-D * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
+        coordinate int1; // first possible intersection
+        int1.x = (D * diffY + getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0); // Calculates intersection points
+        int1.y = (-D * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
-        intersectionX2 = (D * diffY - getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
-        intersectionY2 = (-D * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
+        coordinate int2; // second possible intersection
+        int2.x = (D * diffY - getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
+        int2.y = (-D * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
-        // Runs through checks and appends best intersection last
+        // Runs through checks to ensure intersection is on path
+        if (isnan(int1.x)){ intersection1Check = false; intersection2Check = false;} // Check if there is an intersection
 
-        if (isnan(intersectionX1) || isnan(intersectionY1)){ intersection1Check = false;} // Check if there is an intersection
-        if (isnan(intersectionX2) || isnan(intersectionY2)){ intersection2Check = false;}
+        if (int1.x == int2.x && int1.y == int2.y){ intersection2Check = false; } // Check if they are the same point
 
-        if (intersectionX1 == intersectionX2 && intersectionY1 == intersectionY2){ intersection2Check = false; } // Check if they are the same point
+        if ( (int1.x > startPoint.x && int1.x > endPoint.x) || (int1.x < startPoint.x && int1.x < endPoint.x)){ intersection1Check = false; } // Checks if the intersection is within bounds
+        if ( (int2.x > startPoint.x && int2.x > endPoint.x) || (int2.x < startPoint.x && int2.x < endPoint.x)){ intersection2Check = false; }
 
-        if ( (intersectionX1 > x1 && intersectionX1 > x2) || (intersectionX1 < x1 && intersectionX1 < x2)){ intersection1Check = false; } // Checks if the intersection is within bounds
-        if ( (intersectionX2 > x1 && intersectionX2 > x2) || (intersectionX2 < x1 && intersectionX2 < x2)){ intersection2Check = false; }
 
-        // Return best point
-        if (intersection1Check == true && intersection2Check == true){ // If two intersections then append one closer to end of line
-            if (distance(intersectionX1,intersectionY1,x2,y2) < distance(intersectionX2,intersectionY2,x2,y2)){ 
-                intersectionPoints.push_back({intersectionX1, intersectionY1}); 
-            }
-            else { intersectionPoints.push_back({intersectionX2, intersectionY2}); }
+        // Select best point
+        if (intersection1Check == true && intersection2Check == true){ // If 2 intersections return one closer to the end point
+            
+            if (distance(int1.x,int1.y,endPoint.x,endPoint.y) < distance(int2.x,int2.y,endPoint.x,endPoint.y)){ intersectionPoints.push_back(int1); }
+            else{ intersectionPoints.push_back(int2); }
         }
-        else if (intersection1Check == true && intersection2Check == false){ // If only one intersection check if end point is in lookahead distance
-            if (distance(intersectionX1,intersectionY1,x2,y2) < distance(xPos,yPos,x2,y2)){ 
-                intersectionPoints.push_back({intersectionX1, intersectionY1}); 
-            }
-            else { intersectionPoints.push_back({x2, y2}); }
+        else if (intersection1Check == true && intersection2Check == false){ // If 1 intersections return unless end point is within look ahead dist
+            
+            if (distance(xPos,yPos,endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            else{ intersectionPoints.push_back(int1); }
         }
-        else if (intersection1Check == false && intersection2Check == true){ // If only one intersection check if end point is in lookahead distance 
-            if (distance(intersectionX2,intersectionY2,x2,y2) < distance(xPos,yPos,x2,y2)){ 
-                intersectionPoints.push_back({intersectionX2, intersectionY2}); 
-            }
-            else { intersectionPoints.push_back({x2, y2}); }
+        else if (intersection1Check == false && intersection2Check == true){ // If 1 intersections return unless end point is within look ahead dist
+            
+            if (distance(xPos,yPos,endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            else{ intersectionPoints.push_back(int2); }
         }
-        else{ // If no intersections check if endpoint is within lookahead distance
-            if (distance(xPos,yPos,x2,y2) < lookAheadDis){
-                intersectionPoints.push_back({x2, y2});
-            }
-        }
+        else{} // Don't append anything
 
-        counter++;
+        index ++;
     }
 
-    return intersectionPoints.back(); // Returns last point in list
+    return intersectionPoints.back();
 }
