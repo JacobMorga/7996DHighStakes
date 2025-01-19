@@ -13,12 +13,6 @@ float int1Dist,int2Dist;
 
 bool intersection1Check, intersection2Check = true;
 
-struct coordinate {
-
-    float x;
-    float y;
-};
-
 coordinate findBestIntersections (vector<coordinate> path){
 
     shiftedPath.clear();

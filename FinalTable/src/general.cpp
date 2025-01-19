@@ -37,6 +37,12 @@ ADIPort leftClearer ('H', ADI_DIGITAL_OUT);
 Optical opticalSensor(10);
 Distance distanceSensor(8);
 
+struct coordinate {
+
+    float x;
+    float y;
+};
+
 //Constants
 const float pi = 3.1415927410125732421875; // Cir/Dia
 const bool pressed = 1;
