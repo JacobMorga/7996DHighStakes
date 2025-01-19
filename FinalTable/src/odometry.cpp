@@ -28,6 +28,7 @@ const float yWheelOffset = -4.126149; //calculated
     float yPos = 0.0;
     float calXDia = 0.0;
     float calYDia = 0.0;
+    float pseudoVelocity = 0.0;
 
 void odometry(void){
     previousXPosition = 0.0;
@@ -73,24 +74,7 @@ void odometry(void){
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
 
-        //lcd::set_text(0, std::to_string(xPos));
-        //lcd::set_text(1, std::to_string(yPos));
-        //lcd::set_text(2, std::to_string(tPos / pi * 180.0));
-
-        /*
-        calXDia = 120.0 / (currentXPosition / 36000.0) / pi;
-        calYDia = 120.0 / (currentYPosition / 36000.0) / pi;
-        
-        lcd::set_text(4, std::to_string(calXDia));
-        lcd::set_text(5, std::to_string(calYDia));
-        */
-
-        
-        //lcd::set_text(4, std::to_string(deltaXLocal));
-        //lcd::set_text(5, std::to_string(deltaYLocal));
-        //lcd::set_text(6, std::to_string(deltaXGlobal));
-        //lcd::set_text(7, std::to_string(deltaYGlobal));
-        
+        pseudoVelocity = sqrtf(powf(deltaXGlobal, 2.0) + powf(deltaYGlobal, 2.0)); //distance travelled in last loop
 
         delay(10);
     }

@@ -13,7 +13,7 @@ void bluePositive(){ //currently copied and pasted from redpositive then all x c
     toPoint(xPos - 8.0, yPos, 1, 1); // get ready to grab goal
     rotKP = 220.0;
     delay(250);
-	facePoint2(2.0 * xPos + 24.0, 2.0 * yPos - 48.0); //back to goal
+	facePoint(2.0 * xPos + 24.0, 2.0 * yPos - 48.0); //back to goal
 	toPoint(-24.5, 43.0, 1, 0);//(24.0, 43.5); //drive to goal
 	backClaw.set_value(1);
     delay(500); //let back claw grab the dang goal
@@ -22,7 +22,7 @@ void bluePositive(){ //currently copied and pasted from redpositive then all x c
 	toPoint(0.0, -6.0, 1, 1); //drive to place first goal
     rotKP = 220.0;
     backClaw.set_value(0);
-    facePoint2(xPos - 12.0, yPos); //point left
+    facePoint(xPos - 12.0, yPos); //point left
     intakeState = 5; //! THIS ONE TOO
     toPoint(-28.0, -8.5, 0, 0); //intake preload
     delay(500);
@@ -33,9 +33,9 @@ void bluePositive(){ //currently copied and pasted from redpositive then all x c
     delay(100); //to grab the thing
     intakeState = 2;
     //intakeState = 3;
-    facePoint2(24.0, 24.0);
+    facePoint(24.0, 24.0);
     delay(500); //dropping onto second goal
-    clearer.set_value(1);
+    rightClearer.set_value(1);
     rightDrive.move_velocity(150.0);
     leftDrive.move_velocity(150.0);
     delay(1000);
@@ -68,7 +68,7 @@ void redPositive(){
     toPoint(xPos + 8.0, yPos, 1, 1); // get ready to grab goal
     rotKP = 220.0;
     while (intakeState == 5){delay(10.0);}delay(350);
-	facePoint2(2.0 * xPos - 24.0, 2.0 * yPos - 48.0); //back to goal
+	facePoint(2.0 * xPos - 24.0, 2.0 * yPos - 48.0); //back to goal
 	toPoint(24.5, 41.5, 1, 0);//(24.0, 43.5); //drive to goal
 	backClaw.set_value(1);
     delay(500); //let back claw grab the dang goal
@@ -76,7 +76,7 @@ void redPositive(){
     rotKP = 350.0; //50
 	toPoint(12.0, -6.0, 0, 1); //drive to place first goal
     rotKP = 220.0;
-    facePoint2(xPos + 12.0, yPos + 12.0); //point to 45deg
+    facePoint(xPos + 12.0, yPos + 12.0); //point to 45deg
     backClaw.set_value(0);
     intakeState = 5;
     toPoint(28.0, -10.5, 0, 0); //intake preload
@@ -88,9 +88,9 @@ void redPositive(){
     delay(100); //to grab the thing
     intake.move_voltage(11000.0);
     intakeState = 3;
-    facePoint2(-24.0, 24.0);
+    facePoint(-24.0, 24.0);
     delay(500); //dropping onto second goal
-    clearer.set_value(1);
+    rightClearer.set_value(1);
     rightDrive.move_velocity(150.0);
     leftDrive.move_velocity(150.0);
     delay(1000);
