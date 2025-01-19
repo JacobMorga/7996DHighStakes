@@ -37,6 +37,12 @@ ADIPort leftClearer ('H', ADI_DIGITAL_OUT);
 Optical opticalSensor(10);
 Distance distanceSensor(8);
 
+struct coordinate {
+
+    float x;
+    float y;
+};
+
 //Constants
 const float pi = 3.1415927410125732421875; // Cir/Dia
 const bool pressed = 1;
@@ -90,7 +96,7 @@ float getAngle(void){
 
 float distance(float x1, float y1, float x2, float y2){
 
-    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0));
+    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0)); 
 }
 
 // Arc Tan 2 Function
