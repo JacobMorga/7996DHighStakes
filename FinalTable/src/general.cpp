@@ -102,7 +102,7 @@ float distance(float x1, float y1, float x2, float y2){
 // Arc Tan 2 Function
 
 float a;
-float arctan2(float x, float y){
+float arctan2(float x, float y){ //returns angle from positive x axis on (-pi, pi]
     a = 0.0;
     if (x > 0.0){a = atan(y / x);}
     else if (x < 0.0){
@@ -111,7 +111,7 @@ float arctan2(float x, float y){
     }
     else{
         if (y > 0.0){a = pi / 2.0;}
-        else if (y < 0.0){a = -3.0 * pi / 2.0;}
+        else if (y < 0.0){a = -pi / 2.0;}
         else{a = 0.0;}
     }
     return a;
