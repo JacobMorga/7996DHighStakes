@@ -30,6 +30,11 @@ coordinate findBestIntersection (vector<coordinate> path){
 
     intersectionPoints.clear(); // Erases points
 
+    coordinate startingPoint;
+    startingPoint.x = shiftedPath[0].x;
+    startingPoint.y = shiftedPath[0].y;
+    intersectionPoints.push_back(startingPoint);
+
     while(index < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
         intersection1Check = true;  // All good on intersection checks
@@ -89,14 +94,19 @@ coordinate findBestIntersection (vector<coordinate> path){
     return intersectionPoints.back();
 }
 
-bool runPP = true;
+float PPkp = 0.0;
+float PPtkp = 0.0;
+
+int runPP = 0;
 float tToTarget = 0.0;
-float tError = 0.0;
-float lError = 0.0;
+float tError,lError = 0.0;
+float rightPow,leftPow = 0.0;
+
 coordinate followPoint;
 void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
 
-    while (runPP == true){
+    runPP = 0;
+    while (runPP < 50){
 
         followPoint = findBestIntersection(path); //? This is actually not a point but the difference in the robots position and the follow point
 
@@ -105,8 +115,28 @@ void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
 
         lError = pythagThisJohn(followPoint.x, followPoint.y) * cos(tError); // Distance from the target scaled by the difference in angle
 
-        
+        rightPow = lError * PPkp + tError * PPtkp;
+        leftPow = lError * PPkp - tError * PPtkp;
 
+        if (fabs(rightPow) >= 12000.0|| fabs(leftPow) >= 12000.0){ // If power is over max value scale both sides
+            if (fabs(rightPow) > fabs(leftPow)){
+                rightPow = getDir(rightPow) * 12000.0;
+                leftPow = getDir(leftPow) * fabs(12000.0 * (leftPow) / (rightPow));
+            }
+            else{
+                rightPow = getDir(rightPow) * fabs(600.0 * (rightPow) / (leftPow));
+                leftPow = getDir(leftPow) * 600.0;
+            }
+        }
+
+        rightDrive.move_voltage(rightPow); // Moves motors
+        leftDrive.move_voltage(leftPow);
+
+        delay(10);
+
+        if (pseudoVelocity < 0.25){
+            runPP ++;
+        }
+        else { runPP = 0; }
     }
-
 }
