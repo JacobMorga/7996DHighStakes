@@ -81,10 +81,8 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
     maxDist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
     while (toPointLoops < 50){
 
-        tPos = (pi / 2.0) - tPos + pi * reversed;
+        tPos = (pi / 2.0) - tPos + pi * reversed; //! UN FRANK THIS BAD
         tTarget = arctan2(xTar - xPos, yTar - yPos);
-        tError = normAngle(tTarget - tPos);
-
 
         tInt += tError;
         //if (fabs(tError) <= tErrorMin || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
@@ -93,7 +91,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
 
         dist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
-        lError = (1 - 2.0 * reversed) * dist * cos(tError);
+        lError = (1.0 - 2.0 * reversed) * dist * cos(tError);
         lInt += lError;
         //if (fabs(lError) <= lErrorMin || fabs(lInt) >= lIntMax){lInt = 0.0;} //*tune linKI first
         lDer = lError - lPrevError;
@@ -108,7 +106,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         rightPow = lPow + tWeight * tPow;
         leftPow = lPow - tWeight * tPow;
 
-        if (fabs(rightPow) >= 600.0 || fabs(leftPow) >= 600.0){ //! CHANGED ALL 12000 TO 600 FOR RPM INSTEAD OF VOLTS
+        if (fabs(rightPow) >= 600.0 || fabs(leftPow) >= 600.0){ //! CHANGED ALL 12000 TO  FOR RPM INSTEA600D OF VOLTS
             if (fabs(rightPow) > fabs(leftPow)){
                 rightPow = getDir(lPow + tWeight * tPow) * 600.0;
                 leftPow = getDir(lPow - tWeight * tPow) * fabs(600.0 * (lPow - tWeight * tPow) / (lPow + tWeight * tPow));

@@ -13,7 +13,7 @@ float int1Dist,int2Dist;
 
 bool intersection1Check, intersection2Check = true;
 
-coordinate findBestIntersections (vector<coordinate> path){
+coordinate findBestIntersection (vector<coordinate> path){
 
     shiftedPath.clear();
 
@@ -87,4 +87,26 @@ coordinate findBestIntersections (vector<coordinate> path){
     }
 
     return intersectionPoints.back();
+}
+
+bool runPP = true;
+float tToTarget = 0.0;
+float tError = 0.0;
+float lError = 0.0;
+coordinate followPoint;
+void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
+
+    while (runPP == true){
+
+        followPoint = findBestIntersection(path); //? This is actually not a point but the difference in the robots position and the follow point
+
+        tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
+        tError = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
+
+        lError = pythagThisJohn(followPoint.x, followPoint.y) * cos(tError); // Distance from the target scaled by the difference in angle
+
+        
+
+    }
+
 }

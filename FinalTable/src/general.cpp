@@ -99,6 +99,11 @@ float distance(float x1, float y1, float x2, float y2){
     return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0)); 
 }
 
+float pythagThisJohn (float a, float b){
+
+    return sqrt(pow(a, 2.0) + pow(b, 2.0));
+}
+
 // Arc Tan 2 Function
 
 float a;
