@@ -37,14 +37,14 @@ ADIPort leftClearer ('H', ADI_DIGITAL_OUT);
 Optical opticalSensor(10);
 Distance distanceSensor(8);
 
-struct coordinate {
+struct coord {
 
     float x;
     float y;
 
     // Constructors
-    coordinate();
-    coordinate(float xIN, float yIN){
+    coord();
+    coord(float xIN, float yIN){
         x = xIN;
         y = yIN;
     }

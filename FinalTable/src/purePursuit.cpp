@@ -2,23 +2,23 @@
 using namespace std;
 
 int index;
-vector<coordinate> shiftedPath = {};
-vector<coordinate> intersectionPoints = {};
+vector<coord> shiftedPath = {};
+vector<coord> intersectionPoints = {};
 
 float diffX,diffY,R,D;
 
 float lookAheadDis = 8.0;
 float int1Dist,int2Dist = 0.0;
 bool intersection1Check, intersection2Check = true;
-coordinate lastKnownIntersection;
+coord lastKnownIntersection;
 
-coordinate findBestIntersection (vector<coordinate> path){
+coord findBestIntersection (vector<coord> path){
 
     shiftedPath.clear();
 
-    for (coordinate point : path){
+    for (coord point : path){
 
-        shiftedPath.push_back(coordinate(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
+        shiftedPath.push_back(coord(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
     }
 
     index = 0; // Lines distance along the path
@@ -41,11 +41,11 @@ coordinate findBestIntersection (vector<coordinate> path){
         intersection1Check = true;  // Resets intersection checks
         intersection2Check = true;
 
-        coordinate startPoint;
+        coord startPoint;
         startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point of line
         startPoint.y = shiftedPath[index].y; 
 
-        coordinate endPoint;
+        coord endPoint;
         endPoint.x = shiftedPath[index + 1].x;
         endPoint.y = shiftedPath[index + 1].y;
 
@@ -54,11 +54,11 @@ coordinate findBestIntersection (vector<coordinate> path){
         R = distance(startPoint.x,startPoint.y,endPoint.x,endPoint.y);
         D = startPoint.x*endPoint.y - endPoint.x*startPoint.y;
 
-        coordinate int1; // first possible intersection
+        coord int1; // first possible intersection
         int1.x = (D * diffY + getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0); // Calculates intersection points
         int1.y = (-D * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
-        coordinate int2; // second possible intersection
+        coord int2; // second possible intersection
         int2.x = (D * diffY - getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
         int2.y = (-D * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
@@ -103,8 +103,8 @@ float tToTarget = 0.0;
 float tError,lError = 0.0;
 float rightPow,leftPow = 0.0;
 
-coordinate followPoint;
-void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
+coord followPoint;
+void doThePurePursuit (coord followPoint, vector<coord> path){
 
     runPP = 0;
     while (runPP < 50){
@@ -116,7 +116,7 @@ void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
 
         lError = pythagThisJohn(followPoint.x, followPoint.y) * cos(tError); // Distance from the target scaled by the difference in angle
 
-        rightPow = lError * PPkp + tError * PPtkp;
+        rightPow = lError * PPkp + tError * PPtkp; // Multiply each error by their tuning values
         leftPow = lError * PPkp - tError * PPtkp;
 
         if (fabs(rightPow) >= 12000.0|| fabs(leftPow) >= 12000.0){ // If power is over max value scale both sides
@@ -135,19 +135,13 @@ void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
 
         delay(10);
 
-        if (pseudoVelocity < 0.25){
+        if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
             runPP++;
         }
         else { runPP = 0; }
     }
 }
 
-void bezierCurve(coordinate p1, coordinate p2, coordinate p3, coordinate p4, coordinate p5){
+void bezierCurve(coord p1, coord p2, coord p3, coord p4, coord p5){
 
-}
-
-void bezierCurve(coordinate p1, coordinate p2, coordinate p3, coordinate p4, coordinate p5){
-
-
-    
 }
