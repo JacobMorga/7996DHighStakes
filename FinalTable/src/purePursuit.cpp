@@ -8,10 +8,9 @@ vector<coordinate> intersectionPoints = {};
 float diffX,diffY,R,D;
 
 float lookAheadDis = 8.0;
-float intersectionCount;
-float int1Dist,int2Dist;
-
+float int1Dist,int2Dist = 0.0;
 bool intersection1Check, intersection2Check = true;
+coordinate lastKnownIntersection;
 
 coordinate findBestIntersection (vector<coordinate> path){
 
@@ -19,29 +18,31 @@ coordinate findBestIntersection (vector<coordinate> path){
 
     for (coordinate point : path){
 
-        coordinate shiftedPoint;
-        shiftedPoint.x = point.x - xPos;
-        shiftedPoint.y = point.y - yPos;
-
-        shiftedPath.push_back(shiftedPoint); // Shifts the point to put the robot position on the origin
+        shiftedPath.push_back(coordinate(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
     }
 
     index = 0; // Lines distance along the path
 
-    intersectionPoints.clear(); // Erases points
-
-    coordinate startingPoint;
-    startingPoint.x = shiftedPath[0].x;
-    startingPoint.y = shiftedPath[0].y;
-    intersectionPoints.push_back(startingPoint);
+    if (intersectionPoints.size() == 0){ // First loop
+        lastKnownIntersection.x = shiftedPath[0].x; // Beginning of path
+        lastKnownIntersection.y = shiftedPath[0].y;
+        intersectionPoints.clear(); // Erases points
+        intersectionPoints.push_back(lastKnownIntersection); // Pushed back frist - returns if no intersections found
+    }
+    else { 
+        lastKnownIntersection.x = intersectionPoints.back().x; // Last known intersection
+        lastKnownIntersection.y = intersectionPoints.back().y;
+        intersectionPoints.clear(); // Erases points
+        intersectionPoints.push_back(lastKnownIntersection); // Pushed back frist - returns if no intersections found
+    }
 
     while(index < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
-        intersection1Check = true;  // All good on intersection checks
+        intersection1Check = true;  // Resets intersection checks
         intersection2Check = true;
 
         coordinate startPoint;
-        startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point 
+        startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point of line
         startPoint.y = shiftedPath[index].y; 
 
         coordinate endPoint;
@@ -135,8 +136,18 @@ void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
         delay(10);
 
         if (pseudoVelocity < 0.25){
-            runPP ++;
+            runPP++;
         }
         else { runPP = 0; }
     }
+}
+
+void bezierCurve(coordinate p1, coordinate p2, coordinate p3, coordinate p4, coordinate p5){
+
+}
+
+void bezierCurve(coordinate p1, coordinate p2, coordinate p3, coordinate p4, coordinate p5){
+
+
+    
 }

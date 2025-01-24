@@ -41,6 +41,13 @@ struct coordinate {
 
     float x;
     float y;
+
+    // Constructors
+    coordinate();
+    coordinate(float xIN, float yIN){
+        x = xIN;
+        y = yIN;
+    }
 };
 
 //Constants

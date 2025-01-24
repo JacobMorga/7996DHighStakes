@@ -34,7 +34,7 @@ extern ADIPort leftClearer;
 extern Optical opticalSensor;
 extern Distance distanceSensor;
 
-struct coordinate{
+struct coordinate {
 
     float x;
     float y;
