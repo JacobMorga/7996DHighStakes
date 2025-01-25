@@ -142,6 +142,42 @@ void doThePurePursuit (coord followPoint, vector<coord> path){
     }
 }
 
-void bezierCurve(coord p1, coord p2, coord p3, coord p4, coord p5){
+vector<float> coefficentsBC; // List of coefficents used for generating points
+vector<coord> output; // List of points in path
+coord tempPoint; // Temporary variable to store each point value
 
+vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int n){ // Inputs 5 points and how many segments to split curve into: //$ https://www.desmos.com/calculator/syvdhic9aw
+
+    for (int i = 0; i <= n; i++){ // Pushes back each coefficent
+        coefficentsBC.push_back( to_float(i) / to_float(n) );
+    }
+
+    for (float w : coefficentsBC){
+
+        tempPoint.x = (pow(w,4.0) * (p5.x - 4.0*p4.x + 6.0*p3.x - 4.0*p2.x + p1.x)) + (4.0*pow(w,3.0) * (p4.x - 3.0*p3.x + 3.0*p2.x - p1.x)) + (6.0*pow(w,2.0) * (p3.x - 2.0*p2.x + p1.x)) + (4.0*w * (p2.x - p1.x)) + p1.x;
+        tempPoint.y = (pow(w,4.0) * (p5.y - 4.0*p4.y + 6.0*p3.y - 4.0*p2.y + p1.y)) + (4.0*pow(w,3.0) * (p4.y - 3.0*p3.y + 3.0*p2.y - p1.y)) + (6.0*pow(w,2.0) * (p3.y - 2.0*p2.y + p1.y)) + (4.0*w * (p2.y - p1.y)) + p1.y;
+        output.push_back(tempPoint);
+    }
+    return(output);
+}
+
+vector<float> coefficentsA1, coefficentsA2; // List of coefficents used for generating points of each arc
+vector<coord> arc1, arc2; // List of points for each arc solution
+vector<coord> arcJohn (coord p0, coord p1, coord p2, int n){ // Inputs previous point in path, start and end points, and number of segments  //$ https://www.desmos.com/calculator/leu0gcnwua
+
+
+    for (int i = 0; i <= n; i++){ // Pushes back each coefficent
+        coefficentsA1.push_back(m*i / to_float(n));
+    }
+    for (int i = 0; i <= n; i++){ // Pushes back each coefficent
+        coefficentsA2.push_back((m-2.0*pi) - i * ((2.0*pi - m) / to_float(n)));
+    }
+
+    for (float w : coefficentsA1){ // Calculates points of first arc
+
+    }
+
+    for (float w : coefficentsA2){ // Calculates points of second arc
+        
+    }
 }

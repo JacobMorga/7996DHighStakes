@@ -130,8 +130,14 @@ float arctan2(float x, float y){ //returns angle from positive x axis on (-pi, p
 }
 
 float normAngle(float angle){
-    while (angle > pi){angle -= 2.0 * pi;}
-    while (angle < -pi){angle += 2.0 * pi;}
+    while (angle > pi){angle -= 2.0*pi;}
+    while (angle < -pi){angle += 2.0*pi;}
+    return angle;
+}
+
+float normAngle2pi(float angle){
+    while (angle < 0){angle += 2.0*pi;}
+    while (angle > 2.0*pi){angle -= 2.0*pi;}
     return angle;
 }
 
