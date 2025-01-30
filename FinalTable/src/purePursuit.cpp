@@ -142,11 +142,13 @@ void doThePurePursuit (coord followPoint, vector<coord> path){
     }
 }
 
-vector<float> coefficentsBC; // List of coefficents used for generating points
+vector<float> coefficentsBC; // List of coefficents used for generating points (BC = Besier Curve)
 vector<coord> output; // List of points in path
 coord tempPoint; // Temporary variable to store each point value
 
 vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int n){ // Inputs 5 points and how many segments to split curve into: //$ https://www.desmos.com/calculator/syvdhic9aw
+
+    output.clear();
 
     for (int i = 0; i <= n; i++){ // Pushes back each coefficent
         coefficentsBC.push_back( to_float(i) / to_float(n) );
@@ -159,25 +161,4 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
         output.push_back(tempPoint);
     }
     return(output);
-}
-
-vector<float> coefficentsA1, coefficentsA2; // List of coefficents used for generating points of each arc
-vector<coord> arc1, arc2; // List of points for each arc solution
-vector<coord> arcJohn (coord p0, coord p1, coord p2, int n){ // Inputs previous point in path, start and end points, and number of segments  //$ https://www.desmos.com/calculator/leu0gcnwua
-
-
-    for (int i = 0; i <= n; i++){ // Pushes back each coefficent
-        coefficentsA1.push_back(m*i / to_float(n));
-    }
-    for (int i = 0; i <= n; i++){ // Pushes back each coefficent
-        coefficentsA2.push_back((m-2.0*pi) - i * ((2.0*pi - m) / to_float(n)));
-    }
-
-    for (float w : coefficentsA1){ // Calculates points of first arc
-
-    }
-
-    for (float w : coefficentsA2){ // Calculates points of second arc
-        
-    }
 }
