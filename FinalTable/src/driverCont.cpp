@@ -24,7 +24,12 @@ float wallMechVoltage = 12000.0; //mV
 
 float wallMechTarget = 0.0; // Target position for wall mech arm (Degrees)
 float WMError = 0.0; // Wall mech error
-float WMKp = 0.0; // Tuning value for wall mech P-loop
+float WMKp = 100.0; // tuned value for wall mech P-loop
+float WMKd = 700.0;
+float WMPosition = 0.0;
+float WMPreviousPos = 0.0;
+float WMDerivative = 0.0;
+float WMPower = 0.0;
 
 void runDriveCont (){
     while (1){
@@ -116,6 +121,7 @@ void runIntakeAndWallMech(){
             else{wallMechState = 0;}
         }
 
+        /*
         //* wall mech state execution control
         if(wallMechState == 0){ //move until in idle zone
             if(wallMechPotentiometer.get_angle() > idleHighLimit){wallMech.move_voltage(-wallMechVoltage);}
@@ -135,18 +141,29 @@ void runIntakeAndWallMech(){
             if(wallMechPotentiometer.get_angle() < scoringLowLimit){wallMech.move_voltage(wallMechVoltage);}
             else{wallMech.brake();}
         }
+        */
 
         //$ Wall Mech Code - runs one step of loop every driver cont
 
-        if (wallMechState = 0) { wallMechTarget = 10; }
-        if (wallMechState = 1) { wallMechTarget = 30; }
-        if (wallMechState = 2) { wallMechTarget = 40; }
-        if (wallMechState = 3) { wallMechTarget = 160; }
+        if (wallMechState == 0) { wallMechTarget = 2.0; }
+        else if (wallMechState == 1) { wallMechTarget = 100.0; }
+        else if (wallMechState == 2) { wallMechTarget = 150.0; }
+        else if (wallMechState == 3) { wallMechTarget = 410.0; }
 
-        WMError = wallMechTarget - wallMechPotentiometer.get_angle();
+        WMPosition = wallMech.get_position();
+        WMError = wallMechTarget - WMPosition;
+        WMDerivative = WMPreviousPos - WMPosition;
+        WMPower = WMKp * WMError + WMKd * WMDerivative;
+        WMPreviousPos = WMPosition;
+        lcd::set_text(4, std::to_string(WMError * WMKp));
+        lcd::set_text(5, std::to_string(WMError));
+        lcd::set_text(6, std::to_string(wallMechState));
+        lcd::set_text(7, std::to_string(wallMech.get_position()));
 
-        if (fabs(WMError) > 3){ wallMech.move_voltage(WMError * WMKp); } // If error is over 3 degrees then move
-        else { wallMech.brake(); } // Should be hold type of brake
+        //if (fabs(WMError) > 3.0){ wallMech.move_voltage(WMPower); } // If error is over 3 degrees then move
+        //else { wallMech.brake(); } // Should be hold type of brake
+        wallMech.move_voltage(WMPower);
+        if(controller.get_digital(DIGITAL_DOWN)){wallMech.move_voltage(0.0);}
 
         delay(10);
     }

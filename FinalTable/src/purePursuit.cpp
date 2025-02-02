@@ -1,6 +1,6 @@
 #include "main.h"
 using namespace std;
-
+/*
 int index;
 vector<coord> shiftedPath = {};
 vector<coord> intersectionPoints = {};
@@ -158,3 +158,4 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
     }
     return(output);
 }
+*/

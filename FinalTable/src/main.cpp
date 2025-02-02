@@ -17,7 +17,7 @@ void initialize() {
 	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
-	wallMech.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	wallMech.set_brake_mode(MOTOR_BRAKE_HOLD);
 
 	inertial1.reset();
 	inertial2.reset();
@@ -26,6 +26,7 @@ void initialize() {
 	xTracking.set_reversed(0); //!double check
 	yTracking.reset();
 	xTracking.reset();
+	wallMech.tare_position();
 
 	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
 	delay(500);
@@ -54,7 +55,7 @@ void autonomous() {
 	screen::fill_rect(0,0,480,240);
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
-	
+	/*
 	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos" );	redPositive();} // Runs auton based on auton selector output
 	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg" );	redNegative();} // And prints what auton its running
 	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos");	bluePositive();}
@@ -65,6 +66,7 @@ void autonomous() {
 	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
 	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
+	*/
 }
 
 void opcontrol() {
