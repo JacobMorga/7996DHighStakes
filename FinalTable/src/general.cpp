@@ -76,7 +76,7 @@ float getAngle(void){
     inertial2value = inertial2.get_rotation();
     inertial3value = inertial3.get_rotation();
     
-    dif12 = fabs(inertial1value - inertial2value); // Find differnce between each inertial value
+    dif12 = fabs(inertial1value - inertial2value); // Find difference between each inertial value
     dif23 = fabs(inertial2value - inertial3value);
     dif13 = fabs(inertial1value - inertial3value);
 
@@ -96,7 +96,7 @@ float getAngle(void){
 
 float distance(float x1, float y1, float x2, float y2){
 
-    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0)); 
+    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0));
 }
 
 float pythagThisJohn (float a, float b){

@@ -126,7 +126,7 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         lcd::set_text(6, std::to_string(rightPow));
         lcd::set_text(7, std::to_string(tError));
 
-        if (dist < distLimit || (fabs(rightPow) < 100.0 && fabs(leftPow) < 100.0)){
+        if (dist < distLimit || pseudoVelocity <= 0.25){
             if (smooth == 0){toPointLoops += 1;}
             else{toPointLoops += 10;}
         }
