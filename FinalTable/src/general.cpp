@@ -21,7 +21,7 @@ Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
 Motor wallMech (2, MOTOR_GEAR_200, false, MOTOR_ENCODER_DEGREES);
-ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); //! second argument declares potentiometer type
+ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
 
 Rotation xTracking (20);
 Rotation yTracking (21);
@@ -33,14 +33,22 @@ IMU inertial3 (16);
 ADIPort backClaw ('A', ADI_DIGITAL_OUT);
 ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
 ADIPort leftClearer ('H', ADI_DIGITAL_OUT);
+ADIPort intakePneu ('B', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(10);
 Distance distanceSensor(8);
 
-struct coordinate {
+struct coord {
 
     float x;
     float y;
+
+    // Constructors
+    coord();
+    coord(float xIN, float yIN){
+        x = xIN;
+        y = yIN;
+    }
 };
 
 //Constants
@@ -49,21 +57,23 @@ const bool pressed = 1;
 const bool unpressed = 0;
 const bool on = 1;
 const bool off = 0;
-const float reverse = 1.0;
+const float reverse = -1.0;
 
-float returnSize (float x, float y){
+float returnSmaller (float x, float y){
     if (x < y){ return x; } // x is smaller
     else { return y; } // y is smaller or equal
 }
 
+float returnBigger (float x, float y){
+    if (x > y){ return x; } // x is bigger
+    else { return y; } // y is bigger or equal
+}
+
 float getDir(float input){
 
-    if (input >= 0.0){
-        return 1.0;
-    }
-    if (input < 0.0){
-        return -1.0;
-    }
+    if (input >= 0.0){ return 1.0; }
+    else if (input < 0.0){ return -1.0; }
+    else { return 0.0; }
 }
 
 // Get Angle Function 
@@ -94,6 +104,8 @@ float getAngle(void){
     return angle;
 }
 
+float to_float (int n){ return (static_cast<float> (n)); }
+
 float distance(float x1, float y1, float x2, float y2){
 
     return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0));
@@ -123,8 +135,14 @@ float arctan2(float x, float y){ //returns angle from positive x axis on (-pi, p
 }
 
 float normAngle(float angle){
-    while (angle > pi){angle -= 2.0 * pi;}
-    while (angle < -pi){angle += 2.0 * pi;}
+    while (angle > pi){angle -= 2.0*pi;}
+    while (angle < -pi){angle += 2.0*pi;}
+    return angle;
+}
+
+float normAngle2pi(float angle){
+    while (angle < 0){angle += 2.0*pi;}
+    while (angle > 2.0*pi){angle -= 2.0*pi;}
     return angle;
 }
 

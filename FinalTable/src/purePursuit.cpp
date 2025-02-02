@@ -2,44 +2,50 @@
 using namespace std;
 
 int index;
-vector<coordinate> shiftedPath = {};
-vector<coordinate> intersectionPoints = {};
+vector<coord> shiftedPath = {};
+vector<coord> intersectionPoints = {};
 
 float diffX,diffY,R,D;
 
 float lookAheadDis = 8.0;
-float intersectionCount;
-float int1Dist,int2Dist;
-
+float int1Dist,int2Dist = 0.0;
 bool intersection1Check, intersection2Check = true;
+coord lastKnownIntersection;
 
-coordinate findBestIntersection (vector<coordinate> path){
+coord findBestIntersection (vector<coord> path){
 
     shiftedPath.clear();
 
-    for (coordinate point : path){
+    for (coord point : path){
 
-        coordinate shiftedPoint;
-        shiftedPoint.x = point.x - xPos;
-        shiftedPoint.y = point.y - yPos;
-
-        shiftedPath.push_back(shiftedPoint); // Shifts the point to put the robot position on the origin
+        shiftedPath.push_back(coord(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
     }
 
     index = 0; // Lines distance along the path
 
-    intersectionPoints.clear(); // Erases points
+    if (intersectionPoints.size() == 0){ // First loop
+        lastKnownIntersection.x = shiftedPath[0].x; // Beginning of path
+        lastKnownIntersection.y = shiftedPath[0].y;
+        intersectionPoints.clear(); // Erases points
+        intersectionPoints.push_back(lastKnownIntersection); // Pushed back frist - returns if no intersections found
+    }
+    else { 
+        lastKnownIntersection.x = intersectionPoints.back().x; // Last known intersection
+        lastKnownIntersection.y = intersectionPoints.back().y;
+        intersectionPoints.clear(); // Erases points
+        intersectionPoints.push_back(lastKnownIntersection); // Pushed back frist - returns if no intersections found
+    }
 
     while(index < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
-        intersection1Check = true;  // All good on intersection checks
+        intersection1Check = true;  // Resets intersection checks
         intersection2Check = true;
 
-        coordinate startPoint;
-        startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point 
+        coord startPoint;
+        startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point of line
         startPoint.y = shiftedPath[index].y; 
 
-        coordinate endPoint;
+        coord endPoint;
         endPoint.x = shiftedPath[index + 1].x;
         endPoint.y = shiftedPath[index + 1].y;
 
@@ -48,11 +54,11 @@ coordinate findBestIntersection (vector<coordinate> path){
         R = distance(startPoint.x,startPoint.y,endPoint.x,endPoint.y);
         D = startPoint.x*endPoint.y - endPoint.x*startPoint.y;
 
-        coordinate int1; // first possible intersection
+        coord int1; // first possible intersection
         int1.x = (D * diffY + getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0); // Calculates intersection points
         int1.y = (-D * diffX + fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
-        coordinate int2; // second possible intersection
+        coord int2; // second possible intersection
         int2.x = (D * diffY - getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
         int2.y = (-D * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
@@ -89,14 +95,19 @@ coordinate findBestIntersection (vector<coordinate> path){
     return intersectionPoints.back();
 }
 
-bool runPP = true;
-float tToTarget = 0.0;
-float tError = 0.0;
-float lError = 0.0;
-coordinate followPoint;
-void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
+float PPkp = 0.0;
+float PPtkp = 0.0;
 
-    while (runPP == true){
+int runPP = 0;
+float tToTarget = 0.0;
+float tError,lError = 0.0;
+float rightPow,leftPow = 0.0;
+
+coord followPoint;
+void doThePurePursuit (coord followPoint, vector<coord> path){
+
+    runPP = 0;
+    while (runPP < 50){
 
         followPoint = findBestIntersection(path); //? This is actually not a point but the difference in the robots position and the follow point
 
@@ -105,8 +116,49 @@ void doThePurePursuit (coordinate followPoint, vector<coordinate> path){
 
         lError = pythagThisJohn(followPoint.x, followPoint.y) * cos(tError); // Distance from the target scaled by the difference in angle
 
-        
+        rightPow = lError * PPkp + tError * PPtkp; // Multiply each error by their tuning values
+        leftPow = lError * PPkp - tError * PPtkp;
 
+        if (fabs(rightPow) >= 12000.0|| fabs(leftPow) >= 12000.0){ // If power is over max value scale both sides
+            if (fabs(rightPow) > fabs(leftPow)){
+                rightPow = getDir(rightPow) * 12000.0;
+                leftPow = getDir(leftPow) * fabs(12000.0 * (leftPow) / (rightPow));
+            }
+            else{
+                rightPow = getDir(rightPow) * fabs(600.0 * (rightPow) / (leftPow));
+                leftPow = getDir(leftPow) * 600.0;
+            }
+        }
+
+        rightDrive.move_voltage(rightPow); // Moves motors
+        leftDrive.move_voltage(leftPow);
+
+        delay(10);
+
+        if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
+            runPP++;
+        }
+        else { runPP = 0; }
+    }
+}
+
+vector<float> coefficentsBC; // List of coefficents used for generating points (BC = Besier Curve)
+vector<coord> output; // List of points in path
+coord tempPoint; // Temporary variable to store each point value
+
+vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int n){ // Inputs 5 points and how many segments to split curve into: //$ https://www.desmos.com/calculator/syvdhic9aw
+
+    output.clear();
+
+    for (int i = 0; i <= n; i++){ // Pushes back each coefficent
+        coefficentsBC.push_back( to_float(i) / to_float(n) );
     }
 
+    for (float w : coefficentsBC){
+
+        tempPoint.x = (pow(w,4.0) * (p5.x - 4.0*p4.x + 6.0*p3.x - 4.0*p2.x + p1.x)) + (4.0*pow(w,3.0) * (p4.x - 3.0*p3.x + 3.0*p2.x - p1.x)) + (6.0*pow(w,2.0) * (p3.x - 2.0*p2.x + p1.x)) + (4.0*w * (p2.x - p1.x)) + p1.x;
+        tempPoint.y = (pow(w,4.0) * (p5.y - 4.0*p4.y + 6.0*p3.y - 4.0*p2.y + p1.y)) + (4.0*pow(w,3.0) * (p4.y - 3.0*p3.y + 3.0*p2.y - p1.y)) + (6.0*pow(w,2.0) * (p3.y - 2.0*p2.y + p1.y)) + (4.0*w * (p2.y - p1.y)) + p1.y;
+        output.push_back(tempPoint);
+    }
+    return(output);
 }
