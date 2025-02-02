@@ -22,6 +22,10 @@ float loadingBHighLimit = 61.0; //upper limit for potentiometer value in loading
 float scoringLowLimit = 250.0; //lower limit for potentiometer value in scoring state
 float wallMechVoltage = 12000.0; //mV
 
+float wallMechTarget = 0.0; // Target position for wall mech arm (Degrees)
+float WMError = 0.0; // Wall mech error
+float WMKp = 0.0; // Tuning value for wall mech P-loop
+
 void runDriveCont (){
     while (1){
         JRYValue = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0; // Scales 127 to 100 then cubes and converts to mV
@@ -131,6 +135,18 @@ void runIntakeAndWallMech(){
             if(wallMechPotentiometer.get_angle() < scoringLowLimit){wallMech.move_voltage(wallMechVoltage);}
             else{wallMech.brake();}
         }
+
+        //$ Wall Mech Code - runs one step of loop every driver cont
+
+        if (wallMechState = 0) { wallMechTarget = 10; }
+        if (wallMechState = 1) { wallMechTarget = 30; }
+        if (wallMechState = 2) { wallMechTarget = 40; }
+        if (wallMechState = 3) { wallMechTarget = 160; }
+
+        WMError = wallMechTarget - wallMechPotentiometer.get_angle();
+
+        if (fabs(WMError) > 3){ wallMech.move_voltage(WMError * WMKp); } // If error is over 3 degrees then move
+        else { wallMech.brake(); } // Should be hold type of brake
 
         delay(10);
     }

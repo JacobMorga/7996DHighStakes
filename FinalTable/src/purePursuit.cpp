@@ -10,7 +10,7 @@ float diffX,diffY,R,D;
 float lookAheadDis = 8.0;
 float int1Dist,int2Dist = 0.0;
 bool intersection1Check, intersection2Check = true;
-coord lastKnownIntersection;
+coord lastKnownIntersection (0.0,0.0);
 
 coord findBestIntersection (vector<coord> path){
 
@@ -23,18 +23,6 @@ coord findBestIntersection (vector<coord> path){
 
     index = 0; // Lines distance along the path
 
-    if (intersectionPoints.size() == 0){ // First loop
-        lastKnownIntersection.x = shiftedPath[0].x; // Beginning of path
-        lastKnownIntersection.y = shiftedPath[0].y;
-        intersectionPoints.clear(); // Erases points
-        intersectionPoints.push_back(lastKnownIntersection); // Pushed back frist - returns if no intersections found
-    }
-    else { 
-        lastKnownIntersection.x = intersectionPoints.back().x; // Last known intersection
-        lastKnownIntersection.y = intersectionPoints.back().y;
-        intersectionPoints.clear(); // Erases points
-        intersectionPoints.push_back(lastKnownIntersection); // Pushed back frist - returns if no intersections found
-    }
 
     while(index < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
@@ -92,7 +80,15 @@ coord findBestIntersection (vector<coord> path){
         index ++;
     }
 
-    return intersectionPoints.back();
+    if (intersectionPoints.size() != 0){ // Intersects path
+
+        lastKnownIntersection = intersectionPoints.back();
+        return intersectionPoints.back();
+    }
+    else {  // No intersections with path
+    
+        return lastKnownIntersection;
+    }
 }
 
 float PPkp = 0.0;
