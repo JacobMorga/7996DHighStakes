@@ -69,5 +69,7 @@ void autonomous() {
 
 void opcontrol() {
 
-	runDriveCont();
+	//runDriveCont();
+	intakeTop.move_voltage(12000.0);
+	intakeBottom.move_voltage(12000.0);
 }
