@@ -7,12 +7,12 @@ Controller controller (CONTROLLER_MASTER);
 Motor drive1 (18, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive2 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive3 (1, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor_Group rightDrive ({drive1, drive2, drive3});
+Motor_Group rightDrive ({drive1, drive2, drive3}); // Motors 15,1,45
 
 Motor drive4 (9, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive5 (6, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive6 (7, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor_Group leftDrive ({drive4, drive5, drive6});
+Motor_Group leftDrive ({drive4, drive5, drive6}); // Motors 7,65,18
 
 Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
