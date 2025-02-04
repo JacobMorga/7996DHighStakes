@@ -7,20 +7,20 @@ Controller controller (CONTROLLER_MASTER);
 Motor drive1 (18, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive2 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive3 (1, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor_Group rightDrive ({drive1, drive2, drive3}); // Motors 15,1,45
+Motor_Group rightDrive ({drive1, drive2, drive3}); // Motors 15,65,45
 
 Motor drive4 (9, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive5 (6, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor drive6 (7, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor_Group leftDrive ({drive4, drive5, drive6}); // Motors 7,65,18
+Motor_Group leftDrive ({drive4, drive5, drive6}); // Motors 1,66,7
 
 Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
-Motor intakeTop (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor intakeTop (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES); // Motor 18
+Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES); // Motor 3
 Motor_Group intake ({intakeTop, intakeBottom});
 
-Motor wallMech (2, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor wallMech (2, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES); // Motor 10
 ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
 
 Rotation xTracking (20);
