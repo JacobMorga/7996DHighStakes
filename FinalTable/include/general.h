@@ -30,9 +30,11 @@ extern IMU inertial3;
 extern ADIPort backClaw;
 extern ADIPort rightClearer;
 extern ADIPort leftClearer;
+extern ADIPort intakePiston;
 
 extern Optical opticalSensor;
 extern Distance distanceSensor;
+extern Distance WMDistanceSensor;
 
 extern const float pi;
 extern const bool pressed;
@@ -41,6 +43,7 @@ extern const bool on;
 extern const bool off;
 extern const float reverse;
 
+extern void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text);
 extern float returnSmaller (float x, float y);
 extern float returnBigger (float x, float y);
 extern float getDir(float input);

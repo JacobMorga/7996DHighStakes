@@ -4,39 +4,40 @@ using namespace std;
 // Devices
 Controller controller (CONTROLLER_MASTER);
 
-Motor drive1 (18, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive2 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive3 (1, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive1 (15, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive2 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive3 (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor_Group rightDrive ({drive1, drive2, drive3});
 
-Motor drive4 (9, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive5 (6, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive6 (7, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive4 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive5 (12, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive6 (11, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor_Group leftDrive ({drive4, drive5, drive6});
 
 Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
-Motor intakeTop (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor intakeBottom (17, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor intakeTop (6, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor intakeBottom (20, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
-Motor wallMech (2, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor wallMech (9, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
 
-Rotation xTracking (20);
-Rotation yTracking (21);
+Rotation xTracking (7);
+Rotation yTracking (19);
 
-IMU inertial1 (5);
-IMU inertial2 (12);
-IMU inertial3 (16);
+IMU inertial1 (1);
+IMU inertial2 (2);
+IMU inertial3 (4);
 
-ADIPort backClaw ('A', ADI_DIGITAL_OUT);
-ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
-ADIPort leftClearer ('H', ADI_DIGITAL_OUT);
-ADIPort intakePneu ('B', ADI_DIGITAL_OUT);
+ADIPort backClaw ('H', ADI_DIGITAL_OUT);
+ADIPort rightClearer ('B', ADI_DIGITAL_OUT);
+ADIPort leftClearer ('F', ADI_DIGITAL_OUT);
+ADIPort intakePiston ('G', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(10);
-Distance distanceSensor(8);
+Distance distanceSensor(5);
+Distance WMDistanceSensor(8);
 
 struct coord {
 
@@ -50,6 +51,11 @@ struct coord {
         y = yIN;
     }
 };
+
+void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
+
+    pros::c::screen_print_at(txtFmt,x,y,text);
+}
 
 //Constants
 const float pi = 3.1415927410125732421875; // Cir/Dia

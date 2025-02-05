@@ -6,7 +6,7 @@ float JRYValue, JRXValue, JLYValue, JLXValue; //joystick right y, right x, left 
 int intakeState = 0; //current intake state (0-5)
 float intakeVoltage = 11000.0; // mV
 int exitcode = 0; //indicator for why color sorting state (4) exited
-float sortDistance = 110.0; //mm
+float sortDistance = 20.0; //110.0; //mm
 float sortDelay1 = 150.0; //ms
 float sortDelay2 = 200.0; //ms
 
@@ -24,12 +24,21 @@ float wallMechVoltage = 12000.0; //mV
 
 float wallMechTarget = 0.0; // Target position for wall mech arm (Degrees)
 float WMError = 0.0; // Wall mech error
-float WMKp = 100.0; // tuned value for wall mech P-loop
-float WMKd = 700.0;
+float WMKp = 150.0; //100.0; // tuned value for wall mech P-loop
+float WMKd = 0.0;
+float WMKdForward = 400.0; //700
+float WMKdBackward = 1000.0;
 float WMPosition = 0.0;
 float WMPreviousPos = 0.0;
 float WMDerivative = 0.0;
 float WMPower = 0.0;
+float WMKi = 0.0;
+float WMKiForward = 1.0;
+float WMKiBackward = 10.0;
+float WMIntegral = 0.0;
+float WMErrorMax = 200.0;
+float WMErrorMin = 1.0;
+float WMIntegralMax = 4000.0;
 
 void runDriveCont (){
     while (1){
@@ -42,14 +51,22 @@ void runDriveCont (){
         leftDrive.move_voltage(JRYValue + JLXValue);
 
         if (controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());} //toggles back claw
-        if (controller.get_digital_new_press(DIGITAL_LEFT)){leftClearer.set_value(!leftClearer.get_value());} //toggles left clearer
+        if (controller.get_digital_new_press(DIGITAL_X)){intakePiston.set_value(!intakePiston.get_value());} //toggles intake piston
+        if (controller.get_digital_new_press(DIGITAL_L1)){leftClearer.set_value(!leftClearer.get_value());} //toggles left clearer
         if (controller.get_digital_new_press(DIGITAL_UP)){rightClearer.set_value(!rightClearer.get_value());} //toggles right clearer
 
+        /*
+        lcd::set_text(0, std::to_string(xPos));
+        lcd::set_text(1, std::to_string(yPos));
+        lcd::set_text(2, std::to_string(getAngle()));
+        */
+       
         delay(10);
     }
 }
 
 float distanceSensed = 0.0;
+bool firstTimeRingInVar = 0;
 void runIntakeAndWallMech(){
     pros::c::optical_raw_s_t rawColors = opticalSensor.get_raw();
     while(true){
@@ -68,15 +85,19 @@ void runIntakeAndWallMech(){
             else if (intakeState == 5){intakeState = 0;} //pause
         }
         if(controller.get_digital_new_press(DIGITAL_R1)){ //toggle color sort and off
-            if(intakeState == 3){intakeState = 0;}
-            else{intakeState = 3;}
+            if(intakeState == 2){intakeState = 0;} //! change this to 3 later
+            else{intakeState = 2;}
+            firstTimeRingInVar = 0;
         }
+        /*
         if(controller.get_digital_new_press(DIGITAL_LEFT)){ //toggle blind intake and off
             if(intakeState == 2){intakeState = 0;}
             else{intakeState = 2;}
         }
+        */
         if(controller.get_digital(DIGITAL_R2)){intakeState = 1;} //button hold to outtake
         if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;}
+        if(controller.get_digital(DIGITAL_A)){intakeState = 5;} //pull ring onto intake then wait
 
         //* intake state execution control
         if(intakeState == 3 || intakeState == 4){opticalSensor.set_led_pwm(100);} //optical led control
@@ -95,7 +116,7 @@ void runIntakeAndWallMech(){
                 else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
                 else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
                 else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
-                else if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
+                //else if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
                 delay(10);
             }
             if(exitcode == 1){intakeState = 3;} //ring passed color sorting
@@ -107,6 +128,7 @@ void runIntakeAndWallMech(){
             }
             else if(exitcode > 2){intakeState = exitcode - 3;} //button exit to corresponding state
         }
+        else if(intakeState == 6){intakeTop.move_voltage(intakeVoltage); intakeBottom.move_voltage(-intakeVoltage);}
 
 
         //& Wall Mech State Guide:
@@ -116,10 +138,20 @@ void runIntakeAndWallMech(){
         //& 3: scoring
 
         //* wall mech state transition control
-        if(controller.get_digital_new_press(DIGITAL_L1)){ //forward one state
-            if(wallMechState < 3){wallMechState += 1;}
-            else{wallMechState = 0;}
+        if(controller.get_digital_new_press(DIGITAL_LEFT)){ //forward one state
+            //if(wallMechState < 2){wallMechState += 1;} //! should be 3 when we have the second ring thing
+            //else{wallMechState = 0;}
+            if(wallMechState == 0){wallMechState = 1; WMIntegral = 0.0;}
+            else if(wallMechState == 1){wallMechState = 2; WMIntegral = 0.0;}
+            else if(wallMechState == 2){wallMechState = 0; WMIntegral = 0.0;}
+            else if(wallMechState == 4){wallMechState = 2; WMIntegral = 0.0;}
+            WMIntegral = 0.0;
+
+            if(wallMechState == 1){intakeState = 2;}
+            else if(wallMechState == 2){firstTimeRingInVar = 0;}
         }
+        if(controller.get_digital_new_press(DIGITAL_UP) && wallMechState != 0){wallMechState = 4; wallMechTarget += 10;}
+        if(controller.get_digital_new_press(DIGITAL_DOWN) && wallMechState != 0){wallMechState = 4; wallMechTarget -= 10;}
 
         /*
         //* wall mech state execution control
@@ -145,20 +177,41 @@ void runIntakeAndWallMech(){
 
         //$ Wall Mech Code - runs one step of loop every driver cont
 
-        if (wallMechState == 0) { wallMechTarget = 2.0; }
-        else if (wallMechState == 1) { wallMechTarget = 100.0; }
-        else if (wallMechState == 2) { wallMechTarget = 150.0; }
-        else if (wallMechState == 3) { wallMechTarget = 410.0; }
+        if (wallMechState == 0) { wallMechTarget = 2.0;}
+        else if (wallMechState == 1 || (wallMechState == 4 && wallMech.get_position() <= 250.0)) {
+            wallMechTarget = 125.0; //120
+            if(WMDistanceSensor.get() < 90.0 && firstTimeRingInVar == 0){
+                firstTimeRingInVar = 1;
+                delay(50);
+                intake.move_voltage(-intakeVoltage); //this is because if you just change the state it won't do anything because it hasn't gone back through the loop yet
+                delay(100);
+                intake.move_voltage(0.0);
+                intakeState = 0;
+            }
+        } //120
+        //else if (wallMechState == 2) { wallMechTarget = 180.0; }
+        else if (wallMechState == 2) { wallMechTarget = 420.0;} //max 440? do we need wall mech calibration 💀 //460 //max 480
 
         WMPosition = wallMech.get_position();
         WMError = wallMechTarget - WMPosition;
         WMDerivative = WMPreviousPos - WMPosition;
-        WMPower = WMKp * WMError + WMKd * WMDerivative;
+        WMIntegral += WMError;
+        if(wallMechTarget < 250.0){WMKi = WMKiForward; WMKd = WMKdForward;}
+        else{WMKi = WMKiBackward; WMKd = WMKdBackward;}
+        if(wallMechState == 0){WMKi = 0.0;}
+        //if (fabs(WMError) >= WMErrorMax){WMIntegral = 0.0;} //not sure if this is ever actually helpful
+        if (fabs(WMError) <= WMErrorMin){WMIntegral = 0.0;} //this is to stop the 瑟瑟发抖
+        if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
+        WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
         WMPreviousPos = WMPosition;
-        lcd::set_text(4, std::to_string(WMError * WMKp));
+
+        //lcd::set_text(4, std::to_string(backClaw.get_value()));
+        /*
+        lcd::set_text(4, std::to_string(WMPower / 1000.0));
         lcd::set_text(5, std::to_string(WMError));
-        lcd::set_text(6, std::to_string(wallMechState));
+        lcd::set_text(6, std::to_string(WMIntegral * WMKi));
         lcd::set_text(7, std::to_string(wallMech.get_position()));
+        */
 
         //if (fabs(WMError) > 3.0){ wallMech.move_voltage(WMPower); } // If error is over 3 degrees then move
         //else { wallMech.brake(); } // Should be hold type of brake

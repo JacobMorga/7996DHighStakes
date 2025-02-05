@@ -50,7 +50,8 @@ void blueNegative(){ //currently copied and pasted from rednegative with x signs
     linKP = 15.0;
     delay(500);
     backClaw.set_value(1);
-    intakeState = 3;
+    //intakeState = 3; //!blinded it cause the optical isnt plugged in and also not calibrated
+    intakeState = 2;
     rotKP = 350.0;
     toPoint(30.0, 30.0, 0, 1); //(-24.0, 24.0); //intake first bottom ring    
     toPoint(26.0, 41.0, 0, 1); //intake first auton line ring
@@ -87,7 +88,8 @@ void redPositive(){
     backClaw.set_value(1);
     delay(100); //to grab the thing
     intake.move_voltage(11000.0);
-    intakeState = 3;
+    intakeState = 2;
+    //intakeState = 3; //!see above for blinding
     facePoint(-24.0, 24.0);
     delay(500); //dropping onto second goal
     rightClearer.set_value(1);
@@ -101,7 +103,8 @@ void redNegative(){
     rotKP = 220.0;
     toPoint(0.0 - goaldist * cos(arctan2(0.0 - xPos, 24.0 - yPos)), 24.0 - goaldist * sin(arctan2(0.0 - xPos, 24.0 - yPos)), 1, 0); //go to first goal
     backClaw.set_value(1);
-    intakeState = 3;
+    intakeState = 2;
+    //intakeState = 3; //!blind
     rotKP = 350.0;
     toPoint(-30.0, 30.0, 0, 1); //(-24.0, 24.0); //intake first bottom ring    
     toPoint(-26.0, 44.0, 0, 1); //intake first auton line ring

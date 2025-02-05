@@ -3,8 +3,8 @@
 const float xWheelDiameter = 2.742382; //calculated
 const float yWheelDiameter = 2.739546; //calculated
 
-const float xWheelOffset = 3.069875; //calculated
-const float yWheelOffset = -4.126149; //calculated
+const float xWheelOffset = -4.718740; //3.069875; //calculated
+const float yWheelOffset = 4.512428; //-4.126149; //calculated
 
 // Initialization variables
     float deltaXWheel = 0.0;
@@ -80,7 +80,6 @@ void odometry(void){
     }
 }
 
-
 void calculateOffsets(){
     xTracking.reset();
     yTracking.reset();
@@ -92,7 +91,19 @@ void calculateOffsets(){
     inertial1.set_heading(0.0);
     inertial2.set_heading(0.0);
     inertial3.set_heading(0.0);
+    /*
+    while(1){
+        lcd::set_text(0, std::to_string(xTracking.get_position()));
+        lcd::set_text(1, std::to_string(yTracking.get_position()));
+        lcd::set_text(2, std::to_string(inertial1.get_rotation()));
+        lcd::set_text(3, std::to_string(inertial2.get_rotation()));
+        lcd::set_text(4, std::to_string(inertial3.get_rotation()));
+        lcd::set_text(5, std::to_string(getAngle()));
+        delay(10);
+    }
+    */
 
+    
     delay(3000);
     rightDrive.move_voltage(6000.0);
     leftDrive.move_voltage(-6000.0);
