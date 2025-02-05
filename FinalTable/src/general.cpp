@@ -183,14 +183,14 @@ vector<int> sList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT}; // Lis
 int tR1,tR2,tL1,tL2,tA,tB,tX,tY,tUP,tDOWN,tRIGHT,tLEFT = 0; // Button timers
 vector<int> tList = {tR1,tR2,tL1,tL2,tA,tB,tX,tY,tUP,tDOWN,tRIGHT,tLEFT}; // List of all current timers
 
-int buttonTimeLimit = 50; // time before click is considered a hold (milliseconds)
+int buttonTimeLimit = 250; // time before click is considered a hold (milliseconds)
 void USETHEBUTTONS (){
 
     while(1){
 
         // Get current loop values
-        cR1    = controller.get_digital(DIGITAL_A);
-        cR2    = controller.get_digital(DIGITAL_B);
+        cR1    = controller.get_digital(DIGITAL_R1);
+        cR2    = controller.get_digital(DIGITAL_R2);
         cL1    = controller.get_digital(DIGITAL_L1);
         cL2    = controller.get_digital(DIGITAL_L2);
         cA     = controller.get_digital(DIGITAL_A);
@@ -204,8 +204,7 @@ void USETHEBUTTONS (){
 
         // Update list values
         cList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT};
-        pList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT};
-
+        pList = {pR1,pR2,pL1,pL2,pA,pB,pX,pY,pUP,pDOWN,pRIGHT,pLEFT};
 
         //* Combo matrix
         //* c = current | p = previous
@@ -228,7 +227,9 @@ void USETHEBUTTONS (){
                 sList[i] = 1; // New button press
             }
             else if (cList[i] == 1 && pList [i] == 1){ // Fourth in matrix
-            
+
+                tList[i] += 5; // Update timer
+                if (tList[i] > buttonTimeLimit){ sList[i] = 2; } // Check to see it button is held
 
             }
             else{} // What the sigma
@@ -251,3 +252,54 @@ void USETHEBUTTONS (){
         delay(5);
     }
 }
+
+int getR1 (){
+    if (sList[0] == 1){ sList[0] = 0; std::cout << "FUNCH"; return 1; }
+    else{ return sList[0]; }
+}
+int getR2 (){
+    if (sList[1] == 1){ sList[1] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[1]; }
+}
+int getL1 (){
+    if (sList[2] == 1){ sList[2] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[2]; }
+}
+int getL2 (){
+    if (sList[3] == 1){ sList[3] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[3]; }
+}
+int getA (){
+    if (sList[4] == 1){ sList[4] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[4]; }
+}
+int getB (){
+    if (sList[5] == 1){ sList[5] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[5]; }
+}
+int getX (){
+    if (sList[6] == 1){ sList[6] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[6]; }
+}
+int getY (){
+    if (sList[7] == 1){ sList[7] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[7]; }
+}
+int getUP (){
+    if (sList[8] == 1){ sList[8] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[8]; }
+}
+int getDOWN (){
+    if (sList[9] == 1){ sList[9] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[9]; }
+}
+int getRIGHT (){
+    if (sList[10] == 1){ sList[10] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[10]; }
+}
+int getLEFT (){
+    if (sList[11] == 1){ sList[11] = 0; std::cout << "FUNCH"; return 1; } 
+    else{ return sList[11]; }
+}
+
+

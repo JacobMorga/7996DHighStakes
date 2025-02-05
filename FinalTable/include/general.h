@@ -76,4 +76,19 @@ void motorTesting ();
 
 
 
+
+
+extern void USETHEBUTTONS ();
+extern int getR1();
+extern int getR2();
+extern int getL1();
+extern int getL2();
+extern int getA();
+extern int getB();
+extern int getX();
+extern int getY();
+extern int getUP();
+extern int getDOWN();
+extern int getRIGHT();
+extern int getLEFT();
 #endif
