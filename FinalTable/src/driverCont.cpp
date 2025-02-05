@@ -60,7 +60,7 @@ void runDriveCont (){
         lcd::set_text(1, std::to_string(yPos));
         lcd::set_text(2, std::to_string(getAngle()));
         */
-       
+
         delay(10);
     }
 }
@@ -116,11 +116,14 @@ void runIntakeAndWallMech(){
                 else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
                 else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
                 else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
-                //else if(controller.get_digital(DIGITAL_LEFT)){exitcode = 5;}
+                else if(controller.get_digital(DIGITAL_A)){exitcode = 5;}
                 delay(10);
             }
             if(exitcode == 1){intakeState = 3;} //ring passed color sorting
             else if(exitcode == 2){ //sort flagged ring
+                if(wallMechState == 1 || wallMechState == 2){
+
+                }
                 delay(sortDelay1);
                 intake.move_voltage(-intakeVoltage);
                 delay(sortDelay2);
@@ -183,7 +186,8 @@ void runIntakeAndWallMech(){
             if(WMDistanceSensor.get() < 90.0 && firstTimeRingInVar == 0){
                 firstTimeRingInVar = 1;
                 delay(50);
-                intake.move_voltage(-intakeVoltage); //this is because if you just change the state it won't do anything because it hasn't gone back through the loop yet
+                intake.move_voltage(-intakeVoltage); //this is because if you just change the state
+                                                     //it won't do anything because it hasn't gone back through the loop yet
                 delay(100);
                 intake.move_voltage(0.0);
                 intakeState = 0;
@@ -205,8 +209,8 @@ void runIntakeAndWallMech(){
         WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
         WMPreviousPos = WMPosition;
 
-        //lcd::set_text(4, std::to_string(backClaw.get_value()));
         /*
+        //lcd::set_text(4, std::to_string(backClaw.get_value()));
         lcd::set_text(4, std::to_string(WMPower / 1000.0));
         lcd::set_text(5, std::to_string(WMError));
         lcd::set_text(6, std::to_string(WMIntegral * WMKi));
@@ -216,7 +220,7 @@ void runIntakeAndWallMech(){
         //if (fabs(WMError) > 3.0){ wallMech.move_voltage(WMPower); } // If error is over 3 degrees then move
         //else { wallMech.brake(); } // Should be hold type of brake
         wallMech.move_voltage(WMPower);
-        if(controller.get_digital(DIGITAL_DOWN)){wallMech.move_voltage(0.0);}
+        //if(controller.get_digital(DIGITAL_DOWN)){wallMech.move_voltage(0.0);}
 
         delay(10);
     }
