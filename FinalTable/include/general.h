@@ -43,6 +43,19 @@ extern const bool on;
 extern const bool off;
 extern const float reverse;
 
+struct coord {
+
+    float x;
+    float y;
+
+    // Constructors
+    coord() : x(0.0), y(0.0) {} //? Idk chat gpt said to delcare it this way
+    coord(float xIN, float yIN){
+        x = xIN;
+        y = yIN;
+    }
+};
+
 extern void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text);
 extern float returnSmaller (float x, float y);
 extern float returnBigger (float x, float y);

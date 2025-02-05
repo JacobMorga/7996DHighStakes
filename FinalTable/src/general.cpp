@@ -39,19 +39,6 @@ Optical opticalSensor(10);
 Distance distanceSensor(5);
 Distance WMDistanceSensor(8);
 
-struct coord {
-
-    float x;
-    float y;
-
-    // Constructors
-    coord();
-    coord(float xIN, float yIN){
-        x = xIN;
-        y = yIN;
-    }
-};
-
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 
     pros::c::screen_print_at(txtFmt,x,y,text);

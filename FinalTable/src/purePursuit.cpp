@@ -1,7 +1,7 @@
 #include "main.h"
 using namespace std;
-/*
-int index;
+
+int indexPP;
 vector<coord> shiftedPath = {};
 vector<coord> intersectionPoints = {};
 
@@ -21,21 +21,21 @@ coord findBestIntersection (vector<coord> path){
         shiftedPath.push_back(coord(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
     }
 
-    index = 0; // Lines distance along the path
+    indexPP = 0; // Lines distance along the path
 
 
-    while(index < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
+    while(indexPP < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
         intersection1Check = true;  // Resets intersection checks
         intersection2Check = true;
 
         coord startPoint;
-        startPoint.x = shiftedPath[index].x; // Retrives x and y for each end point of line
-        startPoint.y = shiftedPath[index].y; 
+        startPoint.x = shiftedPath[indexPP].x; // Retrives x and y for each end point of line
+        startPoint.y = shiftedPath[indexPP].y; 
 
         coord endPoint;
-        endPoint.x = shiftedPath[index + 1].x;
-        endPoint.y = shiftedPath[index + 1].y;
+        endPoint.x = shiftedPath[indexPP + 1].x;
+        endPoint.y = shiftedPath[indexPP + 1].y;
 
         diffX = endPoint.x-startPoint.x;
         diffY = endPoint.y-startPoint.y;
@@ -77,7 +77,7 @@ coord findBestIntersection (vector<coord> path){
         }
         else{} // Don't append anything
 
-        index ++;
+        indexPP ++;
     }
 
     if (intersectionPoints.size() != 0){ // Intersects path
@@ -96,8 +96,8 @@ float PPtkp = 0.0;
 
 int runPP = 0;
 float tToTarget = 0.0;
-float tError,lError = 0.0;
-float rightPow,leftPow = 0.0;
+float tErrorPP,lErrorPP = 0.0;
+float rightPowPP,leftPowPP = 0.0;
 
 coord followPoint;
 void doThePurePursuit (coord followPoint, vector<coord> path){
@@ -108,26 +108,26 @@ void doThePurePursuit (coord followPoint, vector<coord> path){
         followPoint = findBestIntersection(path); //? This is actually not a point but the difference in the robots position and the follow point
 
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
-        tError = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
+        tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
 
-        lError = pythagThisJohn(followPoint.x, followPoint.y) * cos(tError); // Distance from the target scaled by the difference in angle
+        lErrorPP = pythagThisJohn(followPoint.x, followPoint.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
 
-        rightPow = lError * PPkp + tError * PPtkp; // Multiply each error by their tuning values
-        leftPow = lError * PPkp - tError * PPtkp;
+        rightPowPP = lErrorPP * PPkp + tErrorPP * PPtkp; // Multiply each error by their tuning values
+        leftPowPP = lErrorPP * PPkp - tErrorPP * PPtkp;
 
-        if (fabs(rightPow) >= 12000.0|| fabs(leftPow) >= 12000.0){ // If power is over max value scale both sides
-            if (fabs(rightPow) > fabs(leftPow)){
-                rightPow = getDir(rightPow) * 12000.0;
-                leftPow = getDir(leftPow) * fabs(12000.0 * (leftPow) / (rightPow));
+        if (fabs(rightPowPP) >= 12000.0|| fabs(leftPowPP) >= 12000.0){ // If power is over max value scale both sides
+            if (fabs(rightPowPP) > fabs(leftPowPP)){
+                rightPowPP = getDir(rightPowPP) * 12000.0;
+                leftPowPP = getDir(leftPowPP) * fabs(12000.0 * (leftPowPP) / (rightPowPP));
             }
             else{
-                rightPow = getDir(rightPow) * fabs(600.0 * (rightPow) / (leftPow));
-                leftPow = getDir(leftPow) * 600.0;
+                rightPowPP = getDir(rightPowPP) * fabs(600.0 * (rightPowPP) / (leftPowPP));
+                leftPowPP = getDir(leftPowPP) * 600.0;
             }
         }
 
-        rightDrive.move_voltage(rightPow); // Moves motors
-        leftDrive.move_voltage(leftPow);
+        rightDrive.move_voltage(rightPowPP); // Moves motors
+        leftDrive.move_voltage(leftPowPP);
 
         delay(10);
 
@@ -158,4 +158,3 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
     }
     return(output);
 }
-*/
