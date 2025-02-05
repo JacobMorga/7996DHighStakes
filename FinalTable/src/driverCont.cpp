@@ -287,6 +287,31 @@ void runIntakeAndWallMech(){
     }
 }
 
+//& Intake State Guide:
+//& 0: both stages stopped
+//& 1: reverse both stages
+//& 2: intake both stages blindly
+//& 3: intake with color sort
+//& 4: perform color sort
+//& 5: intake until ring detected
+
+void intakeControl (){
+    //* intake state transition control
+    if(distanceSensor.get() <= sortDistance){ //when ring seen
+        if (intakeState == 3){intakeState = 4;} //color sort
+        else if (intakeState == 5){intakeState = 0;} //pause
+    }
+    if(controller.get_digital_new_press(DIGITAL_R1)){ //toggle color sort and off
+        if(intakeState == 2 || intakeState == 5){intakeState = 0;} //! change 2 to 3 later for sorting
+        else{intakeState = 2;}
+        ringYet = 0;
+    }
+
+    if(controller.get_digital(DIGITAL_R2)){intakeState = 1;} //button hold to outtake
+    if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;} // stops intake when you let go
+    if(controller.get_digital(DIGITAL_A)){intakeState = 5;} //pull ring onto intake then wait
+}
+void wallMechControl (){}
 
 //* COLOR CALIBRATION STEPS:
 //* 1: Comment intake task in main.cpp >> initialize().

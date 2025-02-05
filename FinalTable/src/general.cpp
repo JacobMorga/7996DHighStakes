@@ -167,3 +167,87 @@ void motorTesting (){
 
     drive1.brake(); // PORT 13
 }
+
+bool cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT = false; // Current button presses 
+vector<bool> cList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT}; // List of all current presses
+
+bool pR1,pR2,pL1,pL2,pA,pB,pX,pY,pUP,pDOWN,pRIGHT,pLEFT = false; // Previous loop button presses
+vector<bool> pList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT}; // List of all previous presses
+
+//& 0: Not pressed
+//& 1: Pressed
+//& 2: Held
+int sR1,sR2,sL1,sL2,sA,sB,sX,sY,sUP,sDOWN,sRIGHT,sLEFT = 0; // Button state
+vector<int> sList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT}; // List of all current states
+
+int tR1,tR2,tL1,tL2,tA,tB,tX,tY,tUP,tDOWN,tRIGHT,tLEFT = 0; // Button timers
+vector<int> tList = {tR1,tR2,tL1,tL2,tA,tB,tX,tY,tUP,tDOWN,tRIGHT,tLEFT}; // List of all current timers
+
+int buttonTimeLimit = 50; // time before click is considered a hold (milliseconds)
+void USETHEBUTTONS (){
+
+    while(1){
+
+        // Get current loop values
+        cR1    = controller.get_digital(DIGITAL_A);
+        cR2    = controller.get_digital(DIGITAL_B);
+        cL1    = controller.get_digital(DIGITAL_L1);
+        cL2    = controller.get_digital(DIGITAL_L2);
+        cA     = controller.get_digital(DIGITAL_A);
+        cB     = controller.get_digital(DIGITAL_B);
+        cX     = controller.get_digital(DIGITAL_X);
+        cY     = controller.get_digital(DIGITAL_Y);
+        cUP    = controller.get_digital(DIGITAL_UP);
+        cDOWN  = controller.get_digital(DIGITAL_DOWN);
+        cRIGHT = controller.get_digital(DIGITAL_RIGHT);
+        cLEFT  = controller.get_digital(DIGITAL_LEFT);
+
+        // Update list values
+        cList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT};
+        pList = {cR1,cR2,cL1,cL2,cA,cB,cX,cY,cUP,cDOWN,cRIGHT,cLEFT};
+
+
+        //* Combo matrix
+        //* c = current | p = previous
+        //* c=0 && p=0 : set state to 0 and reset timer
+        //* c=0 && p=1 : set state to 0 and reset timer
+        //* c=1 && p=0 : set state to 1 and update timer
+        //* c=1 && p=1 : if timer is above limit set state to 2, if not set to state 1
+
+        // Compare values
+        for (int i = 0; i < cList.size(); i++){
+
+            if (cList[i] == 0){ // First two in matrix
+
+                tList[i] = 0; // Reset timer
+                sList[i] = 0; // Update state (not pressed)
+            }
+            else if (cList[i] == 1 && pList [i] == 0){ // Third in matrix
+            
+                tList[i] += 5; // Update timer
+                sList[i] = 1; // New button press
+            }
+            else if (cList[i] == 1 && pList [i] == 1){ // Fourth in matrix
+            
+
+            }
+            else{} // What the sigma
+        }
+
+        // Update previous values
+        pR1    = cR1;
+        pR2    = cR2;
+        pL1    = cL1;
+        pL2    = cL2;
+        pA     = cA;
+        pB     = cB;
+        pX     = cX;
+        pY     = cY;
+        pUP    = cUP;
+        pDOWN  = cDOWN;
+        pRIGHT = cRIGHT;
+        pLEFT  = cLEFT;
+
+        delay(5);
+    }
+}
