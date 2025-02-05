@@ -13,6 +13,10 @@ float sortDelay2 = 200.0; //ms
 const float redLimit = 180.0; //lower limits for rgbc sort
 const float blueLimit = 85.0;
 
+float ambient = 0.0;
+float redFactor = 0.0;
+float blueFactor = 0.0;
+
 int wallMechState = 0; //current wall mech state (0-3)
 float idleHighLimit = 20.0; //upper limit for potentiometer value in idle state
 float loadingALowLimit = 50.0; //lower limit for potentiometer value in loading A state
@@ -39,8 +43,50 @@ float WMIntegral = 0.0;
 float WMErrorMax = 200.0;
 float WMErrorMin = 1.0;
 float WMIntegralMax = 4000.0;
+float WMTargetAdjustment = 0.0;
+float WMIdleTarget = 2.0;
+float WMLoadingTarget = 125.0;
+float WMLoadingBTarget = 180.0; //unused and untested
+float WMScoringTarget = 420.0;
+float WMAdjustmentIncrement = 10.0;
+float WMRingDetectionDist = 90.0;
 
 void runDriveCont (){
+
+    //$ Controller mapping:
+    //$ Button: Current assignment              -> Planned future assignment
+
+    //$ Left joystick X axis: Turning
+    //$ Left joystick Y axis:
+    //$ Right joystick X axis:
+    //$ Right joystick Y axis: Driving
+
+    //$ L1: Left corner clearer toggle          -> Wall mech state cycle
+    //$ L2: Back claw toggle
+    //$ R1: Color sort intake toggle            -> "Run intake" following color sort on/off toggle
+    //$ R2: Reverse intake, hold button
+
+    //$ Up: Wall mech manual adjust up
+    //$ Down: Wall mech manual adjust down
+    //$ Left: Wall mech state cycle             -> Left corner clearer toggle
+    //$ Right: Blind intake toggle              -> Color sorting on/off toggle
+
+    //$ X (up): Intake piston toggle            -> Intake until ring detected
+    //$ Y (left): Right corner clearer toggle   -> Intake piston toggle
+    //$ A (right): Intake until ring detected   -> Right corner clearer toggle
+    //$ B (down): Wall mech go limp, hold button
+
+    //$ Potential additional adjustments/additions:
+    //$ instead of one button for the wall mech use three and assign a state to each one so you never
+    //$     have to double click to go from scoring to loading (picking up another ring), from loading
+    //$     to idle (changed your mind), or from idle to scoring (climb)
+    //$ some kind of macro for holding a second ring in the intake and scoring it on the wall stake
+    //$     after the wall mech ring is scored
+    //$ direct climb button instead of double wall mech state cycle (basically combined with wall mech 3 button)
+    //$ rework up/down arrows to enter a "manual mode" on the wall mech when either is pressed and where
+    //$     it's either braking (neither pressed) or moving at a constant speed slowly, then if regular
+    //$     wall mech cycle/state buttons are used manual mode is exited
+
     while (1){
         JRYValue = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0; // Scales 127 to 100 then cubes and converts to mV
         JLYValue = powf(controller.get_analog(ANALOG_LEFT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
@@ -53,7 +99,7 @@ void runDriveCont (){
         if (controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());} //toggles back claw
         if (controller.get_digital_new_press(DIGITAL_X)){intakePiston.set_value(!intakePiston.get_value());} //toggles intake piston
         if (controller.get_digital_new_press(DIGITAL_L1)){leftClearer.set_value(!leftClearer.get_value());} //toggles left clearer
-        if (controller.get_digital_new_press(DIGITAL_UP)){rightClearer.set_value(!rightClearer.get_value());} //toggles right clearer
+        if (controller.get_digital_new_press(DIGITAL_Y)){rightClearer.set_value(!rightClearer.get_value());} //toggles right clearer
 
         /*
         lcd::set_text(0, std::to_string(xPos));
@@ -66,7 +112,7 @@ void runDriveCont (){
 }
 
 float distanceSensed = 0.0;
-bool firstTimeRingInVar = 0;
+bool ringYet = 0;
 void runIntakeAndWallMech(){
     pros::c::optical_raw_s_t rawColors = opticalSensor.get_raw();
     while(true){
@@ -85,12 +131,12 @@ void runIntakeAndWallMech(){
             else if (intakeState == 5){intakeState = 0;} //pause
         }
         if(controller.get_digital_new_press(DIGITAL_R1)){ //toggle color sort and off
-            if(intakeState == 2){intakeState = 0;} //! change this to 3 later
+            if(intakeState == 2 || intakeState == 5){intakeState = 0;} //! change 2 to 3 later for sorting
             else{intakeState = 2;}
-            firstTimeRingInVar = 0;
+            ringYet = 0;
         }
         /*
-        if(controller.get_digital_new_press(DIGITAL_LEFT)){ //toggle blind intake and off
+        if(controller.get_digital_new_press(DIGITAL_RIGHT)){ //toggle blind intake and off
             if(intakeState == 2){intakeState = 0;}
             else{intakeState = 2;}
         }
@@ -110,19 +156,23 @@ void runIntakeAndWallMech(){
             exitcode = 0;
             while(exitcode == 0){
                 rawColors = opticalSensor.get_raw();
-                std::cout << rawColors.red << ", " << rawColors.blue;
+                ambient = opticalSensor.get_brightness();
+                redFactor = rawColors.red / ambient;
+                blueFactor = rawColors.blue / ambient;
                 distanceSensed = distanceSensor.get();
                 if(distanceSensed > sortDistance){exitcode = 1;} //ring passed color sorting
-                else if((rawColors.red >= redLimit && teamColor == COLOR_BLUE) || (rawColors.blue >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
+                else if((redFactor >= redLimit && teamColor == COLOR_BLUE) || (blueFactor >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
                 else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
                 else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
                 else if(controller.get_digital(DIGITAL_A)){exitcode = 5;}
+                std::cout << ambient << ", " << rawColors.red << ", " << rawColors.blue << ", " << redFactor << ", " << blueFactor;
                 delay(10);
             }
             if(exitcode == 1){intakeState = 3;} //ring passed color sorting
             else if(exitcode == 2){ //sort flagged ring
-                if(wallMechState == 1 || wallMechState == 2){
-
+                if(wallMechState == 1){
+                    //wall mech dodge
+                    delay(1); //just so this if statement isnt empty
                 }
                 delay(sortDelay1);
                 intake.move_voltage(-intakeVoltage);
@@ -136,9 +186,10 @@ void runIntakeAndWallMech(){
 
         //& Wall Mech State Guide:
         //& 0: idle
-        //& 1: loading A
-        //& 2: loading B
-        //& 3: scoring
+        //& 1: loading
+        //& 2: scoring (was loading B)
+        //& 3: unused (was scoring)
+        //& 4: shifted ±10n from state 1 or 2
 
         //* wall mech state transition control
         if(controller.get_digital_new_press(DIGITAL_LEFT)){ //forward one state
@@ -151,11 +202,22 @@ void runIntakeAndWallMech(){
             WMIntegral = 0.0;
 
             if(wallMechState == 1){intakeState = 2;}
-            else if(wallMechState == 2){firstTimeRingInVar = 0;}
+            else if(wallMechState == 2){ringYet = 0;}
         }
-        if(controller.get_digital_new_press(DIGITAL_UP) && wallMechState != 0){wallMechState = 4; wallMechTarget += 10;}
-        if(controller.get_digital_new_press(DIGITAL_DOWN) && wallMechState != 0){wallMechState = 4; wallMechTarget -= 10;}
 
+        /*
+        if(controller.get_digital_new_press(DIGITAL_UP) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment += 1;}
+        if(controller.get_digital_new_press(DIGITAL_DOWN) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment -= 1;}
+        */
+
+        if(controller.get_digital_new_press(DIGITAL_UP)){
+            if(wallMechState == 1){WMLoadingTarget += WMAdjustmentIncrement;}
+            else if(wallMechState == 2){WMScoringTarget += WMAdjustmentIncrement;}
+        }
+        if(controller.get_digital_new_press(DIGITAL_DOWN)){
+            if(wallMechState == 1){WMLoadingTarget -= WMAdjustmentIncrement;}
+            else if(wallMechState == 2){WMScoringTarget -= WMAdjustmentIncrement;}
+        }
         /*
         //* wall mech state execution control
         if(wallMechState == 0){ //move until in idle zone
@@ -180,21 +242,20 @@ void runIntakeAndWallMech(){
 
         //$ Wall Mech Code - runs one step of loop every driver cont
 
-        if (wallMechState == 0) { wallMechTarget = 2.0;}
-        else if (wallMechState == 1 || (wallMechState == 4 && wallMech.get_position() <= 250.0)) {
-            wallMechTarget = 125.0; //120
-            if(WMDistanceSensor.get() < 90.0 && firstTimeRingInVar == 0){
-                firstTimeRingInVar = 1;
+        if (wallMechState == 0) { wallMechTarget = WMIdleTarget;}
+        else if (wallMechState == 1){
+            wallMechTarget = WMLoadingTarget;
+            if(WMDistanceSensor.get() < WMRingDetectionDist && ringYet == 0){
+                ringYet = 1;
                 delay(50);
-                intake.move_voltage(-intakeVoltage); //this is because if you just change the state
-                                                     //it won't do anything because it hasn't gone back through the loop yet
+                intake.move_voltage(-intakeVoltage);
                 delay(100);
                 intake.move_voltage(0.0);
                 intakeState = 0;
             }
-        } //120
-        //else if (wallMechState == 2) { wallMechTarget = 180.0; }
-        else if (wallMechState == 2) { wallMechTarget = 420.0;} //max 440? do we need wall mech calibration 💀 //460 //max 480
+        }
+        //else if (wallMechState == 2) { wallMechTarget = WMLoadingBTarget; }
+        else if(wallMechState == 2){wallMechTarget = WMScoringTarget;} //max 440? do we need wall mech calibration 💀 //460 //max 480
 
         WMPosition = wallMech.get_position();
         WMError = wallMechTarget - WMPosition;
@@ -204,7 +265,7 @@ void runIntakeAndWallMech(){
         else{WMKi = WMKiBackward; WMKd = WMKdBackward;}
         if(wallMechState == 0){WMKi = 0.0;}
         //if (fabs(WMError) >= WMErrorMax){WMIntegral = 0.0;} //not sure if this is ever actually helpful
-        if (fabs(WMError) <= WMErrorMin){WMIntegral = 0.0;} //this is to stop the 瑟瑟发抖
+        if (fabs(WMError) <= WMErrorMin){WMIntegral = 0.0;} //this is to stop the 瑟瑟发抖 //did we ever test this cause still big time 瑟瑟发抖
         if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
         WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
         WMPreviousPos = WMPosition;
@@ -220,7 +281,7 @@ void runIntakeAndWallMech(){
         //if (fabs(WMError) > 3.0){ wallMech.move_voltage(WMPower); } // If error is over 3 degrees then move
         //else { wallMech.brake(); } // Should be hold type of brake
         wallMech.move_voltage(WMPower);
-        //if(controller.get_digital(DIGITAL_DOWN)){wallMech.move_voltage(0.0);}
+        //if(controller.get_digital(DIGITAL_B)){wallMech.move_voltage(0.0);}
 
         delay(10);
     }
@@ -243,18 +304,40 @@ void runIntakeAndWallMech(){
 //* 12: Repeat calibration if necessary.
 //* 13: Comment both run and test calibration functions; uncomment intake task in main.cpp >> initialize().
 
+pros::c::optical_raw_s_t rawColors;
+pros::c::optical_rgb_s_t rgbColors;
+float measuredHue;
+float ambientBrightness;
+float distanceMeasured;
+
 void runColorCalibration(){
+    /*
     pros::c::optical_rgb_s_t rawVals;
-	intake.move_voltage(11000.0);
-	opticalSensor.set_led_pwm(100.0);
-	float distanceMeasured = 0.0;
-	while(1){
-		rawVals = opticalSensor.get_rgb();
-		distanceMeasured = distanceSensor.get();
-		std::cout << distanceMeasured << ", " << rawVals.red / opticalSensor.get_brightness() << ", " << rawVals.green / opticalSensor.get_brightness() << ", " << rawVals.blue / opticalSensor.get_brightness() << "\n";
+    intake.move_voltage(11000.0);
+    opticalSensor.set_led_pwm(100.0);
+    float distanceMeasured = 0.0;
+    while(1){
+        rawVals = opticalSensor.get_rgb();
+        distanceMeasured = distanceSensor.get();
+        std::cout << distanceMeasured << ", " << rawVals.red / opticalSensor.get_brightness() << ", " << rawVals.green / opticalSensor.get_brightness() << ", " << rawVals.blue / opticalSensor.get_brightness() << "\n";
         lcd::set_text(6, std::to_string(rawVals.red));
-		delay(10);
-	}
+        delay(10);
+    }
+    */
+
+    opticalSensor.set_led_pwm(100.0);
+    intake.move_voltage(12000.0);
+    while(1){
+        rawColors = opticalSensor.get_raw();
+        rgbColors = opticalSensor.get_rgb();
+        measuredHue = opticalSensor.get_hue();
+        ambientBrightness = opticalSensor.get_brightness();
+        distanceMeasured = distanceSensor.get();
+        std::cout << distanceMeasured << ", " << ambientBrightness << ", " << rawColors.red << ", " << rawColors.blue << ", " << rgbColors.red << ", " << rgbColors.blue << ", " << measuredHue << ", " << rawColors.red / ambientBrightness << ", " << rawColors.blue / ambientBrightness << ", " << rawColors.red * ambientBrightness << ", " << rawColors.blue * ambientBrightness << ", " << rgbColors.red / ambientBrightness << ", " << rgbColors.blue / ambientBrightness << ", " << rgbColors.red * ambientBrightness << ", " << rgbColors.blue * ambientBrightness;
+        //there's a ton of variables in this printing line so we can just make a million graphs in the excel and see what works best, i have no idea if these multiplying or dividing things will work but we'll see
+        delay(10);
+    }
+
 }
 
 void testColorCalibration(){
