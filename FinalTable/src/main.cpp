@@ -28,7 +28,7 @@ void initialize() {
 	xTracking.reset();
 	wallMech.tare_position();
 	
-	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
+	//while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
 	delay(500);
 	
 	pros::lcd::initialize();
@@ -36,6 +36,7 @@ void initialize() {
 
 	Task odomTask (odometry, "odomTask");
 	Task intakeAndWallMechTask (runIntakeAndWallMech, "intakeAndWallMechTask");
+	Task button (USETHEBUTTONS, "buttonstask");
 }
 
 void disabled() {}
@@ -70,7 +71,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	runDriveCont();
+	//runDriveCont();
 	//calculateOffsets();
 	/*
 	while(1){
@@ -78,4 +79,9 @@ void opcontrol() {
 		delay(10);
 	}
 	*/
-}
+
+	while(1){
+		std::cout << getR1() << getR2() << getL1() << getL2() << getA() << getB() << getX() << getY() << getUP() << getDOWN() << getRIGHT() << getLEFT() << "\n";
+		delay(5);
+	}
+} 
