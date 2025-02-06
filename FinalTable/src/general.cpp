@@ -4,40 +4,40 @@ using namespace std;
 // Devices
 Controller controller (CONTROLLER_MASTER);
 
-Motor drive1 (15, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive2 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive3 (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive1 (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive2 (6, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive3 (15, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor_Group rightDrive ({drive1, drive2, drive3});
 
-Motor drive4 (14, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive5 (12, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive6 (11, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive4 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive5 (14, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive6 (12, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor_Group leftDrive ({drive4, drive5, drive6});
 
 Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
-Motor intakeTop (6, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor intakeBottom (20, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor intakeTop (4, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor intakeBottom (5, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
-Motor wallMech (9, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor wallMech (8, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
 
-Rotation xTracking (7);
-Rotation yTracking (19);
+Rotation xTracking (10);
+Rotation yTracking (21);
 
 IMU inertial1 (1);
-IMU inertial2 (2);
-IMU inertial3 (4);
+IMU inertial2 (11);
+IMU inertial3 (19);
 
 ADIPort backClaw ('H', ADI_DIGITAL_OUT);
 ADIPort rightClearer ('B', ADI_DIGITAL_OUT);
 ADIPort leftClearer ('F', ADI_DIGITAL_OUT);
 ADIPort intakePiston ('G', ADI_DIGITAL_OUT);
 
-Optical opticalSensor(10);
-Distance distanceSensor(5);
-Distance WMDistanceSensor(8);
+Optical opticalSensor(7);
+Distance distanceSensor(9);
+Distance WMDistanceSensor(18);
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 

@@ -35,7 +35,7 @@ void initialize() {
 	pros::screen::erase();
 
 	Task odomTask (odometry, "odomTask");
-	Task intakeAndWallMechTask (runIntakeAndWallMech, "intakeAndWallMechTask");
+	//Task intakeAndWallMechTask (runIntakeAndWallMech, "intakeAndWallMechTask");
 	Task button (USETHEBUTTONS, "buttonstask");
 }
 
@@ -80,8 +80,12 @@ void opcontrol() {
 	}
 	*/
 
+	/*
 	while(1){
 		std::cout << getR1() << getR2() << getL1() << getL2() << getA() << getB() << getX() << getY() << getUP() << getDOWN() << getRIGHT() << getLEFT() << "\n";
 		delay(5);
 	}
+	*/
+
+	runColorCalibration();
 } 
