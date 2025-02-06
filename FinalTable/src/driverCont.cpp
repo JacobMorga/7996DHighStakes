@@ -104,7 +104,8 @@ void runDriveCont (){
         lcd::set_text(1, std::to_string(yPos));
         lcd::set_text(2, std::to_string(getAngle()));
         */
-        
+       delay(10);
+    }
 
 }
 
@@ -293,6 +294,7 @@ void runIntakeAndWallMech(){
 //& 4: perform color sort
 //& 5: intake until ring detected
 
+/*
 void intakeControl (){
     //* intake state transition control
     if(distanceSensor.get() <= sortDistance){ //when ring seen
@@ -310,6 +312,7 @@ void intakeControl (){
     if(controller.get_digital(DIGITAL_A)){intakeState = 5;} //pull ring onto intake then wait
 }
 void wallMechControl (){}
+*/
 
 //* COLOR CALIBRATION STEPS:
 //* 1: Comment intake task in main.cpp >> initialize().
@@ -356,7 +359,7 @@ void runColorCalibration(){
         measuredHue = opticalSensor.get_hue();
         ambientBrightness = opticalSensor.get_brightness();
         distanceMeasured = distanceSensor.get();
-        std::cout << distanceMeasured << ", " << ambientBrightness << ", " << rawColors.red << ", " << rawColors.blue << ", " << rgbColors.red << ", " << rgbColors.blue << ", " << measuredHue << ", " << rawColors.red / ambientBrightness << ", " << rawColors.blue / ambientBrightness << ", " << rawColors.red * ambientBrightness << ", " << rawColors.blue * ambientBrightness << ", " << rgbColors.red / ambientBrightness << ", " << rgbColors.blue / ambientBrightness << ", " << rgbColors.red * ambientBrightness << ", " << rgbColors.blue * ambientBrightness;
+        std::cout << distanceMeasured << ", " << ambientBrightness << ", " << rawColors.red << ", " << rawColors.blue << ", " << rgbColors.red << ", " << rgbColors.blue << ", " << measuredHue << ", " << rawColors.red / ambientBrightness << ", " << rawColors.blue / ambientBrightness << ", " << rawColors.red * ambientBrightness << ", " << rawColors.blue * ambientBrightness << ", " << rgbColors.red / ambientBrightness << ", " << rgbColors.blue / ambientBrightness << ", " << rgbColors.red * ambientBrightness << ", " << rgbColors.blue * ambientBrightness << "\n";
         //there's a ton of variables in this printing line so we can just make a million graphs in the excel and see what works best, i have no idea if these multiplying or dividing things will work but we'll see
         delay(10);
     }
@@ -395,7 +398,7 @@ void testColorCalibration(){
 	}
 }
 
-/*
+
 int comboState = 0;
 float comboStateDecimal = 0.0;
 
@@ -405,12 +408,24 @@ void runComboSystem(){
     //^ 1: intaking, wall mech idle (color sort controlled by separate toggle, all still state 1)
     //^ 2: intake reversing, wall mech idle
     //^ 3: intaking until ring detected, wall mech idle (color sort by toggle)
+
     //^ 4: intaking, wall mech loading (color sort by toggle)
     //^ 5: intake stopped, wall mech loaded but down
+
     //^ 6: intake stopped, wall mech in scoring position
     //^ 7: intaking, wall mech scoring (color sort by toggle)
     //^ 8: intake reversing, wall mech scoring
     //^ 9: intaking until ring detected, wall mech scoring (color sort by toggle)
+
+    //^ 10: intake currently sorting out ring from continuous intake, wall mech idle
+    //^ 11: intake currently sorting out ring from continuous intake, wall mech loading
+    //^ 12: intake currently sorting out ring from continuous intake, wall mech scoring
+
+    //^ 13: intake currently sorting out ring from until finding correct ring, wall mech idle
+    //^ 14: intake currently sorting out ring from until finding correct ring, wall mech loading
+    //^ 15: intake currently sorting out ring from until finding correct ring, wall mech scoring
+
+    //^ 16: intake reversing, wall mech loading
 
     //^ 0.0: intake off, wall mech idle
     //^ 0.1: intake stopped, wall mech loaded but down
@@ -425,48 +440,180 @@ void runComboSystem(){
 
     while(1){
         //* state transitions
-        if(controller.get_digital_new_press(DIGITAL_R1)){ //pressed to start intaking
+        if(controller.get_digital_new_press(DIGITAL_R1)){ //pressed to start intaking //$done
             if(comboState == 0){comboState = 1;}
             else if(comboState == 1){comboState = 0;}
-            else if(comboState == 2){comboState = 1;} //shouldn't really happen
+            else if(comboState == 2){comboState = 1;}
             else if(comboState == 3){comboState = 0;}
-            else if(comboState == 4){comboState = 0;} //this one should never occur because R1 has to be held to be in state 4
-            else if(comboState == 5){comboState = 7;} //if you just put a ring in the wall mech then hit start intake it will move the wall mech out of the way first (hopefully)
+            else if(comboState == 4){comboState = 5;} 
+            else if(comboState == 5){comboState = 4;}
             else if(comboState == 6){comboState = 7;}
             else if(comboState == 7){comboState = 6;}
-            else if(comboState == 8){comboState = 7;} //shouldn't really happen
+            else if(comboState == 8){comboState = 7;}
             else if(comboState == 9){comboState = 6;}
+            else if(comboState == 10){comboState = 10;}
+            else if(comboState == 11){comboState = 11;}
+            else if(comboState == 12){comboState = 12;}
+            else if(comboState == 13){comboState = 13;}
+            else if(comboState == 14){comboState = 14;}
+            else if(comboState == 15){comboState = 15;}
+            else if(comboState == 16){comboState = 4;}
         }
-        else if(controller.get_digital(DIGITAL_R1)){ //holding intake
+        else if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech //$done
             if(comboState == 0){comboState = 4;}
             else if(comboState == 1){comboState = 4;}
             else if(comboState == 2){comboState = 4;}
             else if(comboState == 3){comboState = 4;}
+            else if(comboState == 4){comboState = 7;}
+            else if(comboState == 5){comboState = 6;} //yeah this is on purpose cause we don't want the intake running
+            else if(comboState == 6){comboState = 0;}
+            else if(comboState == 7){comboState = 1;}
+            else if(comboState == 8){comboState = 2;}
+            else if(comboState == 9){comboState = 3;}
+            else if(comboState == 10){comboState = 10;} //shouldn't happen
+            else if(comboState == 11){comboState = 11;} //shouldn't happen
+            else if(comboState == 12){comboState = 12;} //shouldn't happen
+            else if(comboState == 13){comboState = 13;} //shouldn't happen
+            else if(comboState == 14){comboState = 14;} //shouldn't happen
+            else if(comboState == 15){comboState = 15;} //shouldn't happen
+            else if(comboState == 16){comboState = 8;}
+        }
+        else if(controller.get_digital(DIGITAL_R2)){ //intake reverse button //$done
+            if(comboState == 0){comboState = 2;}
+            else if(comboState == 1){comboState = 2;}
+            else if(comboState == 2){comboState = 2;}
+            else if(comboState == 3){comboState = 2;}
+            else if(comboState == 4){comboState = 16;}
+            else if(comboState == 5){comboState = 16;}
+            else if(comboState == 6){comboState = 8;}
+            else if(comboState == 7){comboState = 8;}
+            else if(comboState == 8){comboState = 8;}
+            else if(comboState == 9){comboState = 8;}
+            else if(comboState == 10){comboState = 10;} //shouldn't happen
+            else if(comboState == 11){comboState = 11;} //shouldn't happen
+            else if(comboState == 12){comboState = 12;} //shouldn't happen
+            else if(comboState == 13){comboState = 13;} //shouldn't happen
+            else if(comboState == 14){comboState = 14;} //shouldn't happen
+            else if(comboState == 15){comboState = 15;} //shouldn't happen
+            else if(comboState == 16){comboState = 16;}
+        }
+        else if(controller.get_digital(DIGITAL_R2) == 0){ //let go of the reverse button //$done
+            if(comboState == 0){comboState = 0;}
+            else if(comboState == 1){comboState = 1;}
+            else if(comboState == 2){comboState = 0;}
+            else if(comboState == 3){comboState = 3;}
             else if(comboState == 4){comboState = 4;}
             else if(comboState == 5){comboState = 5;}
-            else if(comboState == 6){comboState = 4;}
-            else if(comboState == 7){comboState = 4;}
-            else if(comboState == 8){comboState = 4;}
-            else if(comboState == 9){comboState = 4;}
+            else if(comboState == 6){comboState = 6;}
+            else if(comboState == 7){comboState = 7;}
+            else if(comboState == 8){comboState = 6;}
+            else if(comboState == 9){comboState = 9;}
+            else if(comboState == 10){comboState = 10;} //shouldn't happen
+            else if(comboState == 11){comboState = 11;} //shouldn't happen
+            else if(comboState == 12){comboState = 12;} //shouldn't happen
+            else if(comboState == 13){comboState = 13;} //shouldn't happen
+            else if(comboState == 14){comboState = 14;} //shouldn't happen
+            else if(comboState == 15){comboState = 15;} //shouldn't happen            
+            else if(comboState == 16){comboState = 5;}
         }
-        else if(controller.get_digital(DIGITAL_R1) == 0){ //intake button is simply not being pressed
+
+        if(WMDistanceSensor.get() <= WMRingDetectionDist){ //$done
             if(comboState == 0){comboState = 0;}
             else if(comboState == 1){comboState = 1;}
             else if(comboState == 2){comboState = 2;}
             else if(comboState == 3){comboState = 3;}
-            else if(comboState == 4){comboState = 0;}
+            else if(comboState == 4){comboState = 5;} //this is the one
             else if(comboState == 5){comboState = 5;}
             else if(comboState == 6){comboState = 6;}
             else if(comboState == 7){comboState = 7;}
             else if(comboState == 8){comboState = 8;}
             else if(comboState == 9){comboState = 9;}
+            else if(comboState == 10){comboState = 10;} //shouldn't happen
+            else if(comboState == 11){comboState = 11;} //shouldn't happen
+            else if(comboState == 12){comboState = 12;} //shouldn't happen    
+            else if(comboState == 13){comboState = 13;} //shouldn't happen
+            else if(comboState == 14){comboState = 14;} //shouldn't happen
+            else if(comboState == 15){comboState = 15;} //shouldn't happen        
+            else if(comboState == 16){comboState = 16;}
         }
 
+        if(distanceSensor.get() <= sortDistance){ //$done
+            if(comboState == 0){comboState = 0;}
+            else if(comboState == 1){comboState = 10;}
+            else if(comboState == 2){comboState = 2;}
+            else if(comboState == 3){comboState = 13;}
+            else if(comboState == 4){comboState = 11;}
+            else if(comboState == 5){comboState = 5;}
+            else if(comboState == 6){comboState = 6;}
+            else if(comboState == 7){comboState = 12;}
+            else if(comboState == 8){comboState = 8;}
+            else if(comboState == 9){comboState = 15;}
+            else if(comboState == 10){comboState = 10;} //shouldn't happen
+            else if(comboState == 11){comboState = 11;} //shouldn't happen
+            else if(comboState == 12){comboState = 12;} //shouldn't happen    
+            else if(comboState == 13){comboState = 13;} //shouldn't happen
+            else if(comboState == 14){comboState = 14;} //shouldn't happen
+            else if(comboState == 15){comboState = 15;} //shouldn't happen  
+            else if(comboState == 16){comboState = 16;}
+        }
 
+        //* state executions
+        if(comboState == 0){
+            intake.brake();
+            wallMechTarget = WMIdleTarget;
+            opticalSensor.set_led_pwm(0.0);
+        }
+        else if(comboState == 1){}
+        else if(comboState == 2){
+            intake.move_voltage(-intakeVoltage);
+            wallMechTarget = WMIdleTarget;
+            opticalSensor.set_led_pwm(0.0);
+        }
+        else if(comboState == 3){}
+        else if(comboState == 4){}
+        else if(comboState == 5){}
+        else if(comboState == 6){
+            intake.brake();
+            wallMechTarget = WMScoringTarget;
+            opticalSensor.set_led_pwm(0.0);
+        }
+        else if(comboState == 7){}
+        else if(comboState == 8){
+            intake.move_voltage(-intakeVoltage);
+            wallMechTarget = WMScoringTarget;
+            opticalSensor.set_led_pwm(0.0);
+        }
+        else if(comboState == 9){}
+        else if(comboState == 10){}
+        else if(comboState == 11){}
+        else if(comboState == 12){}
+        else if(comboState == 13){}
+        else if(comboState == 14){}
+        else if(comboState == 15){}
+        else if(comboState == 16){
+            intake.move_voltage(-intakeVoltage);
+            wallMechTarget = WMLoadingTarget;
+            opticalSensor.set_led_pwm(0.0);
+        }
+
+        WMPosition = wallMech.get_position();
+        WMError = wallMechTarget - WMPosition;
+        WMDerivative = WMPreviousPos - WMPosition;
+        WMIntegral += WMError;
+        if(wallMechTarget < 250.0){WMKi = WMKiForward; WMKd = WMKdForward;}
+        else{WMKi = WMKiBackward; WMKd = WMKdBackward;}
+        if(wallMechState == 0){WMKi = 0.0;}
+        //if (fabs(WMError) >= WMErrorMax){WMIntegral = 0.0;} //not sure if this is ever actually helpful
+        if (fabs(WMError) <= WMErrorMin){WMIntegral = 0.0;} //this is to stop the 瑟瑟发抖 //did we ever test this cause still big time 瑟瑟发抖
+        if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
+        WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
+        WMPreviousPos = WMPosition;
+        wallMech.move_voltage(WMPower);
+        delay(10);
     }
 }
-*/
 
+/*
 void runIntake(){
     while(1){
 
@@ -494,7 +641,7 @@ void runIntake(){
         if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;}
         if(controller.get_digital(DIGITAL_A)){intakeState = 5;} //pull ring onto intake then wait        
         delay(10);
-    }
+    
         //* intake state execution control
         if(intakeState == 3 || intakeState == 4){opticalSensor.set_led_pwm(100);} //optical led control
         else{opticalSensor.set_led_pwm(0);}
@@ -537,7 +684,7 @@ void runIntake(){
 }
 
 void runWallMech(){
-
+    while(1){
         //& Wall Mech State Guide:
         //& 0: idle
         //& 1: loading
@@ -559,10 +706,10 @@ void runWallMech(){
             else if(wallMechState == 2){ringYet = 0;}
         }
 
-        /*
-        if(controller.get_digital_new_press(DIGITAL_UP) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment += 1;}
-        if(controller.get_digital_new_press(DIGITAL_DOWN) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment -= 1;}
-        */
+        
+        //if(controller.get_digital_new_press(DIGITAL_UP) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment += 1;}
+        //if(controller.get_digital_new_press(DIGITAL_DOWN) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment -= 1;}
+        
 
         if(controller.get_digital_new_press(DIGITAL_UP)){
             if(wallMechState == 1){WMLoadingTarget += WMAdjustmentIncrement;}
@@ -603,18 +750,12 @@ void runWallMech(){
         WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
         WMPreviousPos = WMPosition;
 
-        /*
-        //lcd::set_text(4, std::to_string(backClaw.get_value()));
-        lcd::set_text(4, std::to_string(WMPower / 1000.0));
-        lcd::set_text(5, std::to_string(WMError));
-        lcd::set_text(6, std::to_string(WMIntegral * WMKi));
-        lcd::set_text(7, std::to_string(wallMech.get_position()));
-        */
-
         //if (fabs(WMError) > 3.0){ wallMech.move_voltage(WMPower); } // If error is over 3 degrees then move
         //else { wallMech.brake(); } // Should be hold type of brake
         wallMech.move_voltage(WMPower);
         //if(controller.get_digital(DIGITAL_B)){wallMech.move_voltage(0.0);}
 
         delay(10);
+    }
 }
+*/
