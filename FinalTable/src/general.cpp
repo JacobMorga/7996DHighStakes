@@ -230,7 +230,6 @@ void USETHEBUTTONS (){
 
                 tList[i] += 5; // Update timer
                 if (tList[i] > buttonTimeLimit){ sList[i] = 2; } // Check to see it button is held
-
             }
             else{} // What the sigma
         }
