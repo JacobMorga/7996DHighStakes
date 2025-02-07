@@ -2,7 +2,7 @@
 
 using namespace pros;
 
-int teamColor = COLOR_RED;
+int teamColor = COLOR_BLUE;
 bool runAutonSelector = true;
 
 screen_touch_status_s_t status;

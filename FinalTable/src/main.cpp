@@ -35,7 +35,9 @@ void initialize() {
 	pros::screen::erase();
 
 	Task odomTask (odometry, "odomTask");
-	//Task intakeAndWallMechTask (runIntakeAndWallMech, "intakeAndWallMechTask");
+	Task comboTask (runComboSystem, "comboTask");
+	Task wallMechTaskCauseItNeedsIt (wallMechRunning, "wallmechtaskyeahiknow");
+	//Task runintakeandwallmechtask (runIntakeAndWallMech, "iawmt");
 	Task button (USETHEBUTTONS, "buttonstask");
 }
 
@@ -71,7 +73,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	//runDriveCont();
+	runDriveCont();
 	//calculateOffsets();
 	/*
 	while(1){
@@ -87,5 +89,6 @@ void opcontrol() {
 	}
 	*/
 
-	runColorCalibration();
+	//runColorCalibration();
+	//testColorCalibration();
 } 

@@ -6,4 +6,7 @@ extern void runIntakeAndWallMech();
 extern int intakeState;
 extern void runColorCalibration();
 extern void testColorCalibration();
+extern void runComboSystem();
+extern void wallMechRunning();
+
 #endif
