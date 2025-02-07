@@ -480,7 +480,7 @@ void runComboSystem(){
             else if(comboState == 6 || comboState == 8){comboState = 7;}
             else if(comboState == 7 || comboState == 9){comboState = 6;}
         }
-        if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech 
+        else if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech 
             if(comboState <= 3){comboState = 4;}
             else if(comboState == 4){comboState = 7;}
             else if(comboState == 5){comboState = 6;}
@@ -490,39 +490,39 @@ void runComboSystem(){
             else if(comboState == 9){comboState = 3;}
             else if(comboState == 16){comboState = 8;}
         }
-        if(controller.get_digital_new_press(DIGITAL_X)){ //intake until ring seen
+        else if(controller.get_digital_new_press(DIGITAL_X)){ //intake until ring seen
             if(comboState == 3){comboState = 0;}
             else if(comboState <= 5 || comboState == 16){comboState = 3;}
             else if(comboState >= 6 && comboState <= 8){comboState = 9;}
             else if(comboState == 9){comboState = 6;}        
         }
-        if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
-            if(comboState <= 3){comboState = 2;}
-            else if(comboState == 4 || comboState == 5){comboState = 16;}
-            else if(comboState >= 6 && comboState <= 9){comboState = 8;}
-        }
-        if(controller.get_digital(DIGITAL_R2) == 0){ //let go of the reverse button 
-            if(comboState == 2){comboState = 0;}
-            else if(comboState == 8){comboState = 6;}
-            else if(comboState == 16){comboState = 5;}
-        }
-        if(WMDistanceSensor.get() <= WMRingDetectionDist){ //wall mech loaded
+        else if(WMDistanceSensor.get() <= WMRingDetectionDist){ //wall mech loaded
             if(comboState == 4){comboState = 5; justLoaded = 1;}
         }
-        if(distanceSensor.get() <= sortDistance){ //ring detected
+        else if(distanceSensor.get() <= sortDistance){ //ring detected
             if(comboState == 1){comboState = 10;}
             else if(comboState == 3){comboState = 13;}
             else if(comboState == 4){comboState = 11;}
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
         }
-        if(controller.get_digital_new_press(DIGITAL_UP)){ //manual wall mech target editing
+        else if(controller.get_digital_new_press(DIGITAL_UP)){ //manual wall mech target editing
             if(comboState == 4 || comboState == 5){WMLoadingTarget += 10.0;}
             else if(comboState >= 6 && comboState <= 9){WMScoringTarget += 10.0;}
         }
-        if(controller.get_digital_new_press(DIGITAL_DOWN)){
+        else if(controller.get_digital_new_press(DIGITAL_DOWN)){
             if(comboState == 4 || comboState == 5){WMLoadingTarget -= 10.0;}
             else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= 10.0;}
+        }
+        else if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
+            if(comboState <= 3){comboState = 2;}
+            else if(comboState == 4 || comboState == 5){comboState = 16;}
+            else if(comboState >= 6 && comboState <= 9){comboState = 8;}
+        }
+        else if(controller.get_digital(DIGITAL_R2) == 0){ //let go of the reverse button 
+            if(comboState == 2){comboState = 0;}
+            else if(comboState == 8){comboState = 6;}
+            else if(comboState == 16){comboState = 5;}
         }
 
         //* state executions
@@ -648,6 +648,7 @@ void wallMechRunning(){
         wallMech.move_voltage(WMPower);
 
         lcd::set_text(0, std::to_string(comboState));
+        
         /*
         lcd::set_text(1, std::to_string(colorSorting));
         lcd::set_text(2, std::to_string(teamColor));
