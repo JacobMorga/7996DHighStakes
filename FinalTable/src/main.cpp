@@ -38,7 +38,7 @@ void initialize() {
 	Task comboTask (runComboSystem, "comboTask");
 	Task wallMechTaskCauseItNeedsIt (wallMechRunning, "wallmechtaskyeahiknow");
 	//Task runintakeandwallmechtask (runIntakeAndWallMech, "iawmt");
-	Task button (USETHEBUTTONS, "buttonstask");
+	//Task button (USETHEBUTTONS, "buttonstask");
 }
 
 void disabled() {}

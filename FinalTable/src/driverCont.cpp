@@ -9,8 +9,8 @@ int exitcode = 0; //indicator for why color sorting state (4) exited
 float sortDistance = 20.0; //110.0; //mm
 float sortDelay1 = 75.0; //ms
 float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 100.0; //degrees
-float sortDegrees2 = 750.0; //degrees
+float sortDegrees1 = 200.0; //degrees
+float sortDegrees2 = 300.0; //degrees
 int intakeStuckCounter = 0;
 
 const float redLimit = 25000.0; //lower limits for rgbc sort
@@ -48,7 +48,7 @@ float WMErrorMin = 1.0;
 float WMIntegralMax = 4000.0;
 float WMTargetAdjustment = 0.0;
 float WMIdleTarget = 2.0;
-float WMLoadingTarget = 160.0;
+float WMLoadingTarget = 130.0;
 float WMLoadingBTarget = 180.0; //unused and untested
 float WMScoringTarget = 420.0;
 float WMAdjustmentIncrement = 10.0;
@@ -99,11 +99,11 @@ void runDriveCont (){
         leftDrive.move_voltage(JRYValue + JLXValue);
 
         if(controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());} //toggles back claw
-        if(controller.get_digital_new_press(DIGITAL_X)){intakePiston.set_value(!intakePiston.get_value());} //toggles intake piston
-        if(controller.get_digital_new_press(DIGITAL_L1)){leftClearer.set_value(!leftClearer.get_value());} //toggles left clearer
-        if(controller.get_digital_new_press(DIGITAL_Y)){rightClearer.set_value(!rightClearer.get_value());} //toggles right clearer
+        if(controller.get_digital_new_press(DIGITAL_Y)){intakePiston.set_value(!intakePiston.get_value());} //toggles intake piston
+        if(controller.get_digital_new_press(DIGITAL_LEFT)){leftClearer.set_value(!leftClearer.get_value());} //toggles left clearer
+        if(controller.get_digital_new_press(DIGITAL_A)){rightClearer.set_value(!rightClearer.get_value());} //toggles right clearer
         if(controller.get_digital_new_press(DIGITAL_RIGHT)){colorSorting = !colorSorting;} //toggles color sorting on/off
-        if(controller.get_digital_new_press(DIGITAL_Y)){
+        if(controller.get_digital_new_press(DIGITAL_B)){
             if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
             else{teamColor = COLOR_RED;}
         }
@@ -400,7 +400,7 @@ void colorSort(int incomingState){
     }
     else if(incomingState == 11 || incomingState == 14){
         sortingState = 4;
-        stoppedState = 5;
+        stoppedState = 6;
         reversedState = 16;
         waitingState = 3;
         dodge = 1;
@@ -539,6 +539,7 @@ void runComboSystem(){
         else if(comboState == 2){ //^ 2: intake reversing, wall mech idle
             intake.move_voltage(-intakeVoltage);
             wallMechTarget = WMIdleTarget;
+            opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 3){ //^ 3: intaking until ring detected, wall mech idle (color sort by toggle)
             intake.move_voltage(intakeVoltage);
@@ -565,6 +566,7 @@ void runComboSystem(){
         else if(comboState == 6){ //^ 6: intake stopped, wall mech in scoring position
             intake.brake();
             wallMechTarget = WMScoringTarget;
+            opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 7){ //^ 7: intaking, wall mech scoring (color sort by toggle)
             intake.move_voltage(intakeVoltage);
@@ -575,6 +577,7 @@ void runComboSystem(){
         else if(comboState == 8){ //^ 8: intake reversing, wall mech scoring
             intake.move_voltage(-intakeVoltage);
             wallMechTarget = WMScoringTarget;
+            opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 9){ //^ 9: intaking until ring detected, wall mech scoring (color sort by toggle)
             intake.move_voltage(intakeVoltage);
