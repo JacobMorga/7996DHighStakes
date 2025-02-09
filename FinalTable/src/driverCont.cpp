@@ -31,27 +31,24 @@ float wallMechVoltage = 12000.0; //mV
 
 float wallMechTarget = 0.0; // Target position for wall mech arm (Degrees)
 float WMError = 0.0; // Wall mech error
-float WMKp = 150.0; //100.0; // tuned value for wall mech P-loop
+
+float WMKp = 250.0; //100.0; // tuned value for wall mech P-loop
 float WMKd = 0.0;
-float WMKdForward = 400.0; //700
-float WMKdBackward = 1000.0;
 float WMPosition = 0.0;
 float WMPreviousPos = 0.0;
 float WMDerivative = 0.0;
 float WMPower = 0.0;
-float WMKi = 0.0;
-float WMKiForward = 5.0; //1.0;
-float WMKiBackward = 10.0;
+float WMKi = 1000.0;
 float WMIntegral = 0.0;
 float WMErrorMax = 200.0;
 float WMErrorMin = 1.0;
 float WMIntegralMax = 4000.0;
 float WMTargetAdjustment = 0.0;
-float WMIdleTarget = 2.0;
-float WMLoadingTarget = 130.0;
+float WMIdleTarget = 30.0; //470.0; //2.0;
+float WMLoadingTarget = 55.0; //155.0; //900.0; //130.0;
 float WMLoadingBTarget = 180.0; //unused and untested
-float WMScoringTarget = 420.0;
-float WMAdjustmentIncrement = 10.0;
+float WMScoringTarget = 175.0; //445.0; //2800.0; //420.0;
+float WMAdjustmentIncrement = 0.5;
 float WMRingDetectionDist = 90.0;
 
 bool colorSorting = 1;
@@ -114,182 +111,6 @@ void runDriveCont (){
 
 float distanceSensed = 0.0;
 bool ringYet = 0;
-
-void runIntakeAndWallMech(){
-    pros::c::optical_raw_s_t rawColors = opticalSensor.get_raw();
-    while(true){
-
-        //& Intake State Guide:
-        //& 0: both stages stopped
-        //& 1: reverse both stages
-        //& 2: intake both stages blindly
-        //& 3: intake with color sort
-        //& 4: perform color sort
-        //& 5: intake until ring detected
-        //& 6: hooks intaking, flex wheels outtaking
-
-        //* intake state transition control
-        if(distanceSensor.get() <= sortDistance){ //when ring seen
-            if (intakeState == 3){intakeState = 4;} //color sort
-            else if (intakeState == 5){intakeState = 0;} //pause
-        }
-        if(controller.get_digital_new_press(DIGITAL_R1)){ //toggle color sort and off
-            if(intakeState == 3 || intakeState == 5){intakeState = 0;} //! change 2 to 3 later for sorting
-            else{intakeState = 3;}
-            ringYet = 0;
-        }
-        /*
-        if(controller.get_digital_new_press(DIGITAL_RIGHT)){ //toggle blind intake and off
-            if(intakeState == 2){intakeState = 0;}
-            else{intakeState = 2;}
-        }
-        */
-        if(controller.get_digital(DIGITAL_R2)){intakeState = 1;} //button hold to outtake
-        if(controller.get_digital(DIGITAL_R2) == 0 && intakeState == 1){intakeState = 0;}
-        if(controller.get_digital(DIGITAL_A)){intakeState = 5;} //pull ring onto intake then wait
-
-        //* intake state execution control
-        if(intakeState == 3 || intakeState == 4){opticalSensor.set_led_pwm(100);} //optical led control
-        else{opticalSensor.set_led_pwm(0);}
-
-        if(intakeState == 0){intake.brake();} //0: off
-        else if(intakeState == 1){intake.move_voltage(-intakeVoltage);} //1: reverse
-        else if(intakeState == 2 || intakeState == 3 || intakeState == 5){intake.move_voltage(intakeVoltage);} //2: blind intake; 3: color sort; 5: wait until ring
-        else if(intakeState == 4){ //4: color sorting
-            exitcode = 0;
-            while(exitcode == 0){
-                rawColors = opticalSensor.get_raw();
-                ambient = opticalSensor.get_brightness();
-                redQuotient = rawColors.red / ambient;
-                blueQuotient = rawColors.blue / ambient;
-                distanceSensed = distanceSensor.get();
-                if(distanceSensed > sortDistance){exitcode = 1;} //ring passed color sorting
-                else if((redQuotient >= redLimit && teamColor == COLOR_BLUE) || (blueQuotient >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
-                else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
-                else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
-                else if(controller.get_digital(DIGITAL_A)){exitcode = 5;}
-                //std::cout << ambient << ", " << rawColors.red << ", " << rawColors.blue << ", " << redQuotient << ", " << blueQuotient;
-                delay(10);
-            }
-            if(exitcode == 1){intakeState = 3;} //ring passed color sorting
-            else if(exitcode == 2){ //sort flagged ring
-                intakeSort1Start = intakeTop.get_position();
-                intakeStuckCounter = 0;
-                while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;}
-                intakeStuckCounter = 0;
-                intake.move_voltage(-intakeVoltage);
-                intakeSort2Start = intakeTop.get_position();
-                while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;}
-                intakeState = 3;
-            }
-            else if(exitcode > 2){intakeState = exitcode - 3;} //button exit to corresponding state
-        }
-        
-        else if(intakeState == 6){intakeTop.move_voltage(intakeVoltage); intakeBottom.move_voltage(-intakeVoltage);}
-
-
-        //& Wall Mech State Guide:
-        //& 0: idle
-        //& 1: loading
-        //& 2: scoring (was loading B)
-        //& 3: unused (was scoring)
-        //& 4: shifted ±10n from state 1 or 2
-
-        //* wall mech state transition control
-        if(controller.get_digital_new_press(DIGITAL_LEFT)){ //forward one state
-            //if(wallMechState < 2){wallMechState += 1;} //! should be 3 when we have the second ring thing
-            //else{wallMechState = 0;}
-            if(wallMechState == 0){wallMechState = 1; WMIntegral = 0.0;}
-            else if(wallMechState == 1){wallMechState = 2; WMIntegral = 0.0;}
-            else if(wallMechState == 2){wallMechState = 0; WMIntegral = 0.0;}
-            else if(wallMechState == 4){wallMechState = 2; WMIntegral = 0.0;}
-            WMIntegral = 0.0;
-
-            if(wallMechState == 1){intakeState = 2;}
-            else if(wallMechState == 2){ringYet = 0;}
-        }
-
-        /*
-        if(controller.get_digital_new_press(DIGITAL_UP) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment += 1;}
-        if(controller.get_digital_new_press(DIGITAL_DOWN) && wallMechState != 0){wallMechState = 4; WMTargetAdjustment -= 1;}
-        */
-
-        if(controller.get_digital_new_press(DIGITAL_UP)){
-            if(wallMechState == 1){WMLoadingTarget += WMAdjustmentIncrement;}
-            else if(wallMechState == 2){WMScoringTarget += WMAdjustmentIncrement;}
-        }
-        if(controller.get_digital_new_press(DIGITAL_DOWN)){
-            if(wallMechState == 1){WMLoadingTarget -= WMAdjustmentIncrement;}
-            else if(wallMechState == 2){WMScoringTarget -= WMAdjustmentIncrement;}
-        }
-        /*
-        //* wall mech state execution control
-        if(wallMechState == 0){ //move until in idle zone
-            if(wallMechPotentiometer.get_angle() > idleHighLimit){wallMech.move_voltage(-wallMechVoltage);}
-            else{wallMech.brake();}
-        }
-        else if(wallMechState == 1){ //move until in loading A zone
-            if(wallMechPotentiometer.get_angle() < loadingALowLimit){wallMech.move_voltage(wallMechVoltage);}
-            else if(wallMechPotentiometer.get_angle() > loadingAHighLimit){wallMech.move_voltage(-wallMechVoltage);}
-            else{wallMech.brake();}
-        }
-        else if(wallMechState == 2){ //move until in loading B zone
-            if(wallMechPotentiometer.get_angle() < loadingBLowLimit){wallMech.move_voltage(wallMechVoltage);}
-            else if(wallMechPotentiometer.get_angle() > loadingBHighLimit){wallMech.move_voltage(-wallMechVoltage);}
-            else{wallMech.brake();}
-        }
-        else if(wallMechState == 3){ //move until in scoring zone
-            if(wallMechPotentiometer.get_angle() < scoringLowLimit){wallMech.move_voltage(wallMechVoltage);}
-            else{wallMech.brake();}
-        }
-        */
-
-        //$ Wall Mech Code - runs one step of loop every driver cont
-
-        if (wallMechState == 0) { wallMechTarget = WMIdleTarget;}
-        else if (wallMechState == 1){
-            wallMechTarget = WMLoadingTarget;
-            if(WMDistanceSensor.get() < WMRingDetectionDist && ringYet == 0){
-                ringYet = 1;
-                delay(50);
-                intake.move_voltage(-intakeVoltage);
-                delay(100);
-                intake.move_voltage(0.0);
-                intakeState = 0;
-            }
-        }
-        //else if (wallMechState == 2) { wallMechTarget = WMLoadingBTarget; }
-        else if(wallMechState == 2){wallMechTarget = WMScoringTarget;} //max 440? do we need wall mech calibration 💀 //460 //max 480
-
-        WMPosition = wallMech.get_position();
-        WMError = wallMechTarget - WMPosition;
-        WMDerivative = WMPreviousPos - WMPosition;
-        WMIntegral += WMError;
-        if(wallMechTarget < 250.0){WMKi = WMKiForward; WMKd = WMKdForward;}
-        else{WMKi = WMKiBackward; WMKd = WMKdBackward;}
-        if(wallMechState == 0){WMKi = 0.0;}
-        //if (fabs(WMError) >= WMErrorMax){WMIntegral = 0.0;} //not sure if this is ever actually helpful
-        if (fabs(WMError) <= WMErrorMin){WMIntegral = 0.0;} //this is to stop the 瑟瑟发抖 //did we ever test this cause still big time 瑟瑟发抖
-        if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
-        WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
-        WMPreviousPos = WMPosition;
-
-        /*
-        //lcd::set_text(4, std::to_string(backClaw.get_value()));
-        lcd::set_text(4, std::to_string(WMPower / 1000.0));
-        lcd::set_text(5, std::to_string(WMError));
-        lcd::set_text(6, std::to_string(WMIntegral * WMKi));
-        lcd::set_text(7, std::to_string(wallMech.get_position()));
-        */
-
-        //if (fabs(WMError) > 3.0){ wallMech.move_voltage(WMPower); } // If error is over 3 degrees then move
-        //else { wallMech.brake(); } // Should be hold type of brake
-        wallMech.move_voltage(WMPower);
-        //if(controller.get_digital(DIGITAL_B)){wallMech.move_voltage(0.0);}
-
-        delay(10);
-    }
-}
 
 //* COLOR CALIBRATION STEPS:
 //* 1: Comment intake task in main.cpp >> initialize().
@@ -480,7 +301,7 @@ void runComboSystem(){
             else if(comboState == 6 || comboState == 8){comboState = 7;}
             else if(comboState == 7 || comboState == 9){comboState = 6;}
         }
-        if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech 
+        else if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech 
             if(comboState <= 3){comboState = 4;}
             else if(comboState == 4){comboState = 7;}
             else if(comboState == 5){comboState = 6;}
@@ -490,45 +311,46 @@ void runComboSystem(){
             else if(comboState == 9){comboState = 3;}
             else if(comboState == 16){comboState = 8;}
         }
-        if(controller.get_digital_new_press(DIGITAL_X)){ //intake until ring seen
+        else if(controller.get_digital_new_press(DIGITAL_X)){ //intake until ring seen
             if(comboState == 3){comboState = 0;}
             else if(comboState <= 5 || comboState == 16){comboState = 3;}
             else if(comboState >= 6 && comboState <= 8){comboState = 9;}
             else if(comboState == 9){comboState = 6;}        
         }
-        if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
-            if(comboState <= 3){comboState = 2;}
-            else if(comboState == 4 || comboState == 5){comboState = 16;}
-            else if(comboState >= 6 && comboState <= 9){comboState = 8;}
-        }
-        if(controller.get_digital(DIGITAL_R2) == 0){ //let go of the reverse button 
-            if(comboState == 2){comboState = 0;}
-            else if(comboState == 8){comboState = 6;}
-            else if(comboState == 16){comboState = 5;}
-        }
-        if(WMDistanceSensor.get() <= WMRingDetectionDist){ //wall mech loaded
+        else if(WMDistanceSensor.get() <= WMRingDetectionDist){ //wall mech loaded
             if(comboState == 4){comboState = 5; justLoaded = 1;}
         }
-        if(distanceSensor.get() <= sortDistance){ //ring detected
+        else if(distanceSensor.get() <= sortDistance){ //ring detected
             if(comboState == 1){comboState = 10;}
             else if(comboState == 3){comboState = 13;}
             else if(comboState == 4){comboState = 11;}
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
         }
-        if(controller.get_digital_new_press(DIGITAL_UP)){ //manual wall mech target editing
-            if(comboState == 4 || comboState == 5){WMLoadingTarget += 10.0;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += 10.0;}
+        else if(controller.get_digital(DIGITAL_UP)){ //manual wall mech target editing
+            if(comboState == 4 || comboState == 5){WMLoadingTarget += WMAdjustmentIncrement;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMAdjustmentIncrement;}
         }
-        if(controller.get_digital_new_press(DIGITAL_DOWN)){
-            if(comboState == 4 || comboState == 5){WMLoadingTarget -= 10.0;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= 10.0;}
+        else if(controller.get_digital(DIGITAL_DOWN)){
+            if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMAdjustmentIncrement;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMAdjustmentIncrement;}
+        }
+        else if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
+            if(comboState <= 3){comboState = 2;}
+            else if(comboState == 4 || comboState == 5){comboState = 16;}
+            else if(comboState >= 6 && comboState <= 9){comboState = 8;}
+        }
+        else if(controller.get_digital(DIGITAL_R2) == 0){ //let go of the reverse button 
+            if(comboState == 2){comboState = 0;}
+            else if(comboState == 8){comboState = 6;}
+            else if(comboState == 16){comboState = 5;}
         }
 
         //* state executions
         if(comboState == 0){ //^ 0: intake off, wall mech idle
             intake.brake();
             wallMechTarget = WMIdleTarget;
+            opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 1){ //^ 1: intaking, wall mech idle (color sort controlled by separate toggle, all still state 1)
             intake.move_voltage(intakeVoltage);
@@ -562,6 +384,7 @@ void runComboSystem(){
             }
             intake.brake();
             wallMechTarget = WMLoadingTarget;
+            opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 6){ //^ 6: intake stopped, wall mech in scoring position
             intake.brake();
@@ -632,15 +455,11 @@ void runComboSystem(){
 
 void wallMechRunning(){
     while(1){
-        WMPosition = wallMech.get_position();
+        WMPosition = wallMechPotentiometer.get_angle();
         WMError = wallMechTarget - WMPosition;
         WMDerivative = WMPreviousPos - WMPosition;
         WMIntegral += WMError;
-        if(wallMechTarget < 250.0){WMKi = WMKiForward; WMKd = WMKdForward;}
-        else{WMKi = WMKiBackward; WMKd = WMKdBackward;}
         if(comboState <= 3 || comboState == 10 || comboState == 13){WMKi = 0.0;}
-        //if (fabs(WMError) >= WMErrorMax){WMIntegral = 0.0;} //not sure if this is ever actually helpful
-        //if (fabs(WMError) <= WMErrorMin){WMIntegral = 0.0;} //this is to stop the sesefadou //did we ever test this cause still big time sesefadou
         if(getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;} //this is so it corrects back faster
         if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
         WMPower = WMKp * WMError + WMKd * WMDerivative + WMKi * WMIntegral;
@@ -658,7 +477,7 @@ void wallMechRunning(){
         lcd::set_text(7, std::to_string(intakeStuckCounter));
         */
 
-        lcd::set_text(3, std::to_string(wallMech.get_position()));
+        lcd::set_text(3, std::to_string(WMPosition));
         lcd::set_text(4, std::to_string(wallMechTarget));
         lcd::set_text(5, std::to_string(WMError));
         lcd::set_text(6, std::to_string(WMPower / 1000.0));

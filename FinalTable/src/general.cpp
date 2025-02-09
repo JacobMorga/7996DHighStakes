@@ -21,7 +21,7 @@ Motor intakeBottom (5, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
 Motor wallMech (8, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
-ADIPotentiometer wallMechPotentiometer ('B', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
+ADIPotentiometer wallMechPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
 
 Rotation xTracking (10);
 Rotation yTracking (21);
