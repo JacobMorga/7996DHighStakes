@@ -245,9 +245,9 @@ void colorSort(int incomingState){
 
         if(distanceSensed > sortDistance){exitcode = 1;} //ring passed color sorting
         else if((redQuotient >= redLimit && teamColor == COLOR_BLUE) || (blueQuotient >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
-        else if(controller.get_digital(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
-        else if(controller.get_digital(DIGITAL_R2)){exitcode = 4;}
-        else if(controller.get_digital(DIGITAL_A)){exitcode = 5;}
+        else if(controller.get_digital_new_press(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
+        else if(controller.get_digital_new_press(DIGITAL_R2)){exitcode = 4;}
+        else if(controller.get_digital_new_press(DIGITAL_A)){exitcode = 5;}
         if(incomingState >= 13 && incomingState <= 15 && ((redQuotient >= redLimit && teamColor == COLOR_RED) || (blueQuotient >= blueLimit && teamColor == COLOR_BLUE))){exitcode = 3;}
         delay(10);
     }
@@ -317,19 +317,19 @@ void runComboSystem(){
             else if(comboState >= 6 && comboState <= 8){comboState = 9;}
             else if(comboState == 9){comboState = 6;}        
         }
-        else if(WMDistanceSensor.get() <= WMRingDetectionDist){ //wall mech loaded
-            if(comboState == 4){comboState = 5; justLoaded = 1;}
+        else if(WMDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
+            if(comboState == 4){comboState = 5; justLoaded = 1;} //redundant for clarity
         }
-        else if(distanceSensor.get() <= sortDistance){ //ring detected
+        else if(distanceSensor.get() <= sortDistance && (comboState == 1 || comboState == 3 || comboState == 4 || comboState == 7 || comboState == 9)){ //ring detected
             if(comboState == 1){comboState = 10;}
             else if(comboState == 3){comboState = 13;}
             else if(comboState == 4){comboState = 11;}
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
         }
-        else if(controller.get_digital(DIGITAL_UP)){ //manual wall mech target editing
-            if(comboState == 4 || comboState == 5){WMLoadingTarget += WMAdjustmentIncrement;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMAdjustmentIncrement;}
+        if(controller.get_digital_new_press(DIGITAL_UP)){ //manual wall mech target editing
+            if(comboState == 4 || comboState == 5){WMLoadingTarget += 10.0;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += 10.0;}
         }
         else if(controller.get_digital(DIGITAL_DOWN)){
             if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMAdjustmentIncrement;}
@@ -350,6 +350,7 @@ void runComboSystem(){
         if(comboState == 0){ //^ 0: intake off, wall mech idle
             intake.brake();
             wallMechTarget = WMIdleTarget;
+            opticalSensor.set_led_pwm(0.0);
             opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 1){ //^ 1: intaking, wall mech idle (color sort controlled by separate toggle, all still state 1)
@@ -377,7 +378,7 @@ void runComboSystem(){
         }
         else if(comboState == 5){ //^ 5: intake stopped, wall mech loaded but down
             if(justLoaded == 1){
-                //delay(25);
+                delay(50);
                 intake.move_voltage(-intakeVoltage);
                 delay(75);
                 justLoaded = 0;
@@ -467,6 +468,7 @@ void wallMechRunning(){
         wallMech.move_voltage(WMPower);
 
         lcd::set_text(0, std::to_string(comboState));
+        
         /*
         lcd::set_text(1, std::to_string(colorSorting));
         lcd::set_text(2, std::to_string(teamColor));
