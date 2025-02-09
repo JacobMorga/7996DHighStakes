@@ -2,11 +2,10 @@
 #define DRIVERCONT_H
 
 extern void runDriveCont ();
-extern void runIntakeAndWallMech();
-extern int intakeState;
 extern void runColorCalibration();
 extern void testColorCalibration();
 extern void runComboSystem();
-extern void wallMechRunning();
+extern void runWallMech();
+extern int comboState;
 
 #endif

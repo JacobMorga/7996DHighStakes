@@ -3,8 +3,8 @@
 const float xWheelDiameter = 2.742382; //calculated
 const float yWheelDiameter = 2.739546; //calculated
 
-const float xWheelOffset = -4.718740; //3.069875; //calculated
-const float yWheelOffset = 4.512428; //-4.126149; //calculated
+const float xWheelOffset = 4.608845; //4.718740; //3.069875; //calculated
+const float yWheelOffset = -4.457098; //-4.512428; //-4.126149; //calculated
 
 // Initialization variables
     float deltaXWheel = 0.0;
@@ -76,6 +76,17 @@ void odometry(void){
 
         pseudoVelocity = sqrtf(powf(deltaXGlobal, 2.0) + powf(deltaYGlobal, 2.0)); //distance travelled in last loop
 
+        //odom output
+        /*
+        lcd::clear();
+        lcd::print(0, "%f : xPos (inches)", xPos);
+        lcd::print(1, "%f : yPos (inches)", yPos);
+        lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
+        lcd::print(4, "%f : inertial 1", inertial1.get_rotation());
+        lcd::print(5, "%f : inertial 2", inertial2.get_rotation());
+        lcd::print(6, "%f : inertial 3", inertial3.get_rotation());
+        */
+
         delay(10);
     }
 }
@@ -111,10 +122,11 @@ void calculateOffsets(){
     float xAccrued = xTracking.get_position();
     float yAccrued = yTracking.get_position();
     float angleTurned = getAngle();
-    float xRadius = xAccrued / 100.0 / 360.0 * pi * xWheelDiameter / angleTurned;
-    float yRadius = yAccrued / 100.0 / 360.0 * pi * yWheelDiameter / angleTurned;
-    lcd::set_text(0, std::to_string(xRadius));
-    lcd::set_text(1, std::to_string(yRadius));
+    float xRadius = -xAccrued / 100.0 / 360.0 * pi * xWheelDiameter / angleTurned; //negative because this makes it correct you see
+    float yRadius = -yAccrued / 100.0 / 360.0 * pi * yWheelDiameter / angleTurned;
+    lcd::clear();
+    lcd::print(0, "%f : x offset", xRadius);
+    lcd::print(1, "%f : y offset", yRadius);
     delay(500);
     rightDrive.brake();
     leftDrive.brake();

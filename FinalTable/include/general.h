@@ -18,7 +18,7 @@ extern Motor intakeTop;
 extern Motor intakeBottom;
 extern Motor_Group intake;
 extern Motor wallMech;
-extern ADIPotentiometer wallMechPotentiometer;
+extern ADIPotentiometer WMPotentiometer;
 
 extern Rotation xTracking;
 extern Rotation yTracking;
@@ -33,7 +33,7 @@ extern ADIPort leftClearer;
 extern ADIPort intakePiston;
 
 extern Optical opticalSensor;
-extern Distance distanceSensor;
+extern Distance intakeDistanceSensor;
 extern Distance WMDistanceSensor;
 
 extern const float pi;
@@ -73,9 +73,6 @@ void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text);
 extern float getAngle(void);
 
 void motorTesting ();
-
-
-
 
 
 extern void USETHEBUTTONS ();

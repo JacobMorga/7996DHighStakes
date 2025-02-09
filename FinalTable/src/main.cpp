@@ -4,7 +4,7 @@ void initialize() {
 	screen::erase();
 	screen::set_eraser(COLOR_BLACK);
 	screen::set_pen(COLOR_YELLOW);
-	screen::fill_rect(0,0,480,240);
+	screen::fill_rect(0, 0, 480, 240);
 	screen::set_eraser(COLOR_YELLOW);
 	screen::set_pen(COLOR_BLACK);
 	screen::print(TEXT_MEDIUM_CENTER, 120, 118, "Calibrating Inertial & Odom");
@@ -17,31 +17,37 @@ void initialize() {
 	drive6.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeTop.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	intakeBottom.set_brake_mode(MOTOR_BRAKE_COAST);
-	wallMech.set_brake_mode(MOTOR_BRAKE_HOLD); //dont think its ever braking but whatever
+	wallMech.set_brake_mode(MOTOR_BRAKE_HOLD); //don't think it's ever braking but whatever
 	
-	inertial1.reset();
-	inertial2.reset();
-	inertial3.reset();
-	yTracking.set_reversed(1);
-	xTracking.set_reversed(0);
-	yTracking.reset();
+    inertial1.reset();
+    inertial2.reset();
+    inertial3.reset();
 	xTracking.reset();
-	wallMech.tare_position();
+	yTracking.reset();
+    xTracking.set_position(0.0);
+    yTracking.set_position(0.0);
+	xTracking.set_reversed(0);
+	yTracking.set_reversed(1);
 	
-	//while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
+	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
 	delay(500);
+
+	inertial1.set_rotation(0.0);
+	inertial2.set_rotation(0.0);
+	inertial3.set_rotation(0.0);
+	delay(500.0);
 	
 	pros::lcd::initialize();
 	pros::screen::erase();
 
 	Task odomTask (odometry, "odomTask");
 	Task comboTask (runComboSystem, "comboTask");
-	Task wallMechTaskCauseItNeedsIt (wallMechRunning, "wallmechtaskyeahiknow");
-	//Task runintakeandwallmechtask (runIntakeAndWallMech, "iawmt");
-	//Task button (USETHEBUTTONS, "buttonstask");
+	Task WMTask (runWallMech, "WMTask");
 }
 
-void disabled() {}
+void disabled() {
+	//FUNCH(me);
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field Management System 
@@ -75,20 +81,6 @@ void autonomous() {
 void opcontrol() {
 	runDriveCont();
 	//calculateOffsets();
-	/*
-	while(1){
-		lcd::set_text(1, std::to_string(getAngle()));
-		delay(10);
-	}
-	*/
-
-	/*
-	while(1){
-		std::cout << getR1() << getR2() << getL1() << getL2() << getA() << getB() << getX() << getY() << getUP() << getDOWN() << getRIGHT() << getLEFT() << "\n";
-		delay(5);
-	}
-	*/
-
 	//runColorCalibration();
 	//testColorCalibration();
-} 
+}

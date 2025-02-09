@@ -1,10 +1,11 @@
 #include "main.h"
 
 using namespace pros;
-float goaldist = 5.0; //3.0;
+float goaldist = 5.0;
 
-void bluePositive(){ //currently copied and pasted from redpositive then all x coordinates' signs switched
+void bluePositive(){
     teamColor = COLOR_BLUE;
+    /*
 	intakeState = 5; //5 to stop, 8 to go to 3V //!CHANGE THIS JOHN TO 5
     rotKP = 350.0;
     linKP = 25.0;
@@ -39,10 +40,12 @@ void bluePositive(){ //currently copied and pasted from redpositive then all x c
     rightDrive.move_velocity(150.0);
     leftDrive.move_velocity(150.0);
     delay(1000);
+    */
 }
 
-void blueNegative(){ //currently copied and pasted from rednegative with x signs inverted
+void blueNegative(){
     teamColor = COLOR_BLUE;
+    /*
     rotKP = 220.0;
     linKP = 10.0;
     toPoint(0.0, 24.0, 1, 0);
@@ -59,10 +62,12 @@ void blueNegative(){ //currently copied and pasted from rednegative with x signs
     toPoint(20.0, 39.0, 0, 1); //intake second auton line ring
     toPoint(0.0, 24.0, 0, 1); //get away from line
     toPoint(0.0, 48.0, 0, 0); //hit ladder
+    */
 }
 
 void redPositive(){
     teamColor = COLOR_RED;
+    /*
 	intakeState = 5;
     rotKP = 350.0;
 	toPoint(27.0, 22.0, 0, 0); //(25.0, 22.0); //intake bottom ring
@@ -96,10 +101,12 @@ void redPositive(){
     rightDrive.move_velocity(150.0);
     leftDrive.move_velocity(150.0);
     delay(1000);
+    */
 }
 
 void redNegative(){
     teamColor = COLOR_RED;
+    /*
     rotKP = 220.0;
     toPoint(0.0 - goaldist * cos(arctan2(0.0 - xPos, 24.0 - yPos)), 24.0 - goaldist * sin(arctan2(0.0 - xPos, 24.0 - yPos)), 1, 0); //go to first goal
     backClaw.set_value(1);
@@ -112,10 +119,12 @@ void redNegative(){
     toPoint(-20.0, 42.0, 0, 1); //intake second auton line ring
     toPoint(0.0, 24.0, 0, 1); //get away from line
     toPoint(0.0, 48.0, 0, 0); //hit ladder
+    */
 }
 
 void skills(){
     teamColor = COLOR_RED;
+    /*
     rotKP = 350.0;
     linKP = 20.0; //!delete this if it nacks
     toPoint(-24.0, 0.0, 1, 0); //get first goal
@@ -208,6 +217,7 @@ void skills(){
     toPoint(24.0, 108.0, 0, 1); //get second blue goal
     toPoint(72.0, 108.0, 0, 0); //push blue into corner
     toPoint(24.0, 96.0, 1, 0); //leave at the end
+    */
 
     /*
     clearer.set_value(1);
@@ -218,7 +228,6 @@ void skills(){
     backClaw.set_value(0);
     toPoint(-68.0, 72.0, 0, 0); //leave after scoring
     */
-
 
     /*
     toPoint(-56.0, 106.0, 0, 0); //remove blue from corner

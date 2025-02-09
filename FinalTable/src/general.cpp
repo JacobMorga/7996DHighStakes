@@ -21,7 +21,7 @@ Motor intakeBottom (5, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
 Motor wallMech (8, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
-ADIPotentiometer wallMechPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
+ADIPotentiometer WMPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
 
 Rotation xTracking (10);
 Rotation yTracking (21);
@@ -36,7 +36,7 @@ ADIPort leftClearer ('F', ADI_DIGITAL_OUT);
 ADIPort intakePiston ('G', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(7);
-Distance distanceSensor(9);
+Distance intakeDistanceSensor(9);
 Distance WMDistanceSensor(18);
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
@@ -75,6 +75,7 @@ float dif12, dif23, dif13;
 float leastDif, angle;
 int difSelect;
 float getAngle(void){
+    /*
     inertial1value = inertial1.get_rotation();
     inertial2value = inertial2.get_rotation();
     inertial3value = inertial3.get_rotation();
@@ -90,6 +91,9 @@ float getAngle(void){
     if (difSelect == 1){angle = 0.5 * (inertial1value + inertial2value);} // Evaluate average of the two closest sensors
     else if (difSelect == 2){angle = 0.5 * (inertial2value + inertial3value);}
     else{angle = 0.5 * (inertial1value + inertial3value);}
+    */
+
+    angle = inertial3.get_rotation();
 
     //angle = (pi / 2.0) - (angle / 180.0 * pi); // Convert to radians and have zero heading pi/2 rad
     angle = angle / 180.0 * pi;
