@@ -1,8 +1,13 @@
 #include "main.h"
 
-float rotKP = 190.0; // 100.0 for straight
-const float rotKI = 0.0; // 150
-const float rotKD = 1250.0; // 250
+float linKP = 15.0;
+const float linKI = 0.0;
+const float linKD = 0.0;
+
+float rotKP = 15000.0;
+const float rotKI = 750.0;
+const float rotKD = 100000.0; //106250.0; 
+
 const float tErrorMin = -1.0; //*tune after tuning rotKI
 const float tErrorMax = 5.0 / 180.0 * pi; //*tune after tuning rotKI
 const float tIntMax = 2000.0; //*tune after tuning rotKI
@@ -27,13 +32,13 @@ void facePoint(float xTar, float yTar){ //$ DONE ###############################
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
-        rightDrive.move_velocity((20.0 * tPow) / 12000.0 * 600.0); //! might need to switch which one is negative
-        leftDrive.move_velocity((-20.0 * tPow) / 12000.0 * 600.0);
+        rightDrive.move_voltage(tPow); //! might need to switch which one is negative
+        leftDrive.move_voltage(-tPow); //these used to be .move_velocity(20.0 * tPow) / 12000.0 * 600.0);
 
-        if (fabs(tError / pi * 180.0) <= 0.75 || pseudoVelocity <= 0.25){exitLoops += 1;} //about 0.5 degrees
+        if (fabs(tError / pi * 180.0) <= 0.75 || pseudoVelocity <= 0.25){exitLoops = 0;} //! rewrite to exitLoops += 1; I changed it to never exit //about 0.5 degrees
         else{exitLoops = 0;}
 
-        lcd::set_text(3, std::to_string(tError / pi * 180.0));
+        //lcd::set_text(3, std::to_string(tError / pi * 180.0));
 
         delay(10);
     }
@@ -42,9 +47,7 @@ void facePoint(float xTar, float yTar){ //$ DONE ###############################
 }
 
 
-float linKP = 15.0; //*tune this
-const float linKI = 0.0; //*tune this
-const float linKD = 10.0; //* 12.5
+
 const float lErrorMin = 1.0; //*tune after tuning linKI
 const float lIntMax = 1000.0; //*tune after tuning linKI
 
@@ -76,7 +79,7 @@ float tpl2dir = 0.0;
 float ttotar = 0.0;
 float distLimit = 5.0;
 
-void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
+void toPoint(float xTar, float yTar, float reversed, bool smooth){
     toPointLoops = 0;
     maxDist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
     while (toPointLoops < 50){
@@ -135,4 +138,9 @@ void toPoint(float xTar, float yTar, float reversed = 0.0, bool smooth = 0){
         delay(10);
     }
     drivetrain.brake();
+}
+
+void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float offsetDist){
+    float angleToTarget = arctan2(xTar - xPos, yTar - yPos);
+    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth);
 }

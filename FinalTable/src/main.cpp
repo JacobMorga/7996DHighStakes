@@ -29,7 +29,8 @@ void initialize() {
 	xTracking.set_reversed(0);
 	yTracking.set_reversed(1);
 	
-	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
+	//while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
+	while(inertial3.is_calibrating()){delay(20);}
 	delay(500);
 
 	inertial1.set_rotation(0.0);
@@ -83,4 +84,5 @@ void opcontrol() {
 	//calculateOffsets();
 	//runColorCalibration();
 	//testColorCalibration();
+	//facePoint(24.0, 0.0);
 }

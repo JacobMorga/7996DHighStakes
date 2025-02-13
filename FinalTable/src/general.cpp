@@ -31,9 +31,9 @@ IMU inertial2 (11);
 IMU inertial3 (19);
 
 ADIPort backClaw ('H', ADI_DIGITAL_OUT);
-ADIPort rightClearer ('B', ADI_DIGITAL_OUT);
-ADIPort leftClearer ('F', ADI_DIGITAL_OUT);
-ADIPort intakePiston ('G', ADI_DIGITAL_OUT);
+ADIPort rightClearer ('D', ADI_DIGITAL_OUT);
+ADIPort leftClearer ('G', ADI_DIGITAL_OUT);
+ADIPort intakePiston ('F', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(7);
 Distance intakeDistanceSensor(9);

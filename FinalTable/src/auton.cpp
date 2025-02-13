@@ -67,6 +67,32 @@ void blueNegative(){
 
 void redPositive(){
     teamColor = COLOR_RED;
+    toPoint(30.0, 42.0, 1, 0); //reverse goal rush
+    backClaw.set_value(1);
+    comboState = 1; //intake, wall mech idle
+    leftClearer.set_value(1);
+    toPointShortBy(66.0, -18.0, 0, 1, 12.0); //corner clearer behind rings
+    toPoint(24.0, -12.0, 0, 0); //clear corner and intake all rings
+    backClaw.set_value(0); //leave goal in corner
+    leftClearer.set_value(0);
+    intakePiston.set_value(1);
+    comboState = 3; //intake until ring of correct color detected
+    toPointShortBy(-24.0, 0.0, 0, 0, 6.0); //move to intake stacked top ring
+    intakePiston.set_value(0); //intake stacked ring
+    delay(50);
+    intakePiston.set_value(1);
+    toPoint(-14.0, -12.0, 0, 0); //align for alliance stake scoring
+    comboState = 6; //wall mech fully extended, intake off
+    delay(100);
+    comboState = 0;
+    intakePiston.set_value(0);
+    toPointShortBy(0.0, 24.0, 1, 0, 6.0); //reverse into second goal
+    comboState = 1; //intake held ring onto second goal
+    toPoint(24.0, 24.0, 0, 1); //intake ring into wall mech
+    comboState = 4;
+    toPointShortBy(48.0, 48.0, 0, 0, 10.0); //score wall stake
+    comboState = 6; //score wall stake
+
     /*
 	intakeState = 5;
     rotKP = 350.0;
@@ -106,6 +132,31 @@ void redPositive(){
 
 void redNegative(){
     teamColor = COLOR_RED;
+    toPoint(-6.0, 18.0, 1, 0); //align to first goal
+    backClaw.set_value(1); //clamp first goal
+    intakePiston.set_value(1);
+    comboState = 1;
+    toPointShortBy(24.0, 0.0, 0, 0, 6.0); //go to stacked ring
+    intakePiston.set_value(0); //intake stacked ring
+    delay(50);
+    intakePiston.set_value(1);
+    toPoint(14.0, -12.0, 0, 0); //align for alliance wall stake
+    comboState = 6; //score on alliance stake
+    delay(100);
+    comboState = 0;
+    toPoint(14.0, 0.0, 1, 1); //reverse away from alliance stake
+    leftClearer.set_value(1);
+    toPointShortBy(-66.0, -18.0, 0, 1, 12.0); //go put clearer in corner
+    toPoint(-24.0, -12.0, 0, 0); //clear corner and intake all rings
+    leftClearer.set_value(0);
+    comboState = 4; //wall mech loading
+    toPoint(-24.0, 24.0, 0, 1); //intake into wall mech
+    toPoint(-12.0, 66.0, 0, 1); //go to ring pile
+    comboState = 7; //wall mech scoring, intaking
+    toPoint(-36.0, 66.0, 0, 1); //intake other ring
+    toPoint(-36.0, 26.0, 1, 1); //reverse to align with wall stake
+    toPointShortBy(-48.0, 48.0, 0, 0, 10.0); //score wall stake
+
     /*
     rotKP = 220.0;
     toPoint(0.0 - goaldist * cos(arctan2(0.0 - xPos, 24.0 - yPos)), 24.0 - goaldist * sin(arctan2(0.0 - xPos, 24.0 - yPos)), 1, 0); //go to first goal

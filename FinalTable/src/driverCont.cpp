@@ -22,21 +22,21 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 250.0;
-float WMKd = 0.0;  //!untuned
+float WMKp = 375.0; //450.0;
+float WMKd = 350.0; //200.0;
 float WMPosition = 0.0; //degrees
 float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
 float WMPower = 0.0;
-float WMKi = 1000.0;
+float WMKi = 0.0;
 float WMIntegral = 0.0;
 float WMIntegralMax = 4000.0; //mV, arbitrary
-float WMIdleTarget = 30.0; //degrees
-float WMLoadingTarget = 55.0; //degrees
+float WMIdleTarget = 40.0; //degrees
+float WMLoadingTarget = 65.0; //degrees
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
-float WMScoringTarget = 175.0; //degrees
+float WMScoringTarget = 180.0; //degrees
 float WMManualSpeed = 0.5; //degrees per cycle
-float WMRingDetectionDist = 90.0; //m
+float WMRingDetectionDist = 50.0; //mm
 
 bool colorSorting = 1;
 float intakeSort1Start = 0.0;
@@ -397,34 +397,38 @@ void runComboSystem(){
         delay(10);
     }
 }
-
+float WMDistance;
 void runWallMech(){
     while(1){
         WMPosition = WMPotentiometer.get_angle();
         WMError = WMTarget - WMPosition;
         WMIntegral += WMError;
-        if(comboState <= 3 || comboState == 10 || comboState == 13){WMKi = 0.0;}
-        if(getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;} //this is so it turns around faster
-        if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
+        //if(comboState <= 3 || comboState == 10 || comboState == 13){WMKi = 0.0;}
+        //if(getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;} //this is so it turns around faster
+        //if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
         WMDerivative = WMPreviousPos - WMPosition;
         WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
         WMPreviousPos = WMPosition;
         wallMech.move_voltage(WMPower);
 
         //debug combo system
+        WMDistance = WMDistanceSensor.get();
         /*
         lcd::clear();
         lcd::print(0, "%d : combo state", comboState);
         lcd::print(1, "%d : color sorting", colorSorting);
         if(teamColor == COLOR_RED){lcd::print(2, "RED : team color");}
         else{lcd::print(2, "BLUE : team color");}
+        lcd::print(2, "%f : distance of WM sensor", WMDistance);
         lcd::print(3, "%f : position of WM", WMPosition);
         lcd::print(4, "%f : target of WM", WMTarget);
         lcd::print(5, "%f : error of WM", WMError);
         lcd::print(6, "%f : power of WM", WMPower / 1000.0);
         lcd::print(7, "%f : integral power of WM", WMIntegral * WMKi);
         */
-        
+
+        //debug drivetrain speeds
+        /*
         lcd::clear();
         lcd::print(0, "%f : right drive speed", (drive1.get_actual_velocity() + drive2.get_actual_velocity() + drive3.get_actual_velocity()) / 3.0);
         lcd::print(1, "%f : left drive speed", (drive4.get_actual_velocity() + drive5.get_actual_velocity() + drive6.get_actual_velocity()) / 3.0);
@@ -434,6 +438,14 @@ void runWallMech(){
         lcd::print(5, "%f : drive 4 speed", drive4.get_actual_velocity());
         lcd::print(6, "%f : drive 5 speed", drive5.get_actual_velocity());
         lcd::print(7, "%f : drive 6 speed", drive6.get_actual_velocity());
+        */
+        
+        lcd::clear();
+        lcd::print(0, "%f : xPos", xPos);
+        lcd::print(1, "%f : yPos", yPos);
+        lcd::print(2, "%f : tPos", tPos);
+        lcd::print(4, "%f : power", (20.0 * tPow) / 12000.0 * 600.0);
+        lcd::print(5, "%f : error", tError * 180.0 / pi);
         delay(10);
     }
 }
