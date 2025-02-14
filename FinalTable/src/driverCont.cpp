@@ -9,7 +9,7 @@ float sortDistance = 20.0; //110.0; //mm
 float sortDelay1 = 75.0; //ms
 float sortDelay2 = 200.0; //ms
 float sortDegrees1 = 200.0; //degrees
-float sortDegrees2 = 200.0; //degrees
+float sortDegrees2 = 100.0; //degrees
 int intakeStuckCounter = 0;
 
 const float redLimit = 25000.0; //lower limits for rgb sort

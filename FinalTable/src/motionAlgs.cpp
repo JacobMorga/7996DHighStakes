@@ -88,7 +88,7 @@ bool updateTargets = 0;
 float xTarShortInput = 0.0;
 float yTarShortInput = 0.0;
 
-void toPoint(float xTar, float yTar, float reversed, bool smooth){
+void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis){
     toPointLoops = 0;
     tInt = 0.0;
     tDer = 0.0;
@@ -152,6 +152,10 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth){
 
         if(pseudoVelSwitch == 0 && pseudoVelocity >= pseudoVelLimit){pseudoVelSwitch = 1;}
 
+        if(smooth == 1 && exitDis > distance(xPos,yPos,xTar,yTar)){
+            toPointLoops += 100; // immediatly exits loops
+        }
+
         if (dist < distLimit || (pseudoVelSwitch == 1 && pseudoVelocity <= pseudoVelLimit)){
             if (smooth == 0){toPointLoops += 1;} // +=1
             else{toPointLoops += 10;} //+=10
@@ -179,8 +183,8 @@ void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float o
     float angleToTarget = arctan2(xTar - xPos, yTar - yPos);
     xTarShortInput = xTar;
     yTarShortInput = yTar;
-    updateTargets = 1;
-    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth);
+    updateTargets = 1; //!1?
+    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, 0.0);
 }
 
 void faceAway(float xTar, float yTar){
