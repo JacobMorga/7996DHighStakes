@@ -81,8 +81,26 @@ void autonomous() {
 
 void opcontrol() {
 	runDriveCont();
+	//toPointShortBy(48.0, -24.0, 0, 1, clearingDist);
 	//calculateOffsets();
 	//runColorCalibration();
 	//testColorCalibration();
 	//facePoint(24.0, 0.0);
+
+	//toPoint(0.0, 72.0, 0, 0);
+	//toPoint(96.0, 24.0, 0, 0);
+
+	//toPoint(24.0, -72.0, 0, 0);
+	//toPoint(0.0, 0.0, 0, 0);
+	
+	//toPoint(0.0, 48.0, 0, 0);
+	//toPoint(0.0, 0.0, 1, 0);
+	//toPoint(0.0, 48.0, 1, 0);
+	//toPoint(0.0, 0.0, 0, 0);
+	
+	//toPoint(48.0, 48.0, 0, 0);
+	//toPoint(96.0, 0.0, 0, 0);
+	//toPoint(48.0, -48.0, 0, 0);
+	//toPoint(0.0, 0.0, 0, 0);
+	
 }

@@ -9,7 +9,7 @@ float sortDistance = 20.0; //110.0; //mm
 float sortDelay1 = 75.0; //ms
 float sortDelay2 = 200.0; //ms
 float sortDegrees1 = 200.0; //degrees
-float sortDegrees2 = 300.0; //degrees
+float sortDegrees2 = 200.0; //degrees
 int intakeStuckCounter = 0;
 
 const float redLimit = 25000.0; //lower limits for rgb sort
@@ -50,6 +50,8 @@ int waitingState = 0;
 bool dodge = 0;
 bool justLoaded = 0;
 pros::c::optical_raw_s_t rawColors;
+bool prevBackClawBool = 0;
+bool backClawBool = 0;
 
 void runDriveCont (){
     //$ Controller mapping:
@@ -59,15 +61,15 @@ void runDriveCont (){
     //$  Left joystick Y axis: Unused
     //$                    L1: Wall mech state cycle
     //$                    L2: Back claw toggle
-    //$                    R1: Intake toggle
+    //$                    R1: Intake toggle                -> Intake whether you have the back claw down
     //$                    R2: Reverse intake, hold button
-    //$                    Up: Wall mech manual adjust up
-    //$                  Down: Wall mech manual adjust down
+    //$                    Up: Wall mech manual adjust up   -> Right corner clearer
+    //$                  Down: Wall mech manual adjust down -> Intake piston toggle
     //$                  Left: Left corner clearer toggle
-    //$                 Right: Color sorting on/off toggle
-    //$                 X (↑): Intake until ring detected
-    //$                 Y (←): Intake piston toggle
-    //$                 A (→): Right corner clearer toggle
+    //$                 Right: Color sorting on/off toggle  
+    //$                 X (↑): Intake until ring detected   -> Wall mech manual adjust up
+    //$                 Y (←): Intake piston toggle         -> Unneeded
+    //$                 A (→): Right corner clearer toggle  -> Wall mech manual adjust down
     //$                 B (↓): Team color toggle
     //$ Potential additional adjustments/additions:
     //$ some kind of macro for holding a second ring in the intake and scoring it on the wall stake after the wall mech ring is scored
@@ -82,9 +84,9 @@ void runDriveCont (){
         leftDrive.move_voltage(JRYValue + JLXValue);
 
         if(controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());}
-        if(controller.get_digital_new_press(DIGITAL_Y)){intakePiston.set_value(!intakePiston.get_value());}
+        if(controller.get_digital_new_press(DIGITAL_DOWN)){intakePiston.set_value(!intakePiston.get_value());}
         if(controller.get_digital_new_press(DIGITAL_LEFT)){leftClearer.set_value(!leftClearer.get_value());}
-        if(controller.get_digital_new_press(DIGITAL_A)){rightClearer.set_value(!rightClearer.get_value());}
+        if(controller.get_digital_new_press(DIGITAL_UP)){rightClearer.set_value(!rightClearer.get_value());}
         if(controller.get_digital_new_press(DIGITAL_RIGHT)){colorSorting = !colorSorting;}
         if(controller.get_digital_new_press(DIGITAL_B)){
             if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
@@ -236,14 +238,22 @@ void runComboSystem(){
     //^ 14: intake currently sorting out ring from until finding correct ring, wall mech loading
     //^ 15: intake currently sorting out ring from until finding correct ring, wall mech scoring
     //^ 16: intake reversing, wall mech loading
+    //^ 17: secret state where just the bottom is intaking? unable to use controller to get here though it's only for autons i guess
     while(1){
         //* state transitions
+        backClawBool = backClaw.get_value();
         if(controller.get_digital_new_press(DIGITAL_R1)){ //pressed to start intaking 
-            if(comboState == 0 || comboState == 2){comboState = 1;}
+            if(comboState == 0 || comboState == 2){
+                if(backClaw.get_value()){comboState = 1;}
+                else{comboState = 3;}
+            }
             else if(comboState == 1 || comboState == 3){comboState = 0;}
             else if(comboState == 4){comboState = 5;} 
             else if(comboState == 5 || comboState == 16){comboState = 4;}
-            else if(comboState == 6 || comboState == 8){comboState = 7;}
+            else if(comboState == 6 || comboState == 8){
+                if(backClaw.get_value()){comboState = 7;}
+                else{comboState = 9;}
+            }
             else if(comboState == 7 || comboState == 9){comboState = 6;}
         }
         else if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech 
@@ -256,11 +266,11 @@ void runComboSystem(){
             else if(comboState == 9){comboState = 3;}
             else if(comboState == 16){comboState = 8;}
         }
-        else if(controller.get_digital_new_press(DIGITAL_X)){ //intake until ring seen
-            if(comboState == 3){comboState = 0;}
-            else if(comboState <= 5 || comboState == 16){comboState = 3;}
-            else if(comboState >= 6 && comboState <= 8){comboState = 9;}
-            else if(comboState == 9){comboState = 6;}        
+        else if(backClawBool != prevBackClawBool){
+            if(comboState == 1){comboState = 3;}
+            else if(comboState == 3){comboState = 1;}
+            else if(comboState == 7){comboState = 9;}
+            else if(comboState == 9){comboState = 7;}
         }
         else if(WMDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
             if(comboState == 4){comboState = 5; justLoaded = 1;} //redundant for clarity
@@ -272,13 +282,13 @@ void runComboSystem(){
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
         }
-        if(controller.get_digital(DIGITAL_UP)){ //manual wall mech target editing
+        if(controller.get_digital(DIGITAL_X)){ //manual wall mech target editing
             if(comboState == 4 || comboState == 5){WMLoadingTarget += WMManualSpeed;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;}
-        }
-        else if(controller.get_digital(DIGITAL_DOWN)){
-            if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMManualSpeed;}
             else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMManualSpeed;}
+        }
+        else if(controller.get_digital(DIGITAL_A)){
+            if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMManualSpeed;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;}
         }
         else if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
             if(comboState <= 3){comboState = 2;}
@@ -394,6 +404,11 @@ void runComboSystem(){
             WMTarget = WMLoadingTarget;
             opticalSensor.set_led_pwm(0.0);
         }
+        else if(comboState == 17){ //^ 17: secret state where just the bottom is intaking? unable to use controller to get here though it's only for autons i guess
+            intakeTop.brake();
+            intakeBottom.move_voltage(intakeVoltage);
+        }
+        prevBackClawBool = backClawBool;
         delay(10);
     }
 }
@@ -412,7 +427,7 @@ void runWallMech(){
         wallMech.move_voltage(WMPower);
 
         //debug combo system
-        WMDistance = WMDistanceSensor.get();
+        //WMDistance = WMDistanceSensor.get();
         /*
         lcd::clear();
         lcd::print(0, "%d : combo state", comboState);
@@ -440,12 +455,14 @@ void runWallMech(){
         lcd::print(7, "%f : drive 6 speed", drive6.get_actual_velocity());
         */
         
+        /*
         lcd::clear();
         lcd::print(0, "%f : xPos", xPos);
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos);
         lcd::print(4, "%f : power", (20.0 * tPow) / 12000.0 * 600.0);
         lcd::print(5, "%f : error", tError * 180.0 / pi);
+        */
         delay(10);
     }
 }

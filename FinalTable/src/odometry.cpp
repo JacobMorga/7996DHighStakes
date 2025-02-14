@@ -74,7 +74,7 @@ void odometry(void){
         xPos += deltaXGlobal;
         yPos += deltaYGlobal;
 
-        pseudoVelocity = sqrtf(powf(deltaXGlobal, 2.0) + powf(deltaYGlobal, 2.0)); //distance travelled in last loop
+        pseudoVelocity = 100.0 * sqrtf(powf(deltaXGlobal, 2.0) + powf(deltaYGlobal, 2.0)); //inches per second ish
 
         //odom output
         /*
