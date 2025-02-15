@@ -7,5 +7,6 @@ extern void testColorCalibration();
 extern void runComboSystem();
 extern void runWallMech();
 extern int comboState;
+extern bool instantLift;
 
 #endif

@@ -34,7 +34,7 @@ void facePoint(float xTar, float yTar){
         rightDrive.move_voltage(tPow); 
         leftDrive.move_voltage(-tPow); //these used to be .move_velocity(20.0 * tPow) / 12000.0 * 600.0);
 
-        if (fabs(tError / pi * 180.0) <= 0.75 || pseudoVelocity <= 0.25){exitLoops += 1;}
+        if (fabs(tError / pi * 180.0) <= 1.5 || pseudoVelocity <= 0.25){exitLoops += 1;}
         else{exitLoops = 0;}
 
         //lcd::set_text(3, std::to_string(tError / pi * 180.0));
@@ -88,7 +88,9 @@ bool updateTargets = 0;
 float xTarShortInput = 0.0;
 float yTarShortInput = 0.0;
 
-void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis){
+bool TPSB1 = 0;
+
+void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis, float powerLimit){
     toPointLoops = 0;
     tInt = 0.0;
     tDer = 0.0;
@@ -130,14 +132,14 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis)
         rightPow = lPow + tWeight * tPow;
         leftPow = lPow - tWeight * tPow;
 
-        if (fabs(rightPow) >= 12000.0 || fabs(leftPow) >= 12000.0){
+        if (fabs(rightPow) >= powerLimit || fabs(leftPow) >= powerLimit){
             if (fabs(rightPow) > fabs(leftPow)){
-                rightPow = getDir(lPow + tWeight * tPow) * 12000.0;
-                leftPow = getDir(lPow - tWeight * tPow) * fabs(12000.0 * (lPow - tWeight * tPow) / (lPow + tWeight * tPow));
+                rightPow = getDir(lPow + tWeight * tPow) * powerLimit;
+                leftPow = getDir(lPow - tWeight * tPow) * fabs(powerLimit * (lPow - tWeight * tPow) / (lPow + tWeight * tPow));
             }
             else{
-                rightPow = getDir(lPow + tWeight * tPow) * fabs(12000.0 * (lPow + tWeight * tPow) / (lPow - tWeight * tPow));
-                leftPow = getDir(lPow - tWeight * tPow) * 12000.0;
+                rightPow = getDir(lPow + tWeight * tPow) * fabs(powerLimit * (lPow + tWeight * tPow) / (lPow - tWeight * tPow));
+                leftPow = getDir(lPow - tWeight * tPow) * powerLimit;
             }
         }
 
@@ -150,18 +152,21 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis)
         //lcd::set_text(6, std::to_string(rightPow));
         //lcd::set_text(7, std::to_string(tError));
 
-        if(pseudoVelSwitch == 0 && pseudoVelocity >= pseudoVelLimit){pseudoVelSwitch = 1;}
+        if(pseudoVelSwitch == 0 && pseudoVelocity > pseudoVelLimit){pseudoVelSwitch = 1;}
 
+        /* //!i took this out between switching from positive to negative corner
         if(smooth == 1 && exitDis > distance(xPos,yPos,xTar,yTar)){
-            toPointLoops += 100; // immediatly exits loops
+            toPointLoops += 100; //immediately exits loop
         }
+        */
 
-        if (dist < distLimit || (pseudoVelSwitch == 1 && pseudoVelocity <= pseudoVelLimit)){
+        if (dist < distLimit || (pseudoVelSwitch == 1 && pseudoVelocity < pseudoVelLimit)){
             if (smooth == 0){toPointLoops += 1;} // +=1
             else{toPointLoops += 10;} //+=10
         }
         else{toPointLoops = 0;}
 
+        /*
         lcd::clear();
         //lcd::print(0, "%f : rightPow", rightPow);
         //lcd::print(1, "%f : leftPow", leftPow);
@@ -172,6 +177,7 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis)
         lcd::print(5, "%f : lPow", lPow / 1000.0);
         lcd::print(6, "%f : tError", tError);
         lcd::print(7, "%f : tPow", tWeight * tPow / 1000.0);
+        */
 
         delay(10);
     }
@@ -179,12 +185,13 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis)
     updateTargets = 0;
 }
 
-void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float offsetDist){
+void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float offsetDist, float powerLimit){
     float angleToTarget = arctan2(xTar - xPos, yTar - yPos);
     xTarShortInput = xTar;
     yTarShortInput = yTar;
-    updateTargets = 1; //!1?
-    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, 0.0);
+    if(TPSB1){updateTargets = 0;}
+    else{updateTargets = 1;}
+    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, 0.0, powerLimit);
 }
 
 void faceAway(float xTar, float yTar){

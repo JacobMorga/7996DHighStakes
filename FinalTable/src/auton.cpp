@@ -3,7 +3,7 @@
 using namespace pros;
 float goalDist = 6.0;
 float cornerDist = 18.0;
-float ringStackDist = 4.0;
+float ringStackDist = 9.0;
 float clearingDist = 12.0;
 float wallStakeDist = 10.0;
 
@@ -17,26 +17,28 @@ void blueNegative(){
 
 void redPositive(){ // Line up with right side wallmech bearing flat front screw and back left screw in 7th hole
     teamColor = COLOR_RED;
+    TPSB1 = 0; //update
     comboState = 6; //wall mech fully extended, intake off
     delay(1000); // score alliance stake
     comboState = 0; //wall mwch idle intake off
-    toPointShortBy(0.0,24.0,1,0,goalDist+8.5); // grab goal
+    toPointShortBy(0.0,24.0,1,0,goalDist+8.5, 12000.0); // grab goal
     backClaw.set_value(1);
     delay(500);
     intakePiston.set_value(1); // lift up intake
     comboState = 1; //wall mech idle intake off
-    toPointShortBy(-24.0,0.0,0,0,12.0); //ring stack
-    //intakePiston.set_value(0);
-    delay(750);
-    //intakePiston.set_value(1);
-    toPoint(0.0,0.0,1,1,12.0); //crank the 90
+    toPointShortBy(-24.0,0.0,0,0,12.0, 12000.0); //ring stack
+    delay(250);
     intakePiston.set_value(0);
-    toPoint(24.0,24.0,0, 1, 6.0); //bottom ring
-    //leftClearer.set_value(1);
-    toPointShortBy(36.0, -12.0, 0, 0, 18.0); //put clearer in corner
-    toPoint(12.0, -18.0, 0, 1, 6.0); //clear intake all corner rings
+    toPoint(0.0,0.0,1,1,12.0, 12000.0); //crank the 90
+    toPoint(24.0,24.0,0, 1, 6.0, 12000.0); //bottom ring
+    leftClearer.set_value(1);
+    toPointShortBy(36.0, -10.0, 0, 0, 18.0, 12000.0); //put clearer in corner
+    toPoint(-36.0, -14.0, 0, 0, 6.0, 12000.0); //clear corner
+    facePoint(0.0, yPos); //align to rings
+    toPoint(-12.0, -14.0, 0, 0, 6.0, 12000.0); //clear intake all corner rings
     leftClearer.set_value(0);
-    toPoint(-12.0, 12.0, 0, 0, 1.0); //go to ladder
+    toPoint(-24.0, 12.0, 0, 0, 1.0, 12000.0); //go to ladder
+    facePoint(-24.0, 24.0); //face ladder
     drivetrain.move_voltage(2000.0); //ram ladder
 
 
@@ -86,30 +88,48 @@ void redPositive(){ // Line up with right side wallmech bearing flat front screw
 
 void redNegative(){
     teamColor = COLOR_RED;
-    toPointShortBy(0.0, 24.0, 1, 0, goalDist); //align to first goal
+    comboState = 0;
+    TPSB1 = 1; //don't update
+    toPointShortBy(0.0, 24.0, 1, 0, goalDist, 12000.0); //align to first goal
     backClaw.set_value(1); //clamp first goal
+    delay(125);
     intakePiston.set_value(1);
     comboState = 1;
-    toPointShortBy(24.0, 0.0, 0, 0, ringStackDist); //go to stacked ring
+    toPointShortBy(24.0, -3.0, 0, 0, ringStackDist, 12000.0); //go to stacked ring //!no idea why it needs -3.0
     intakePiston.set_value(0); //intake stacked ring
-    delay(50);
-    intakePiston.set_value(1);
-    toPoint(14.0, -12.0, 0, 0, 0.0); //align for alliance wall stake
+    delay(125);
+    comboState = 18;
+    //intakePiston.set_value(1);
+    toPoint(18.0, -12.0, 0, 0, 0.0, 12000.0); //align for alliance wall stake
+    facePoint(xPos, -48.0); //face alliance wall stake
     comboState = 6; //score on alliance stake
-    delay(100);
-    comboState = 0;
-    toPoint(14.0, 0.0, 1, 1, 6.0); //reverse away from alliance stake
+    delay(500);
+    //drivetrain.move_voltage(6000.0);
+    //delay(250);
+    intakePiston.set_value(0);
+    toPoint(xPos, 6.0, 1, 1, 6.0, 12000.0); //reverse away from alliance stake
+    comboState = 1;
     leftClearer.set_value(1);
-    toPointShortBy(-66.0, -18.0, 0, 1, clearingDist); //go put clearer in corner
-    toPoint(-24.0, -12.0, 0, 0, 0.0); //clear corner and intake all rings
+    toPoint(-32.0, -12.0, 0, 1, 6.0, 12000.0); //go put clearer in corner
+    toPoint(-32.0, 0.0, 0, 1, 6.0, 12000.0); //push rings out
     leftClearer.set_value(0);
+    facePoint(-48.0, 24.0); //face rings
+    toPoint(-36.0, 27.0, 0, 1, 0.0, 6000.0); //intake all rings //pull +36 down //!4000.0
+    toPoint(-36.0, 18.0, 1, 1, 0.0, 12000.0); //back up from ring intake (if necessary?)
     comboState = 4; //wall mech loading
-    toPoint(-24.0, 24.0, 0, 1, 6.0); //intake into wall mech
-    toPoint(-12.0, 66.0, 0, 1, 6.0); //go to ring pile
-    comboState = 7; //wall mech scoring, intaking
-    toPoint(-36.0, 66.0, 0, 1, 6.0); //intake other ring
-    toPoint(-36.0, 26.0, 1, 1, 6.0); //reverse to align with wall stake
-    toPointShortBy(-48.0, 48.0, 0, 0, wallStakeDist); //score wall stake
+    instantLift = 1;
+    toPoint(-24.0, 24.0, 0, 1, 6.0, 12000.0); //intake into wall mech
+    toPoint(-20.0, 38.5, 0, 1, 6.0, 12000.0); //go to ring pile
+    delay(250);
+    toPoint(-24.0, 24.0, 1, 1, 6.0, 12000.0); //reverse from first line ring
+    toPoint(-26.0, 40.0, 0, 1, 6.0, 12000.0); //intake other ring
+    delay(250);
+    toPoint(-24.0, 24.0, 1, 1, 6.0, 12000.0); //reverse outta there to align with wall stake
+    facePoint(-48.0, 48.0); //face wall stake
+    toPoint(-40.0, 46.0, 0, 0, 0.0, 12000.0); //score wall stake
+    //toPointShortBy(-48.0, 50.0, 0, 0, wallStakeDist, 12000.0); //score wall stake
+    toPoint(-24.0, 24.0, 1, 1, 6.0, 12000.0); //away from wall stake
+    toPoint(12.0, 36.0, 0, 1, 6.0, 6000.0); //go touch ladder
 }
 
 void skills(){
