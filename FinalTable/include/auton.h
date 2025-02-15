@@ -10,4 +10,6 @@ extern float cornerDist;
 extern float ringStackDist;
 extern float clearingDist;
 extern float wallStakeDist;
+extern bool redAWP;
+extern bool blueAWP;
 #endif

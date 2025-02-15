@@ -29,6 +29,7 @@ const float yWheelOffset = -4.457098; //-4.512428; //-4.126149; //calculated
     float calXDia = 0.0;
     float calYDia = 0.0;
     float pseudoVelocity = 0.0;
+    float pseudoRotVel = 0.0;
 
 void odometry(void){
     previousXPosition = 0.0;
@@ -66,7 +67,6 @@ void odometry(void){
         deltaRLocal = sqrtf((powf(deltaXLocal, 2.0)) + powf(deltaYLocal, 2.0));
         deltaThetaLocal = arctan2(deltaXLocal, deltaYLocal);
         modTheta = deltaThetaLocal - avgTheta;
-        previousTheta = tPos;
 
         deltaXGlobal = deltaRLocal * cos(modTheta);
         deltaYGlobal = deltaRLocal * sin(modTheta);
@@ -75,6 +75,8 @@ void odometry(void){
         yPos += deltaYGlobal;
 
         pseudoVelocity = 100.0 * sqrtf(powf(deltaXGlobal, 2.0) + powf(deltaYGlobal, 2.0)); //inches per second ish
+        pseudoRotVel = tPos - previousTheta;
+        previousTheta = tPos;
 
         //odom output
         /*

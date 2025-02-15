@@ -66,15 +66,15 @@ void autonomous() {
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
 	
-	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos" );	redPositive();} // Runs auton based on auton selector output
-	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg" );	redNegative();} // And prints what auton its running
-	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos");	bluePositive();}
-	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg");	blueNegative();}
-	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
+	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos AWP" );	redAWP = 1;  redPositive();} // Runs auton based on auton selector output
+	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg AWP" );	redAWP = 1;  redNegative();} // And prints what auton its running
+	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos AWP");	blueAWP = 1; bluePositive();}
+	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg AWP");	blueAWP = 1; blueNegative();}
+	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos Max" );	redAWP = 0;  redPositive();}
+	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg Max" );	redAWP = 0;  redNegative();}
+	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos Max");	blueAWP = 0; bluePositive();}
+	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg Max");	blueAWP = 0; blueNegative();}
+	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"      );	skills();}
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
 	
 }

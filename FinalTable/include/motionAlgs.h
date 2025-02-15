@@ -7,6 +7,7 @@ extern void toPoint(float xTar, float yTar, float reversed, bool smooth, float e
 extern void rotArc(float xTar, float yTar, float tTar);
 extern void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float offsetDist, float powerLimit);
 extern void faceAway(float xTar, float yTar);
+extern void faceHeading(float tTar);
 extern float rotKP;
 extern float linKP;
 extern float distLimit;
