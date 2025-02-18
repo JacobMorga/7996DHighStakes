@@ -6,10 +6,12 @@ float JRYValue, JRXValue, JLYValue, JLXValue; //joystick right y, right x, left 
 float intakeVoltage = 12000.0; // mV //11000
 int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
-float sortDelay1 = 75.0; //ms
-float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 200.0; //degrees
-float sortDegrees2 = 100.0; //degrees
+//float sortDelay1 = 750.0; //ms
+//float sortDelay2 = 200.0; //ms
+float sortDegrees1 = 435.0; //degrees
+float sortDegrees2 = 400.0; //degrees
+float stickItIn = 200.0; //ms
+float pullItOut = 75.0; //ms
 int intakeStuckCounter = 0;
 
 const float redLimit = 25000.0; //lower limits for rgb sort
@@ -32,7 +34,7 @@ float WMKi = 0.0;
 float WMIntegral = 0.0;
 float WMIntegralMax = 4000.0; //mV, arbitrary
 float WMIdleTarget = 40.0; //degrees
-float WMLoadingTarget = 65.0; //degrees
+float WMLoadingTarget = 67.0; //degrees
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 180.0; //degrees
 float WMManualSpeed = 0.5; //degrees per cycle
@@ -69,6 +71,8 @@ bool backClawBool = 0;
 
 
 
+bool instantLift = 0;
+
 void runDriveCont (){
     //$ Controller mapping:
     //$ Right joystick X axis: Unused
@@ -90,6 +94,7 @@ void runDriveCont (){
     //$ Potential additional adjustments/additions:
     //$ some kind of macro for holding a second ring in the intake and scoring it on the wall stake after the wall mech ring is scored
 
+    instantLift = 0;
     while (1){
         JRYValue = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0; // Scales 127 to 100 then cubes and converts to mV
         JLYValue = powf(controller.get_analog(ANALOG_LEFT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
@@ -255,6 +260,7 @@ void runComboSystem(){
     //^ 15: intake currently sorting out ring from until finding correct ring, wall mech scoring
     //^ 16: intake reversing, wall mech loading
     //^ 17: secret state where just the bottom is intaking? unable to use controller to get here though it's only for autons i guess
+    //^ 18: second secret state where the bottom's outtaking while the top's intaking. controller unable to reach this state
     while(1){
         //* state transitions
         backClawBool = backClaw.get_value();
@@ -289,7 +295,10 @@ void runComboSystem(){
             else if(comboState == 9){comboState = 7;}
         }
         else if(WMDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
-            if(comboState == 4){comboState = 5; justLoaded = 1;} //redundant for clarity
+            if(comboState == 4){ //redundant for clarity
+                if(instantLift){comboState = 7; justLoaded = 1;}
+                else{comboState = 5; justLoaded = 1;}
+            }
         }
         else if(intakeDistanceSensor.get() <= sortDistance && (comboState == 1 || comboState == 3 || comboState == 4 || comboState == 7 || comboState == 9)){ //ring detected
             if(comboState == 1){comboState = 10;}
@@ -348,9 +357,9 @@ void runComboSystem(){
         }
         else if(comboState == 5){ //^ 5: intake stopped, wall mech loaded but down
             if(justLoaded == 1){ //pull hook out of ring
-                delay(50);
+                delay(stickItIn);
                 intake.move_voltage(-intakeVoltage);
-                delay(75);
+                delay(pullItOut);
                 justLoaded = 0;
             }
             intake.brake();
@@ -363,8 +372,15 @@ void runComboSystem(){
             opticalSensor.set_led_pwm(0.0);
         }
         else if(comboState == 7){ //^ 7: intaking, wall mech scoring (color sort by toggle)
-            intake.move_voltage(intakeVoltage);
+            if(justLoaded == 1){ //pull hook out of ring
+                delay(stickItIn);
+                intake.move_voltage(-intakeVoltage);
+                WMTarget = WMScoringTarget;
+                delay(pullItOut);
+                justLoaded = 0;
+            }
             WMTarget = WMScoringTarget;
+            intake.move_voltage(intakeVoltage);
             if(colorSorting){opticalSensor.set_led_pwm(100.0);}
             else{opticalSensor.set_led_pwm(0.0);}
         }
@@ -420,9 +436,13 @@ void runComboSystem(){
             WMTarget = WMLoadingTarget;
             opticalSensor.set_led_pwm(0.0);
         }
-        else if(comboState == 17){ //^ 17: secret state where just the bottom is intaking? unable to use controller to get here though it's only for autons i guess
+        else if(comboState == 17){ //^ 17: secret state where just the bottom is intaking. unable to use controller to get here though it's only for autons i guess
             intakeTop.brake();
             intakeBottom.move_voltage(intakeVoltage);
+        }
+        else if(comboState == 18){ //^ 18: second secret state where the bottom's outtaking while the top's intaking. controller unable to reach this state
+            intakeTop.move_voltage(intakeVoltage);
+            intakeBottom.move_voltage(-intakeVoltage);
         }
         prevBackClawBool = backClawBool;
         delay(10);
@@ -442,11 +462,19 @@ void runWallMech(){
         WMPreviousPos = WMPosition;
         wallMech.move_voltage(WMPower);
 
-        //debug combo system
-        //WMDistance = WMDistanceSensor.get();
         /*
         lcd::clear();
+        lcd::print(0, "%f : xPos", xPos);
+        lcd::print(1, "%f : yPos", yPos);
+        lcd::print(2, "%f : tPos", tPos);
+        */
+
+        //debug combo system
+        //WMDistance = WMDistanceSensor.get();
+        
+        lcd::clear();
         lcd::print(0, "%d : combo state", comboState);
+        /*
         lcd::print(1, "%d : color sorting", colorSorting);
         if(teamColor == COLOR_RED){lcd::print(2, "RED : team color");}
         else{lcd::print(2, "BLUE : team color");}
