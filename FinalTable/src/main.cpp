@@ -65,6 +65,14 @@ void autonomous() {
 	screen::fill_rect(0,0,480,240);
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
+	led1.set_all(teamColor);
+	led2.set_all(teamColor);
+	led3.set_all(teamColor);
+	led4.set_all(teamColor);
+    led1.update();
+	led2.update();
+	led3.update();
+	led4.update();
 	
 	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos" );	redPositive();} // Runs auton based on auton selector output
 	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg" );	redNegative();} // And prints what auton its running
@@ -76,7 +84,6 @@ void autonomous() {
 	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
 	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
-	
 }
 
 void opcontrol() {
