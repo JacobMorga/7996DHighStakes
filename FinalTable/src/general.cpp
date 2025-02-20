@@ -39,6 +39,11 @@ Optical opticalSensor(7);
 Distance intakeDistanceSensor(9);
 Distance WMDistanceSensor(18);
 
+ADILed led1 ('A', 33); // Must be in seperate groups
+ADILed led2 ('C', 33);
+ADILed led3 ('E', 33);
+ADILed led4 ('G', 33);
+
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 
     pros::c::screen_print_at(txtFmt,x,y,text);

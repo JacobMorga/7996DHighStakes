@@ -54,6 +54,22 @@ bool justLoaded = 0;
 pros::c::optical_raw_s_t rawColors;
 bool prevBackClawBool = 0;
 bool backClawBool = 0;
+ 
+#define intakeTog       DIGITAL_A
+#define intakeRev       DIGITAL_A
+#define wallMechTog     DIGITAL_A
+#define backClawTog     DIGITAL_A
+#define colorSortingTog DIGITAL_A
+#define wallMechUp      DIGITAL_A
+#define wallMechDown    DIGITAL_A
+#define leftCC          DIGITAL_A
+#define rightCC         DIGITAL_A
+#define teamColorTog    DIGITAL_A
+#define intakeUntilRing DIGITAL_A
+#define intakePis       DIGITAL_A
+
+
+
 
 bool instantLift = 0;
 bool forcedTransit = 0;
@@ -90,12 +106,12 @@ void runDriveCont (){
         rightDrive.move_voltage(JRYValue - JLXValue);
         leftDrive.move_voltage(JRYValue + JLXValue);
 
-        if(controller.get_digital_new_press(DIGITAL_L2)){backClaw.set_value(!backClaw.get_value());}
-        if(controller.get_digital_new_press(DIGITAL_DOWN)){intakePiston.set_value(!intakePiston.get_value());}
-        if(controller.get_digital_new_press(DIGITAL_LEFT)){leftClearer.set_value(!leftClearer.get_value());}
-        if(controller.get_digital_new_press(DIGITAL_UP)){rightClearer.set_value(!rightClearer.get_value());}
-        if(controller.get_digital_new_press(DIGITAL_RIGHT)){colorSorting = !colorSorting;}
-        if(controller.get_digital_new_press(DIGITAL_B)){
+        if(controller.get_digital_new_press(backClawTog)){backClaw.set_value(!backClaw.get_value());}
+        if(controller.get_digital_new_press(intakePis)){intakePiston.set_value(!intakePiston.get_value());}
+        if(controller.get_digital_new_press(leftCC)){leftClearer.set_value(!leftClearer.get_value());}
+        if(controller.get_digital_new_press(rightCC)){rightClearer.set_value(!rightClearer.get_value());}
+        if(controller.get_digital_new_press(colorSortingTog)){colorSorting = !colorSorting;}
+        if(controller.get_digital_new_press(teamColorTog)){
             if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
             else{teamColor = COLOR_RED;}
         }
