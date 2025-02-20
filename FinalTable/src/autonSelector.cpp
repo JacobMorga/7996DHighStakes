@@ -96,15 +96,15 @@ void autonSelector (){
         }
         
         screen::set_pen(COLOR_WHITE);
-        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,0   + yTxtOffset,"Red Pos AWP");
-        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,0   + yTxtOffset,"Red Neg AWP");
-        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,0   + yTxtOffset,"Blue Pos AWP");
-        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,80  + yTxtOffset,"Blue Neg AWP");
-        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,80  + yTxtOffset,"Red Pos Max");
-        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,80  + yTxtOffset,"Red Neg Max");
-        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,160 + yTxtOffset,"Blue Pos Max");
-        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,160 + yTxtOffset,"Blue Neg Max");
-        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,160 + yTxtOffset,"Skills");
+        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,0   + yTxtOffset, "D Red +");
+        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,0   + yTxtOffset, "D Red -");
+        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,0   + yTxtOffset, "D Blue +");
+        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,80  + yTxtOffset, "D Blue -");
+        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,80  + yTxtOffset, "Red Rush");
+        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,80  + yTxtOffset, "RedNegMax");
+        screen::print(TEXT_MEDIUM_CENTER,120 + xTxtOffset,160 + yTxtOffset, "Blue Rush");
+        screen::print(TEXT_MEDIUM_CENTER,240 + xTxtOffset,160 + yTxtOffset, "BlueNegMax");
+        screen::print(TEXT_MEDIUM_CENTER,360 + xTxtOffset,160 + yTxtOffset, "Blue Hook");
 
                                if (teamColor == COLOR_RED){
 		std::cout << "RED";

@@ -14,5 +14,7 @@ extern float distLimit;
 extern float tPow;
 extern float tError;
 extern bool TPSB1;
+extern float minAcceptableRotError;
+
 
 #endif

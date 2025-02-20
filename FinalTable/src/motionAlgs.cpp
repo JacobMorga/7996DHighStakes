@@ -20,8 +20,9 @@ float tPow = 0.0;
 float tTarget = 0.0; //this is a variable while tTar is an input
 int exitLoops = 0; //universal
 bool pseudoVelSwitch = 0;
-float pseudoVelLimit = 2.0;
-float pseudoRotVelLimit = 0.05;
+float pseudoVelLimit = 1.0;
+float pseudoRotVelLimit = 0.15;
+float minAcceptableRotError = 1.5;
 
 void facePoint(float xTar, float yTar){
     pseudoVelSwitch = 0;
@@ -38,9 +39,9 @@ void facePoint(float xTar, float yTar){
         rightDrive.move_voltage(tPow); 
         leftDrive.move_voltage(-tPow);
 
-        if(pseudoVelSwitch == 0 && pseudoVelocity > pseudoVelLimit){pseudoVelSwitch = 1;}
+        if(pseudoVelSwitch == 0 && fabs(pseudoRotVel) > pseudoRotVelLimit){pseudoVelSwitch = 1;}
 
-        if (fabs(tError / pi * 180.0) <= 1.5 || (pseudoVelSwitch == 1 && pseudoRotVel < pseudoRotVelLimit)){exitLoops += 1;}
+        if (fabs(tError / pi * 180.0) <= minAcceptableRotError || (pseudoVelSwitch == 1 && fabs(pseudoRotVel) < pseudoRotVelLimit)){exitLoops += 1;}
         else{exitLoops = 0;}
 
         delay(10);

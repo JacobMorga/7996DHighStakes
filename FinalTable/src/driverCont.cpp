@@ -24,8 +24,8 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 375.0; //450.0;
-float WMKd = 350.0; //200.0;
+float WMKp = 375.0;
+float WMKd = 350.0;
 float WMPosition = 0.0; //degrees
 float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
@@ -56,6 +56,8 @@ bool prevBackClawBool = 0;
 bool backClawBool = 0;
 
 bool instantLift = 0;
+bool forcedTransit = 0;
+int forcedState = 0;
 
 void runDriveCont (){
     //$ Controller mapping:
@@ -201,27 +203,42 @@ void colorSort(int incomingState){
         else if(controller.get_digital_new_press(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
         else if(controller.get_digital_new_press(DIGITAL_R2)){exitcode = 4;}
         else if(controller.get_digital_new_press(DIGITAL_A)){exitcode = 5;}
+        else if(forcedTransit == 1){exitcode = 6; forcedTransit = 0;}
         if(incomingState >= 13 && incomingState <= 15 && ((redQuotient >= redLimit && teamColor == COLOR_RED) || (blueQuotient >= blueLimit && teamColor == COLOR_BLUE))){exitcode = 3;} //pause this ring on intake
         delay(10);
     }
     if(exitcode == 1){comboState = sortingState;} //ring passed color sorting
     else if(exitcode == 2){ //sort flagged ring
         if(dodge){WMTarget = WMIdleTarget;}
+
         intakeStuckCounter = 0;
-        while(intakeDistanceSensor.get() < sortDistance && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;} //intended variance decreaser
+        while(intakeDistanceSensor.get() < sortDistance && intakeStuckCounter < 200 && forcedTransit == 0){
+            intakeStuckCounter += 1;
+            delay(10);
+        }
+
         intakeStuckCounter = 0;
-        while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;}    
+        while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200 && forcedTransit == 0){
+            intakeStuckCounter += 1;
+            delay(10);
+        }   
+
         intakeStuckCounter = 0;
         intake.move_voltage(-intakeVoltage);
         intakeSort2Start = intakeTop.get_position();
-        while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;}
+        while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200 && forcedTransit == 0){
+            intakeStuckCounter += 1;
+            delay(10);
+        }
         if(dodge){WMTarget = WMLoadingTarget;}
         if(incomingState >= 13 && incomingState <= 15){comboState = waitingState;}
         else{comboState = sortingState;}
+        if(forcedTransit == 1){comboState = forcedState; forcedTransit = 0;}
     }
     else if(exitcode == 3){comboState = stoppedState;} //manual or automatic stop
     else if(exitcode == 4){comboState = reversedState;} //manual reverse
     else if(exitcode == 5){comboState = waitingState;} //manual wait until ring
+    else if(exitcode == 6){comboState = forcedState;} //force exit of color sort in auton
 }
 
 void runComboSystem(){
@@ -293,11 +310,11 @@ void runComboSystem(){
         }
         if(controller.get_digital(DIGITAL_X)){ //manual wall mech target editing
             if(comboState == 4 || comboState == 5){WMLoadingTarget += WMManualSpeed;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMManualSpeed;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMManualSpeed;} // + or - up to driver
         }
         else if(controller.get_digital(DIGITAL_A)){
             if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMManualSpeed;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;} // + or - up to driver
         }
         else if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
             if(comboState <= 3){comboState = 2;}
@@ -455,9 +472,8 @@ void runWallMech(){
 
         //debug combo system
         //WMDistance = WMDistanceSensor.get();
-        
-        lcd::clear();
-        lcd::print(0, "%d : combo state", comboState);
+        //lcd::clear();
+        //lcd::print(0, "%d : combo state", comboState);
         /*
         lcd::print(1, "%d : color sorting", colorSorting);
         if(teamColor == COLOR_RED){lcd::print(2, "RED : team color");}
@@ -493,4 +509,10 @@ void runWallMech(){
         */
         delay(10);
     }
+}
+
+void transit(int forcedStateInput){ //force exit from color sort in auton
+    comboState = forcedStateInput;
+    forcedTransit = 1;
+    forcedState = forcedStateInput;
 }
