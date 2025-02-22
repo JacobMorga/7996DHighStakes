@@ -158,3 +158,10 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
     }
     return(output);
 }
+
+void graphThePath (vector<coord> targetPath, vector<coord> actualPath){
+
+    for (int i = 0; i < targetPath.size(); i++){
+        //screen::draw_line();
+    }
+}
