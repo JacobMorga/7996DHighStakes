@@ -8,7 +8,7 @@ int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 435.0; //degrees
+float sortDegrees1 = 400.0; //412.5; //degrees
 float sortDegrees2 = 400.0; //degrees
 float stickItIn = 200.0; //ms
 float pullItOut = 75.0; //ms
@@ -24,21 +24,23 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 375.0; //450.0;
-float WMKd = 350.0; //200.0;
+float WMKp = 375.0;
+float WMKd = 2250.0; //350.0; 2000-2500
 float WMPosition = 0.0; //degrees
 float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
 float WMPower = 0.0;
-float WMKi = 0.0;
+float WMKi = 5.0; //0-10
 float WMIntegral = 0.0;
 float WMIntegralMax = 4000.0; //mV, arbitrary
+float WMErrorMax = 20.0;
 float WMIdleTarget = 40.0; //degrees
-float WMLoadingTarget = 67.0; //degrees
+float WMLoadingTarget = 60.0; //degrees
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
-float WMScoringTarget = 180.0; //degrees
+float WMScoringTarget = 175.0; //180.0; //degrees
 float WMManualSpeed = 0.5; //degrees per cycle
 float WMRingDetectionDist = 50.0; //mm
+float prevWMTarget = 0.0;
 
 bool colorSorting = 1;
 float intakeSort1Start = 0.0;
@@ -55,23 +57,21 @@ pros::c::optical_raw_s_t rawColors;
 bool prevBackClawBool = 0;
 bool backClawBool = 0;
  
-#define intakeTog       DIGITAL_A
-#define intakeRev       DIGITAL_A
-#define wallMechTog     DIGITAL_A
-#define backClawTog     DIGITAL_A
-#define colorSortingTog DIGITAL_A
-#define wallMechUp      DIGITAL_A
-#define wallMechDown    DIGITAL_A
-#define leftCC          DIGITAL_A
-#define rightCC         DIGITAL_A
-#define teamColorTog    DIGITAL_A
-#define intakeUntilRing DIGITAL_A
-#define intakePis       DIGITAL_A
-
-
-
-
 bool instantLift = 0;
+bool forcedTransit = 0;
+int forcedState = 0;
+
+#define intakeTog       DIGITAL_R1
+#define intakeRev       DIGITAL_R2
+#define wallMechCycle   DIGITAL_L1
+#define backClawTog     DIGITAL_L2
+#define colorSortingTog DIGITAL_RIGHT
+#define wallMechUp      DIGITAL_X
+#define wallMechDown    DIGITAL_A
+#define leftCC          DIGITAL_LEFT
+#define rightCC         DIGITAL_UP
+#define teamColorTog    DIGITAL_B
+#define intakePis       DIGITAL_DOWN
 
 void runDriveCont (){
     //$ Controller mapping:
@@ -204,7 +204,7 @@ void colorSort(int incomingState){
 
     opticalSensor.set_led_pwm(100.0);
     exitcode = 0;
-    intakeSort1Start = intakeTop.get_position();
+    intakeSort1Start = intakeRotation.get_position(); //intakeTop.get_position();
     while(exitcode == 0){
         rawColors = opticalSensor.get_raw();
         ambient = opticalSensor.get_brightness();
@@ -214,30 +214,45 @@ void colorSort(int incomingState){
 
         if(distanceSensed > sortDistance){exitcode = 1;} //ring passed through color sorter
         else if((redQuotient >= redLimit && teamColor == COLOR_BLUE) || (blueQuotient >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
-        else if(controller.get_digital_new_press(DIGITAL_R1)){exitcode = 3;} //exit to corresponding state
-        else if(controller.get_digital_new_press(DIGITAL_R2)){exitcode = 4;}
-        else if(controller.get_digital_new_press(DIGITAL_A)){exitcode = 5;}
+        else if(controller.get_digital_new_press(intakeTog)){exitcode = 3;} //exit to corresponding state
+        else if(controller.get_digital_new_press(intakeRev)){exitcode = 4;}
+        //else if(controller.get_digital_new_press(DIGITAL_A)){exitcode = 5;} //? don't think we need this anymore
+        else if(forcedTransit == 1){exitcode = 6; forcedTransit = 0;}
         if(incomingState >= 13 && incomingState <= 15 && ((redQuotient >= redLimit && teamColor == COLOR_RED) || (blueQuotient >= blueLimit && teamColor == COLOR_BLUE))){exitcode = 3;} //pause this ring on intake
         delay(10);
     }
     if(exitcode == 1){comboState = sortingState;} //ring passed color sorting
     else if(exitcode == 2){ //sort flagged ring
         if(dodge){WMTarget = WMIdleTarget;}
+
         intakeStuckCounter = 0;
-        while(intakeDistanceSensor.get() < sortDistance && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;} //intended variance decreaser
+        while(intakeDistanceSensor.get() < sortDistance && intakeStuckCounter < 200 && forcedTransit == 0){
+            intakeStuckCounter += 1;
+            delay(10);
+        }        
+
         intakeStuckCounter = 0;
-        while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;}    
+        while(intakeRotation.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200 && forcedTransit == 0){
+            intakeStuckCounter += 1;
+            delay(10);
+        }   
+
         intakeStuckCounter = 0;
         intake.move_voltage(-intakeVoltage);
-        intakeSort2Start = intakeTop.get_position();
-        while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200){delay(10); intakeStuckCounter += 1;}
+        intakeSort2Start = intakeRotation.get_position(); //intakeTop.get_position();
+        while(intakeRotation.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200 && forcedTransit == 0){
+            intakeStuckCounter += 1;
+            delay(10);
+        }
         if(dodge){WMTarget = WMLoadingTarget;}
         if(incomingState >= 13 && incomingState <= 15){comboState = waitingState;}
         else{comboState = sortingState;}
+        if(forcedTransit == 1){comboState = forcedState; forcedTransit = 0;}
     }
     else if(exitcode == 3){comboState = stoppedState;} //manual or automatic stop
     else if(exitcode == 4){comboState = reversedState;} //manual reverse
     else if(exitcode == 5){comboState = waitingState;} //manual wait until ring
+    else if(exitcode == 6){comboState = forcedState;} //force exit of color sort in auton
 }
 
 void runComboSystem(){
@@ -264,7 +279,7 @@ void runComboSystem(){
     while(1){
         //* state transitions
         backClawBool = backClaw.get_value();
-        if(controller.get_digital_new_press(DIGITAL_R1)){ //pressed to start intaking 
+        if(controller.get_digital_new_press(intakeTog)){ //pressed to start intaking 
             if(comboState == 0 || comboState == 2){
                 if(backClaw.get_value()){comboState = 1;}
                 else{comboState = 3;}
@@ -278,7 +293,7 @@ void runComboSystem(){
             }
             else if(comboState == 7 || comboState == 9){comboState = 6;}
         }
-        else if(controller.get_digital_new_press(DIGITAL_L1)){ //pressed to cycle wall mech 
+        else if(controller.get_digital_new_press(wallMechCycle)){ //pressed to cycle wall mech 
             if(comboState <= 3){comboState = 4;}
             else if(comboState == 4){comboState = 7;}
             else if(comboState == 5){comboState = 6;}
@@ -307,20 +322,20 @@ void runComboSystem(){
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
         }
-        if(controller.get_digital(DIGITAL_X)){ //manual wall mech target editing
+        if(controller.get_digital(wallMechUp)){ //manual wall mech target editing
             if(comboState == 4 || comboState == 5){WMLoadingTarget += WMManualSpeed;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMManualSpeed;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMManualSpeed;} // + or - up to driver
         }
-        else if(controller.get_digital(DIGITAL_A)){
+        else if(controller.get_digital(wallMechDown)){
             if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMManualSpeed;}
-            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;}
+            else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;} // + or - up to driver
         }
-        else if(controller.get_digital(DIGITAL_R2)){ //intake reverse button 
+        else if(controller.get_digital(intakeRev)){ //intake reverse button 
             if(comboState <= 3){comboState = 2;}
             else if(comboState == 4 || comboState == 5){comboState = 16;}
             else if(comboState >= 6 && comboState <= 9){comboState = 8;}
         }
-        else if(controller.get_digital(DIGITAL_R2) == 0){ //let go of the reverse button 
+        else if(controller.get_digital(intakeRev) == 0){ //let go of the reverse button 
             if(comboState == 2){comboState = 0;}
             else if(comboState == 8){comboState = 6;}
             else if(comboState == 16){comboState = 5;}
@@ -449,18 +464,26 @@ void runComboSystem(){
     }
 }
 float WMDistance;
-void runWallMech(){
+void runWallMech(){ //also holds printing so we only print in one task
     while(1){
+        if(WMTarget != prevWMTarget){
+            WMError = 0.0;
+            WMIntegral = 0.0;
+            WMDerivative = 0.0;
+        }
         WMPosition = WMPotentiometer.get_angle();
         WMError = WMTarget - WMPosition;
         WMIntegral += WMError;
-        //if(comboState <= 3 || comboState == 10 || comboState == 13){WMKi = 0.0;}
-        //if(getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;} //this is so it turns around faster
-        //if (fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
-        WMDerivative = WMPreviousPos - WMPosition;
+        if(WMTarget > 160.0 && getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;}
+        if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
+        if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
+        //WMDerivative = WMPreviousPos - WMPosition; //!aint no way this is how it works
+        WMDerivative = WMPosition - WMPreviousPos;
+        if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
         WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
         WMPreviousPos = WMPosition;
         wallMech.move_voltage(WMPower);
+        prevWMTarget = WMTarget;
 
         /*
         lcd::clear();
@@ -470,11 +493,9 @@ void runWallMech(){
         */
 
         //debug combo system
-        //WMDistance = WMDistanceSensor.get();
-        
+        WMDistance = WMDistanceSensor.get();
         lcd::clear();
         lcd::print(0, "%d : combo state", comboState);
-        /*
         lcd::print(1, "%d : color sorting", colorSorting);
         if(teamColor == COLOR_RED){lcd::print(2, "RED : team color");}
         else{lcd::print(2, "BLUE : team color");}
@@ -484,41 +505,13 @@ void runWallMech(){
         lcd::print(5, "%f : error of WM", WMError);
         lcd::print(6, "%f : power of WM", WMPower / 1000.0);
         lcd::print(7, "%f : integral power of WM", WMIntegral * WMKi);
-        */
 
-        //debug drivetrain speeds
-        /*
-        lcd::clear();
-        lcd::print(0, "%f : right drive speed", (drive1.get_actual_velocity() + drive2.get_actual_velocity() + drive3.get_actual_velocity()) / 3.0);
-        lcd::print(1, "%f : left drive speed", (drive4.get_actual_velocity() + drive5.get_actual_velocity() + drive6.get_actual_velocity()) / 3.0);
-        lcd::print(2, "%f : drive 1 speed", drive1.get_actual_velocity());
-        lcd::print(3, "%f : drive 2 speed", drive2.get_actual_velocity());
-        lcd::print(4, "%f : drive 3 speed", drive3.get_actual_velocity());
-        lcd::print(5, "%f : drive 4 speed", drive4.get_actual_velocity());
-        lcd::print(6, "%f : drive 5 speed", drive5.get_actual_velocity());
-        lcd::print(7, "%f : drive 6 speed", drive6.get_actual_velocity());
-        */
-        
-        /*
-        lcd::clear();
-        lcd::print(0, "%f : xPos", xPos);
-        lcd::print(1, "%f : yPos", yPos);
-        lcd::print(2, "%f : tPos", tPos);
-        lcd::print(4, "%f : power", (20.0 * tPow) / 12000.0 * 600.0);
-        lcd::print(5, "%f : error", tError * 180.0 / pi);
-        */
         delay(10);
     }
 }
 
-
-void intakeAndWallMech (void){
-
-    while(1){
-
-        if (controller.get_digital_new_press(intakeTog)){
-
-        }
-        
-    }
+void transit(int forcedStateInput){ //force exit from color sort in auton
+    comboState = forcedStateInput;
+    forcedTransit = 1;
+    forcedState = forcedStateInput;
 }

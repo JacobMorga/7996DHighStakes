@@ -7,5 +7,6 @@ extern float tPos;
 extern void odometry(void);
 extern void calculateOffsets(void);
 extern float pseudoVelocity;
+extern float pseudoRotVel;
 
 #endif

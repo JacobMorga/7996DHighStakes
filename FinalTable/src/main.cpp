@@ -74,15 +74,15 @@ void autonomous() {
 	led3.update();
 	led4.update();
 	
-	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos" );	redPositive();} // Runs auton based on auton selector output
-	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg" );	redNegative();} // And prints what auton its running
-	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos");	bluePositive();}
-	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg");	blueNegative();}
-	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
-	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills"  );	skills();}
+	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Red +");  defaultAutoRedPos();} // Runs auton based on auton selector output
+	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Red -");  defaultAutoRedNeg();} // And prints what auton its running
+	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Blue +");	 defaultAutoBluePos();}
+	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Blue -");	 defaultAutoBlueNeg();}
+	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Rush");  simpleRedRush();}
+	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RedNegMax");  redAWP = 0; redNegative();}
+	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Rush");	 simpleBlueRush();}
+	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BlueNegMax");	 blueAWP = 0; blueNegative();}
+	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Hook");	blueHooker();}
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
 }
 

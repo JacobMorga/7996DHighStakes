@@ -22,6 +22,7 @@ extern ADIPotentiometer WMPotentiometer;
 
 extern Rotation xTracking;
 extern Rotation yTracking;
+extern Rotation intakeRotation;
 
 extern IMU inertial1;
 extern IMU inertial2;

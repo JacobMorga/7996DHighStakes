@@ -25,6 +25,7 @@ ADIPotentiometer WMPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument 
 
 Rotation xTracking (10);
 Rotation yTracking (21);
+Rotation intakeRotation (2);
 
 IMU inertial1 (1);
 IMU inertial2 (11);
@@ -39,9 +40,9 @@ Optical opticalSensor(7);
 Distance intakeDistanceSensor(9);
 Distance WMDistanceSensor(18);
 
-ADILed led1 ('A', 33); // Must be in seperate groups
+ADILed led1 ('A', 33); // Must be in separate groups
 ADILed led2 ('C', 33);
-ADILed led3 ('E', 33);
+ADILed led3 ('B', 33);
 ADILed led4 ('G', 33);
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){

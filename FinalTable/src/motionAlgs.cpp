@@ -19,25 +19,30 @@ float tPrevError = 0.0;
 float tPow = 0.0;
 float tTarget = 0.0; //this is a variable while tTar is an input
 int exitLoops = 0; //universal
+bool pseudoVelSwitch = 0;
+float pseudoVelLimit = 1.0;
+float pseudoRotVelLimit = 0.15;
+float minAcceptableRotError = 1.5;
 
 void facePoint(float xTar, float yTar){
+    pseudoVelSwitch = 0;
     exitLoops = 0;
     while (exitLoops < 25){
         tPos = (pi / 2.0) - tPos;
         tTarget = arctan2(xTar - xPos, yTar - yPos);
         tError = normAngle(tTarget - tPos);
         tInt += tError;
-        if (fabs(tError) >= tErrorMax || fabs(tInt) >= tIntMax){tInt = 0.0;} //*tune rotKI first
+        if (fabs(tError) >= tErrorMax || fabs(tInt) >= tIntMax){tInt = 0.0;}
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
         rightDrive.move_voltage(tPow); 
-        leftDrive.move_voltage(-tPow); //these used to be .move_velocity(20.0 * tPow) / 12000.0 * 600.0);
+        leftDrive.move_voltage(-tPow);
 
-        if (fabs(tError / pi * 180.0) <= 1.5 || pseudoVelocity <= 0.25){exitLoops += 1;}
+        if(pseudoVelSwitch == 0 && fabs(pseudoRotVel) > pseudoRotVelLimit){pseudoVelSwitch = 1;}
+
+        if (fabs(tError / pi * 180.0) <= minAcceptableRotError || (pseudoVelSwitch == 1 && fabs(pseudoRotVel) < pseudoRotVelLimit)){exitLoops += 1;}
         else{exitLoops = 0;}
-
-        //lcd::set_text(3, std::to_string(tError / pi * 180.0));
 
         delay(10);
     }
@@ -80,8 +85,7 @@ float TProtKP = 30000.0; //best so far 15000.0;
 float TProtKI = 0.0; //best so far 0.0;
 float TProtKD = 500000.0; //best so far 500000.0;
 
-bool pseudoVelSwitch = 0;
-float pseudoVelLimit = 2.0;
+
 float offsetDist = 0.0;
 float angleToTarget = 0.0;
 bool updateTargets = 0;
@@ -99,6 +103,7 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis,
     lDer = 0.0;
     lPrevError = 0.0;
     pseudoVelSwitch = 0;
+    pseudoVelocity = 0.0;
     maxDist = sqrt(pow(xTar - xPos, 2.0) + pow(yTar - yPos, 2.0));
     while (toPointLoops < 50){
 
@@ -196,4 +201,8 @@ void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float o
 
 void faceAway(float xTar, float yTar){
     facePoint(2.0 * xPos - xTar, 2.0 * yPos - yTar);
+}
+
+void faceHeading(float tTar){
+    facePoint(xPos + 96.0 * cos(tTar), yPos + 96.0 * sin(tTar));
 }

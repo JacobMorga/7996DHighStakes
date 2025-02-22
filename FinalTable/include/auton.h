@@ -10,4 +10,13 @@ extern float cornerDist;
 extern float ringStackDist;
 extern float clearingDist;
 extern float wallStakeDist;
+extern bool redAWP;
+extern bool blueAWP;
+extern void defaultAutoRedPos();
+extern void defaultAutoRedNeg();
+extern void defaultAutoBluePos();
+extern void defaultAutoBlueNeg();
+extern void simpleRedRush();
+extern void simpleBlueRush();
+extern void blueHooker();
 #endif

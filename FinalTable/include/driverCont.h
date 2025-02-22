@@ -6,7 +6,11 @@ extern void runColorCalibration();
 extern void testColorCalibration();
 extern void runComboSystem();
 extern void runWallMech();
+extern void transit(int forcedStateInput);
 extern int comboState;
 extern bool instantLift;
+extern float WMKp;
+extern float WMKd;
+extern float WMScoringTarget;
 
 #endif
