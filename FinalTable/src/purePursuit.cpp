@@ -10,6 +10,9 @@ float diffX,diffY,R,D;
 float int1Dist,int2Dist = 0.0;
 bool intersection1Check, intersection2Check = true;
 coord lastKnownIntersection (0.0,0.0);
+//! NOTEBOOK NOTES
+//! 1. IT CANT MOVE TO A POINT DIRECTLY AHEAD - VALUES OSCILATE BETWEEN 100M - -500M
+//! 2.
 
 coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputPoint){
 
@@ -78,6 +81,14 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
         indexPP ++;
     }
+    lcd::clear();
+    lcd::print(0, "%d : x", intersectionPoints.back().x);
+    lcd::print(1, "%d : y", intersectionPoints.back().y);
+    lcd::print(2, "%d : check1", intersection1Check);
+    lcd::print(3, "%d : check2", intersection2Check);
+    lcd::print(4, "%d : xrob", xPos);
+    lcd::print(5, "%d : yrob", yPos);
+    
 
     if (intersectionPoints.size() != 0){ // Intersects path
 
@@ -90,7 +101,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
     }
 }
 
-float PPkp = 0.0;
+float PPkp = 100.0;
 float PPtkp = 0.0;
 
 int runPP = 0;
@@ -101,7 +112,7 @@ float rightPowPP,leftPowPP = 0.0;
 coord robotPos (0.0,0.0);
 
 coord followPoint;
-void doThePurePursuit (coord followPoint, vector<coord> path){
+void doThePurePursuit (vector<coord> path){
 
     runPP = 0;
     while (runPP < 50){
@@ -130,15 +141,18 @@ void doThePurePursuit (coord followPoint, vector<coord> path){
             }
         }
 
-        rightDrive.move_voltage(rightPowPP); // Moves motors
-        leftDrive.move_voltage(leftPowPP);
+        //rightDrive.move_voltage(rightPowPP); // Moves motors
+        //leftDrive.move_voltage(leftPowPP);
 
-        delay(10);
 
+
+        delay(500);
+        /*
         if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
             runPP++;
         }
         else { runPP = 0; }
+        */
     }
 }
 

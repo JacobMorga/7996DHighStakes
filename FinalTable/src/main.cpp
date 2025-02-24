@@ -1,4 +1,5 @@
 #include "main.h"
+using namespace pros;
 
 void initialize() {
 	screen::erase();
@@ -42,8 +43,8 @@ void initialize() {
 	pros::screen::erase();
 
 	Task odomTask (odometry, "odomTask");
-	Task comboTask (runComboSystem, "comboTask");
-	Task WMTask (runWallMech, "WMTask");
+	//Task comboTask (runComboSystem, "comboTask");
+	//Task WMTask (runWallMech, "WMTask");
 }
 
 void disabled() {
@@ -87,7 +88,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	runDriveCont();
+	//runDriveCont();
 	//toPointShortBy(48.0, -24.0, 0, 1, clearingDist);
 	//calculateOffsets();
 	//runColorCalibration();
@@ -109,5 +110,14 @@ void opcontrol() {
 	//toPoint(96.0, 0.0, 0, 0);
 	//toPoint(48.0, -48.0, 0, 0);
 	//toPoint(0.0, 0.0, 0, 0);
-	
+
+	while (1){
+		lcd::clear();
+		lcd::print(3, "%d : trob", tPos);
+		lcd::print(4, "%d : xrob", xPos);
+		lcd::print(5, "%d : yrob", yPos);
+		delay(10);
+	}
+	std::vector<coord> pathJohn= {coord(0.0,0.0), coord(1.0,1.1)};
+	doThePurePursuit(pathJohn);
 }
