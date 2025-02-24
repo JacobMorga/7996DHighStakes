@@ -8,7 +8,7 @@ int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 400.0; //412.5; //degrees
+float sortDegrees1 = 450.0; //412.5; //degrees
 float sortDegrees2 = 400.0; //degrees
 float stickItIn = 200.0; //ms
 float pullItOut = 75.0; //ms
@@ -231,15 +231,14 @@ void colorSort(int incomingState){
             delay(10);
         }        
 
-        intakeStuckCounter = 0;
         while(intakeRotation.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200 && forcedTransit == 0){
             intakeStuckCounter += 1;
             delay(10);
-        }   
+        }
 
-        intakeStuckCounter = 0;
-        intake.move_voltage(-intakeVoltage);
         intakeSort2Start = intakeRotation.get_position(); //intakeTop.get_position();
+        intake.move_voltage(-intakeVoltage);
+        intakeStuckCounter = 0;
         while(intakeRotation.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200 && forcedTransit == 0){
             intakeStuckCounter += 1;
             delay(10);
