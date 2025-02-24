@@ -26,14 +26,15 @@ float WMError = 0.0; //degrees
 
 float WMKp = 375.0;
 float WMKd = 2250.0; //350.0; 2000-2500
+float WMKi = 5.0; //0-10
+float WMIntegralMax = 4000.0; //mV, arbitrary
+float WMErrorMax = 20.0;
+
+float WMIntegral = 0.0;
 float WMPosition = 0.0; //degrees
 float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
 float WMPower = 0.0;
-float WMKi = 5.0; //0-10
-float WMIntegral = 0.0;
-float WMIntegralMax = 4000.0; //mV, arbitrary
-float WMErrorMax = 20.0;
 float WMIdleTarget = 40.0; //degrees
 float WMLoadingTarget = 60.0; //degrees
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
@@ -476,7 +477,6 @@ void runWallMech(){ //also holds printing so we only print in one task
         if(WMTarget > 160.0 && getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;}
         if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
         if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
-        //WMDerivative = WMPreviousPos - WMPosition; //!aint no way this is how it works
         WMDerivative = WMPosition - WMPreviousPos;
         if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
         WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
