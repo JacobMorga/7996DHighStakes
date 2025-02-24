@@ -26,14 +26,15 @@ float WMError = 0.0; //degrees
 
 float WMKp = 375.0;
 float WMKd = 2250.0; //350.0; 2000-2500
+float WMKi = 5.0; //0-10
+float WMIntegralMax = 4000.0; //mV, arbitrary
+float WMErrorMax = 20.0;
+
+float WMIntegral = 0.0;
 float WMPosition = 0.0; //degrees
 float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
 float WMPower = 0.0;
-float WMKi = 5.0; //0-10
-float WMIntegral = 0.0;
-float WMIntegralMax = 4000.0; //mV, arbitrary
-float WMErrorMax = 20.0;
 float WMIdleTarget = 40.0; //degrees
 float WMLoadingTarget = 60.0; //degrees
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
@@ -477,7 +478,6 @@ void runWallMech(){ //also holds printing so we only print in one task
         if(WMTarget > 160.0 && getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;}
         if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
         if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
-        //WMDerivative = WMPreviousPos - WMPosition; //!aint no way this is how it works
         WMDerivative = WMPosition - WMPreviousPos;
         if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
         WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
@@ -514,4 +514,49 @@ void transit(int forcedStateInput){ //force exit from color sort in auton
     comboState = forcedStateInput;
     forcedTransit = 1;
     forcedState = forcedStateInput;
+}
+
+void newRunWallMech(){ //also holds printing so we only print in one task
+    while(1){
+        if(WMTarget != prevWMTarget){
+            WMError = 0.0;
+            WMIntegral = 0.0;
+            WMDerivative = 0.0;
+        }
+        WMPosition = WMPotentiometer.get_angle();
+        WMError = WMTarget - WMPosition;
+        WMIntegral += WMError;
+        if(WMTarget > 160.0 && getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;}
+        if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
+        if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
+        WMDerivative = WMPosition - WMPreviousPos;
+        if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
+        WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
+        WMPreviousPos = WMPosition;
+        wallMech.move_voltage(WMPower);
+        prevWMTarget = WMTarget;
+
+        /*
+        lcd::clear();
+        lcd::print(0, "%f : xPos", xPos);
+        lcd::print(1, "%f : yPos", yPos);
+        lcd::print(2, "%f : tPos", tPos);
+        */
+
+        //debug combo system
+        WMDistance = WMDistanceSensor.get();
+        lcd::clear();
+        lcd::print(0, "%d : combo state", comboState);
+        lcd::print(1, "%d : color sorting", colorSorting);
+        if(teamColor == COLOR_RED){lcd::print(2, "RED : team color");}
+        else{lcd::print(2, "BLUE : team color");}
+        lcd::print(2, "%f : distance of WM sensor", WMDistance);
+        lcd::print(3, "%f : position of WM", WMPosition);
+        lcd::print(4, "%f : target of WM", WMTarget);
+        lcd::print(5, "%f : error of WM", WMError);
+        lcd::print(6, "%f : power of WM", WMPower / 1000.0);
+        lcd::print(7, "%f : integral power of WM", WMIntegral * WMKi);
+
+        delay(10);
+    }
 }
