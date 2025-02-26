@@ -33,7 +33,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
         coord startPoint;
         startPoint.x = shiftedPath[indexPP].x; // Retrives x and y for each end point of line
-        startPoint.y = shiftedPath[indexPP].y; 
+        startPoint.y = shiftedPath[indexPP].y;
 
         coord endPoint;
         endPoint.x = shiftedPath[indexPP + 1].x;
@@ -42,7 +42,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         diffX = endPoint.x-startPoint.x;
         diffY = endPoint.y-startPoint.y;
         R = distance(startPoint.x,startPoint.y,endPoint.x,endPoint.y);
-        D = startPoint.x*endPoint.y - endPoint.x*startPoint.y;
+        D = startPoint.x * endPoint.y - endPoint.x * startPoint.y;
 
         coord int1; // first possible intersection
         int1.x = (D * diffY + getDir(diffY) * diffX * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0); // Calculates intersection points
@@ -122,31 +122,30 @@ void doThePurePursuit (vector<coord> path){
 
         followPoint = findBestIntersection(path, 8.0, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
 
-        tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
+        tToTarget = arctan2(followPoint.x - robotPos.x, followPoint.y - robotPos.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
 
-        lErrorPP = pythagThisJohn(followPoint.x, followPoint.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
+        lErrorPP = pythagThisJohn(followPoint.x - robotPos.x, followPoint.y - robotPos.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
 
         rightPowPP = lErrorPP * PPkp + tErrorPP * PPtkp; // Multiply each error by their tuning values
         leftPowPP = lErrorPP * PPkp - tErrorPP * PPtkp;
 
         if (fabs(rightPowPP) >= 12000.0|| fabs(leftPowPP) >= 12000.0){ // If power is over max value scale both sides
             if (fabs(rightPowPP) > fabs(leftPowPP)){
-                rightPowPP = getDir(rightPowPP) * 12000.0;
-                leftPowPP = getDir(leftPowPP) * fabs(12000.0 * (leftPowPP) / (rightPowPP));
+                rightPowPP = getDir(lErrorPP * PPkp + tErrorPP * PPtkp) * 12000.0;
+                leftPowPP = getDir(lErrorPP * PPkp - tErrorPP * PPtkp) * fabs(12000.0 * (lErrorPP * PPkp - tErrorPP * PPtkp) / (lErrorPP * PPkp + tErrorPP * PPtkp));
             }
             else{
-                rightPowPP = getDir(rightPowPP) * fabs(600.0 * (rightPowPP) / (leftPowPP));
-                leftPowPP = getDir(leftPowPP) * 600.0;
+                rightPowPP = getDir(lErrorPP * PPkp + tErrorPP * PPtkp) * fabs(12000.0 * (lErrorPP * PPkp + tErrorPP * PPtkp) / (lErrorPP * PPkp - tErrorPP * PPtkp));
+                leftPowPP = getDir(lErrorPP * PPkp - tErrorPP * PPtkp) * 12000.0;
             }
         }
 
-        //rightDrive.move_voltage(rightPowPP); // Moves motors
-        //leftDrive.move_voltage(leftPowPP);
+        rightDrive.move_voltage(rightPowPP); // Moves motors
+        leftDrive.move_voltage(leftPowPP);
 
 
-
-        delay(500);
+        delay(10);
         /*
         if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
             runPP++;
