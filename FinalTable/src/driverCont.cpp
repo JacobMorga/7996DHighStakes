@@ -24,8 +24,8 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 375.0;
-float WMKd = 2250.0; //350.0; 2000-2500
+float WMKp = 150.0; //375.0;
+float WMKd = 350.0; //2250.0; //350.0; 2000-2500
 float WMKi = 5.0; //0-10
 float WMIntegralMax = 4000.0; //mV, arbitrary
 float WMErrorMax = 20.0;
@@ -76,21 +76,21 @@ int forcedState = 0;
 
 void runDriveCont (){
     //$ Controller mapping:
-    //$ Right joystick X axis: Unused
+    //$ Right joystick X axis: -------
     //$ Right joystick Y axis: Driving
     //$  Left joystick X axis: Turning
-    //$  Left joystick Y axis: Unused
+    //$  Left joystick Y axis: -------
     //$                    L1: Wall mech state cycle
     //$                    L2: Back claw toggle
-    //$                    R1: Intake toggle                -> Intake whether you have the back claw down
+    //$                    R1: Intake whether you have the back claw down
     //$                    R2: Reverse intake, hold button
-    //$                    Up: Wall mech manual adjust up   -> Right corner clearer
-    //$                  Down: Wall mech manual adjust down -> Intake piston toggle
-    //$                  Left: Left corner clearer toggle
+    //$                    Up: Right corner clearer
+    //$                  Down: Intake piston toggle
+    //$                  Left: -------
     //$                 Right: Color sorting on/off toggle  
-    //$                 X (↑): Intake until ring detected   -> Wall mech manual adjust up
-    //$                 Y (←): Intake piston toggle         -> Unneeded
-    //$                 A (→): Right corner clearer toggle  -> Wall mech manual adjust down
+    //$                 X (↑): Wall mech manual adjust up
+    //$                 Y (←): -------
+    //$                 A (→): Wall mech manual adjust down
     //$                 B (↓): Team color toggle
     //$ Potential additional adjustments/additions:
     //$ some kind of macro for holding a second ring in the intake and scoring it on the wall stake after the wall mech ring is scored
@@ -205,7 +205,7 @@ void colorSort(int incomingState){
 
     opticalSensor.set_led_pwm(100.0);
     exitcode = 0;
-    intakeSort1Start = intakeRotation.get_position(); //intakeTop.get_position();
+    intakeSort1Start = intakeTop.get_position(); //intakeTop.get_position();
     while(exitcode == 0){
         rawColors = opticalSensor.get_raw();
         ambient = opticalSensor.get_brightness();
@@ -232,15 +232,15 @@ void colorSort(int incomingState){
             delay(10);
         }        
 
-        while(intakeRotation.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200 && forcedTransit == 0){
+        while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200 && forcedTransit == 0){
             intakeStuckCounter += 1;
             delay(10);
         }
 
-        intakeSort2Start = intakeRotation.get_position(); //intakeTop.get_position();
+        intakeSort2Start = intakeTop.get_position(); //intakeTop.get_position();
         intake.move_voltage(-intakeVoltage);
         intakeStuckCounter = 0;
-        while(intakeRotation.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200 && forcedTransit == 0){
+        while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200 && forcedTransit == 0){
             intakeStuckCounter += 1;
             delay(10);
         }
@@ -484,14 +484,15 @@ void runWallMech(){ //also holds printing so we only print in one task
         wallMech.move_voltage(WMPower);
         prevWMTarget = WMTarget;
 
-        /*
+        
         lcd::clear();
         lcd::print(0, "%f : xPos", xPos);
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos);
-        */
+        
 
         //debug combo system
+        /*
         WMDistance = WMDistanceSensor.get();
         lcd::clear();
         lcd::print(0, "%d : combo state", comboState);
@@ -504,6 +505,7 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(5, "%f : error of WM", WMError);
         lcd::print(6, "%f : power of WM", WMPower / 1000.0);
         lcd::print(7, "%f : integral power of WM", WMIntegral * WMKi);
+        */
 
         delay(10);
     }

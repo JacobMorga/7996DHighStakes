@@ -111,13 +111,8 @@ void opcontrol() {
 	//toPoint(48.0, -48.0, 0, 0);
 	//toPoint(0.0, 0.0, 0, 0);
 
-	while (1){
-		lcd::clear();
-		lcd::print(3, "%d : trob", tPos);
-		lcd::print(4, "%d : xrob", xPos);
-		lcd::print(5, "%d : yrob", yPos);
-		delay(10);
-	}
-	std::vector<coord> pathJohn= {coord(0.0,0.0), coord(1.0,1.1)};
+	
+	std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
 	doThePurePursuit(pathJohn);
+	
 }

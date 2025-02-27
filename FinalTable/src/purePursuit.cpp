@@ -6,13 +6,25 @@ vector<coord> shiftedPath = {};
 vector<coord> intersectionPoints = {};
 
 float diffX,diffY,R,D;
+float rightPowPP,leftPowPP = 0.0;
 
 float int1Dist,int2Dist = 0.0;
 bool intersection1Check, intersection2Check = true;
 coord lastKnownIntersection (0.0,0.0);
+
+int runPP = 0;
+float tToTarget = 0.0;
+float tErrorPP = 0.0;
+float lErrorPP = 0.0;
+
+coord robotPos (0.0,0.0);
+
+coord followPoint;
+
 //! NOTEBOOK NOTES
 //! 1. IT CANT MOVE TO A POINT DIRECTLY AHEAD - VALUES OSCILATE BETWEEN 100M - -500M
-//! 2.
+//! 2. we calculated the distance to the endpoint wrong
+//! 3. it was using the behind point also
 
 coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputPoint){
 
@@ -69,12 +81,12 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         }
         else if (intersection1Check == true && intersection2Check == false){ // If 1 intersections return unless end point is within look ahead dist
             
-            if (distance(xPos,yPos,endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            if (pythagThisJohn(endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
             else{ intersectionPoints.push_back(int1); }
         }
         else if (intersection1Check == false && intersection2Check == true){ // If 1 intersections return unless end point is within look ahead dist
             
-            if (distance(xPos,yPos,endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            if (pythagThisJohn(endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
             else{ intersectionPoints.push_back(int2); }
         }
         else{} // Don't append anything
@@ -82,12 +94,14 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         indexPP ++;
     }
     lcd::clear();
-    lcd::print(0, "%d : x", intersectionPoints.back().x);
-    lcd::print(1, "%d : y", intersectionPoints.back().y);
-    lcd::print(2, "%d : check1", intersection1Check);
-    lcd::print(3, "%d : check2", intersection2Check);
-    lcd::print(4, "%d : xrob", xPos);
-    lcd::print(5, "%d : yrob", yPos);
+    lcd::print(0, "%f : x", intersectionPoints.back().x + xPos);
+    lcd::print(1, "%f : y", intersectionPoints.back().y + yPos);
+    lcd::print(2, "%f : tError", tErrorPP);
+    lcd::print(3, "%f : lError", lErrorPP);
+    lcd::print(4, "%f : xrob", xPos);
+    lcd::print(5, "%f : yrob", yPos);
+    lcd::print(6, "%f : right speed", rightPowPP);
+    lcd::print(7, "%f : left speed", leftPowPP);
     
 
     if (intersectionPoints.size() != 0){ // Intersects path
@@ -101,17 +115,19 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
     }
 }
 
-float PPkp = 100.0;
-float PPtkp = 0.0;
 
-int runPP = 0;
-float tToTarget = 0.0;
-float tErrorPP,lErrorPP = 0.0;
-float rightPowPP,leftPowPP = 0.0;
+float lErrPPkP = 100.0;
+float tErrPPkP = 5000.0;
+float lDerPPkP = 0.0;
+float tDerPPkP = 100.0;
 
-coord robotPos (0.0,0.0);
+float tDerPP = 0.0;
+float lDerPP = 0.0;
+float prevTErrorPP = 0.0;
+float prevLErrorPP = 0.0;
+float lPowPP = 0.0;
+float tPowPP = 0.0;
 
-coord followPoint;
 void doThePurePursuit (vector<coord> path){
 
     runPP = 0;
@@ -120,29 +136,37 @@ void doThePurePursuit (vector<coord> path){
         robotPos.x = xPos;
         robotPos.y = yPos;
 
-        followPoint = findBestIntersection(path, 8.0, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
+        followPoint = findBestIntersection(path, 24.0, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
 
-        tToTarget = arctan2(followPoint.x - robotPos.x, followPoint.y - robotPos.y); // Finds angle to target point
+        tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
+        lErrorPP = pythagThisJohn(followPoint.x, followPoint.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
 
-        lErrorPP = pythagThisJohn(followPoint.x - robotPos.x, followPoint.y - robotPos.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
+        tDerPP = tErrorPP - prevTErrorPP;
+        lDerPP = lErrorPP - prevLErrorPP;
 
-        rightPowPP = lErrorPP * PPkp + tErrorPP * PPtkp; // Multiply each error by their tuning values
-        leftPowPP = lErrorPP * PPkp - tErrorPP * PPtkp;
+        lPowPP = lErrorPP * lErrPPkP + lDerPP * lDerPPkP; // Multiply each error by their tuning values
+        tPowPP = tErrorPP * tErrPPkP + tDerPP * tDerPPkP;
 
-        if (fabs(rightPowPP) >= 12000.0|| fabs(leftPowPP) >= 12000.0){ // If power is over max value scale both sides
+        rightPowPP = lPowPP + tPowPP;
+        leftPowPP = lPowPP - tPowPP;
+
+        if (fabs(rightPowPP) >= 12000.0 || fabs(leftPowPP) >= 12000.0){ // If power is over max value scale both sides
             if (fabs(rightPowPP) > fabs(leftPowPP)){
-                rightPowPP = getDir(lErrorPP * PPkp + tErrorPP * PPtkp) * 12000.0;
-                leftPowPP = getDir(lErrorPP * PPkp - tErrorPP * PPtkp) * fabs(12000.0 * (lErrorPP * PPkp - tErrorPP * PPtkp) / (lErrorPP * PPkp + tErrorPP * PPtkp));
+                rightPowPP = getDir(lPowPP + tPowPP) * 12000.0;
+                leftPowPP = getDir(lPowPP - tPowPP) * fabs(12000.0 * (lPowPP - tPowPP) / (lPowPP + tPowPP));
             }
             else{
-                rightPowPP = getDir(lErrorPP * PPkp + tErrorPP * PPtkp) * fabs(12000.0 * (lErrorPP * PPkp + tErrorPP * PPtkp) / (lErrorPP * PPkp - tErrorPP * PPtkp));
-                leftPowPP = getDir(lErrorPP * PPkp - tErrorPP * PPtkp) * 12000.0;
+                rightPowPP = getDir(lPowPP + tPowPP) * fabs(12000.0 * (lPowPP + tPowPP) / (lPowPP - tPowPP));
+                leftPowPP = getDir(lPowPP - tPowPP) * 12000.0;
             }
         }
 
         rightDrive.move_voltage(rightPowPP); // Moves motors
         leftDrive.move_voltage(leftPowPP);
+
+        prevTErrorPP = tErrorPP;
+        prevLErrorPP = lErrorPP;
 
 
         delay(10);

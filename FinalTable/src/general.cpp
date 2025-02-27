@@ -32,8 +32,8 @@ IMU inertial2 (11);
 IMU inertial3 (19);
 
 ADIPort backClaw ('H', ADI_DIGITAL_OUT);
-ADIPort rightClearer ('D', ADI_DIGITAL_OUT);
-ADIPort leftClearer ('G', ADI_DIGITAL_OUT);
+ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
+ADIPort leftClearer ('D', ADI_DIGITAL_OUT);
 ADIPort intakePiston ('F', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(7);
@@ -111,12 +111,12 @@ float to_float (int n){ return (static_cast<float> (n)); }
 
 float distance(float x1, float y1, float x2, float y2){
 
-    return sqrt(pow(x2-x1, 2.0) + pow(y2-y1, 2.0));
+    return sqrtf(powf(x2-x1, 2.0) + powf(y2-y1, 2.0));
 }
 
 float pythagThisJohn (float a, float b){
 
-    return sqrt(pow(a, 2.0) + pow(b, 2.0));
+    return sqrtf(powf(a, 2.0) + powf(b, 2.0));
 }
 
 // Arc Tan 2 Function
