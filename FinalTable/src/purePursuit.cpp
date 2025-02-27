@@ -76,7 +76,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         // Select best point
         if (intersection1Check == true && intersection2Check == true){ // If 2 intersections return one closer to the end point
             
-            if (distance(int1.x,int1.y,endPoint.x,endPoint.y) < distance(int2.x,int2.y,endPoint.x,endPoint.y)){ intersectionPoints.push_back(int1); }
+            if (distance(int1.x + xPos,int1.y + yPos,endPoint.x + xPos,endPoint.y + yPos) < distance(int2.x + xPos,int2.y + yPos,endPoint.x + xPos,endPoint.y + yPos)){ intersectionPoints.push_back(int1); }
             else{ intersectionPoints.push_back(int2); }
         }
         else if (intersection1Check == true && intersection2Check == false){ // If 1 intersections return unless end point is within look ahead dist
@@ -137,7 +137,7 @@ void doThePurePursuit (vector<coord> path){
         robotPos.y = yPos;
 
         followPoint = findBestIntersection(path, 30.0, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
-//
+
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
         lErrorPP = pythagThisJohn(followPoint.x, followPoint.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
