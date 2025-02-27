@@ -43,8 +43,8 @@ void initialize() {
 	pros::screen::erase();
 
 	Task odomTask (odometry, "odomTask");
-	//Task comboTask (runComboSystem, "comboTask");
-	//Task WMTask (runWallMech, "WMTask");
+	Task comboTask (runComboSystem, "comboTask");
+	Task WMTask (runWallMech, "WMTask");
 }
 
 void disabled() {
@@ -111,8 +111,9 @@ void opcontrol() {
 	//toPoint(48.0, -48.0, 0, 0);
 	//toPoint(0.0, 0.0, 0, 0);
 
-	
+	/*
 	std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
 	doThePurePursuit(pathJohn);
+	*/
 	
 }
