@@ -116,9 +116,9 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 }
 
 
-float lErrPPkP = 400.0; // 100
+float lErrPPkP = 300.0; // 100
 float tErrPPkP = 15000.0; // 5000
-float lDerPPkD = 400.0;
+float lDerPPkD = 1000.0;
 float tDerPPkD = 400.0; // 100
 
 float tDerPP = 0.0;
@@ -162,19 +162,19 @@ void doThePurePursuit (vector<coord> path){
             }
         }
 
-        rightDrive.move_voltage(rightPowPP); // Moves motors
-        leftDrive.move_voltage(leftPowPP);
+        //rightDrive.move_voltage(rightPowPP); // Moves motors
+        //leftDrive.move_voltage(leftPowPP);
 
-        //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
-        //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
-        //rightDrive.brake();
-        //leftDrive.brake();
+        rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+        leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+        rightDrive.brake();
+        leftDrive.brake();
 
         prevTErrorPP = tErrorPP;
         prevLErrorPP = lErrorPP;
 
 
-        delay(10);
+        delay(100);
         /*
         if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
             runPP++;

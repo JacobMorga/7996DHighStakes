@@ -88,7 +88,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	//runDriveCont();
+	runDriveCont();
 	//toPointShortBy(48.0, -24.0, 0, 1, clearingDist);
 	//calculateOffsets();
 	//runColorCalibration();
