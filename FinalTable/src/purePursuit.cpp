@@ -118,8 +118,8 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
 float lErrPPkP = 100.0;
 float tErrPPkP = 5000.0;
-float lDerPPkP = 0.0;
-float tDerPPkP = 100.0;
+float lDerPPkD = 0.0;
+float tDerPPkD = 100.0;
 
 float tDerPP = 0.0;
 float lDerPP = 0.0;
@@ -145,8 +145,8 @@ void doThePurePursuit (vector<coord> path){
         tDerPP = tErrorPP - prevTErrorPP;
         lDerPP = lErrorPP - prevLErrorPP;
 
-        lPowPP = lErrorPP * lErrPPkP + lDerPP * lDerPPkP; // Multiply each error by their tuning values
-        tPowPP = tErrorPP * tErrPPkP + tDerPP * tDerPPkP;
+        lPowPP = lErrorPP * lErrPPkP + lDerPP * lDerPPkD; // Multiply each error by their tuning values
+        tPowPP = tErrorPP * tErrPPkP + tDerPP * tDerPPkD;
 
         rightPowPP = lPowPP + tPowPP;
         leftPowPP = lPowPP - tPowPP;
