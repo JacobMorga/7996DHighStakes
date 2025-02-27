@@ -23,8 +23,8 @@ coord followPoint;
 
 //! NOTEBOOK NOTES
 //! 1. IT CANT MOVE TO A POINT DIRECTLY AHEAD - VALUES OSCILATE BETWEEN 100M - -500M
-//! 2. we calculated the distance to the endpoint wrong
-//! 3. it was using the behind point also
+//! 2. we calculated the distance to the endpoint wrong (intersection code rerturns distance from robot)
+//! 3. it was using the behind point also, wasnt returning the end point of the function
 
 coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputPoint){
 
@@ -116,10 +116,10 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 }
 
 
-float lErrPPkP = 100.0;
-float tErrPPkP = 5000.0;
-float lDerPPkD = 0.0;
-float tDerPPkD = 100.0;
+float lErrPPkP = 400.0; // 100
+float tErrPPkP = 15000.0; // 5000
+float lDerPPkD = 400.0;
+float tDerPPkD = 400.0; // 100
 
 float tDerPP = 0.0;
 float lDerPP = 0.0;
@@ -136,8 +136,8 @@ void doThePurePursuit (vector<coord> path){
         robotPos.x = xPos;
         robotPos.y = yPos;
 
-        followPoint = findBestIntersection(path, 24.0, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
-
+        followPoint = findBestIntersection(path, 30.0, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
+//
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
         lErrorPP = pythagThisJohn(followPoint.x, followPoint.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
@@ -149,7 +149,7 @@ void doThePurePursuit (vector<coord> path){
         tPowPP = tErrorPP * tErrPPkP + tDerPP * tDerPPkD;
 
         rightPowPP = lPowPP + tPowPP;
-        leftPowPP = lPowPP - tPowPP;
+        leftPowPP = lPowPP - tPowPP; 
 
         if (fabs(rightPowPP) >= 12000.0 || fabs(leftPowPP) >= 12000.0){ // If power is over max value scale both sides
             if (fabs(rightPowPP) > fabs(leftPowPP)){
@@ -164,6 +164,11 @@ void doThePurePursuit (vector<coord> path){
 
         rightDrive.move_voltage(rightPowPP); // Moves motors
         leftDrive.move_voltage(leftPowPP);
+
+        //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+        //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+        //rightDrive.brake();
+        //leftDrive.brake();
 
         prevTErrorPP = tErrorPP;
         prevLErrorPP = lErrorPP;
