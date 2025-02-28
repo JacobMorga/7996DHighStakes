@@ -92,6 +92,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         else{} // Don't append anything
 
         indexPP ++;
+        delay(10);
     }
     lcd::clear();
     lcd::print(0, "%f : x", intersectionPoints.back().x + xPos);
