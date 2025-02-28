@@ -87,7 +87,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         // Select best point
         if (intersection1Check == true && intersection2Check == true){ // If 2 intersections return one closer to the end point
             
-            if (distance(int1.x + xPos,int1.y + yPos,endPoint.x + xPos,endPoint.y + yPos) < distance(int2.x + xPos,int2.y + yPos,endPoint.x + xPos,endPoint.y + yPos)){ intersectionPoints.push_back(int1); }
+            if (distance(int1.x, int1.y, endPoint.x, endPoint.y) < distance(int2.x, int2.y, endPoint.x, endPoint.y)){ intersectionPoints.push_back(int1); }
             else{ intersectionPoints.push_back(int2); }
         }
         else if (intersection1Check == true && intersection2Check == false){ // If 1 intersections return unless end point is within look ahead dist
@@ -145,7 +145,7 @@ float tPowPP = 0.0;
 float tWeightPP = 0.0;
 float tWeightAPP = 0.0;
 float tWeightBPP = 0.0;
-float tWeightKPP = 0.1;
+float tWeightKPP = 0.25;
 float distPP = 0.0;
 float maxDistPP = 0.0;
 bool firstBoundary = 0;
@@ -180,7 +180,7 @@ void doThePurePursuit (vector<coord> path){
                 maxDistPP = distPP;
                 firstBoundary = 1;
             }
-            lDerPPkD = 500000.0;
+            lDerPPkD = 1'000'000.0; //500'000 before
             tWeightAPP = (1.0 + sqrt(1.0 + 4.0 / tWeightKPP)) / 2.0;
             tWeightBPP = 1.0 / (tWeightKPP * (tWeightAPP - 1.0));
             tWeightPP = 1.0 / (tWeightKPP * (1.0 - (distPP / maxDistPP) - tWeightAPP)) + tWeightBPP;
@@ -220,7 +220,7 @@ void doThePurePursuit (vector<coord> path){
         prevTErrorPP = tErrorPP;
         prevLErrorPP = lErrorPP;
 
-        delay(100);
+        delay(10);
         /*
         if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
             runPP++;
