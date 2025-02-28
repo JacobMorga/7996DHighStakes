@@ -88,7 +88,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	runDriveCont();
+	//runDriveCont();
 	//toPointShortBy(48.0, -24.0, 0, 1, clearingDist);
 	//calculateOffsets();
 	//runColorCalibration();
@@ -111,9 +111,10 @@ void opcontrol() {
 	//toPoint(48.0, -48.0, 0, 0);
 	//toPoint(0.0, 0.0, 0, 0);
 
-	/*
-	std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
+	
+	//std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
+	std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 0.0)};
 	doThePurePursuit(pathJohn);
-	*/
+	
 	
 }

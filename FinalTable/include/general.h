@@ -70,7 +70,7 @@ extern float getDir(float input);
 extern float getAngle(void);
 extern float to_float (int n);
 extern float distance(float x1, float y1, float x2, float y2);
-extern float pythagThisJohn (float a, float b);
+extern float pythag (float a, float b);
 extern float arctan2(float x, float y);
 extern float normAngle(float angle);
 extern float normAngle2(float angle);
