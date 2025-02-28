@@ -484,11 +484,12 @@ void runWallMech(){ //also holds printing so we only print in one task
         wallMech.move_voltage(WMPower);
         prevWMTarget = WMTarget;
 
-        
+        /*
         lcd::clear();
         lcd::print(0, "%f : xPos", xPos);
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos);
+        */
         
 
         //debug combo system
@@ -506,7 +507,7 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(6, "%f : power of WM", WMPower / 1000.0);
         lcd::print(7, "%f : integral power of WM", WMIntegral * WMKi);
         */
-
+        
         delay(10);
     }
 }
