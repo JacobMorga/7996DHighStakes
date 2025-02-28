@@ -18,8 +18,9 @@ float tErrorPP = 0.0;
 float lErrorPP = 0.0;
 
 coord robotPos (0.0,0.0);
-
 coord followPoint;
+
+vector<coord> acutalPath {};
 
 //! NOTEBOOK NOTES
 //! 1. IT CANT MOVE TO A POINT DIRECTLY AHEAD - VALUES OSCILATE BETWEEN 100M - -500M
@@ -34,10 +35,12 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
     for (coord point : path){
 
         shiftedPath.push_back(coord(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
+        delay(5);
     }
 
     indexPP = 0; // Lines distance along the path
 
+    lastKnownIntersection = shiftedPath[0]; // Initializes beginning of path as last known intersection
 
     while(indexPP < shiftedPath.size() - 1){ // Runs loop for each pair of coordinates (each line)
 
@@ -67,43 +70,38 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
         
         if ( (int1.x > startPoint.x && int1.x > endPoint.x) || (int1.x < startPoint.x && int1.x < endPoint.x)){ intersection1Check = false; } // Checks if the intersection is within bounds
-        if ( (int2.x > startPoint.x && int2.x > endPoint.x) || (int2.x < startPoint.x && int2.x < endPoint.x)){ intersection2Check = false; }
+        if ( (int1.y > startPoint.y && int1.y > endPoint.y) || (int1.y < startPoint.y && int1.y < endPoint.y)){ intersection1Check = false; }
 
-        if ( (int1.y > startPoint.y && int1.y > endPoint.y) || (int1.y < startPoint.y && int1.y < endPoint.y)){ intersection1Check = false; } // Checks if the intersection is within bounds
         if ( (int2.y > startPoint.y && int2.y > endPoint.y) || (int2.y < startPoint.y && int2.y < endPoint.y)){ intersection2Check = false; }
+        if ( (int2.x > startPoint.x && int2.x > endPoint.x) || (int2.x < startPoint.x && int2.x < endPoint.x)){ intersection2Check = false; }
         
-
-        /*
-        if(int1.x <= returnBigger(startPoint.x, endPoint.x) && int1.x >= returnSmaller(startPoint.x, endPoint.x) && int1.y <= returnBigger(startPoint.y, endPoint.y) && int1.y >= returnSmaller(startPoint.y, endPoint.y)){intersection1Check = true;}
-        if(int2.x <= returnBigger(startPoint.x, endPoint.x) && int2.x >= returnSmaller(startPoint.x, endPoint.x) && int2.y <= returnBigger(startPoint.y, endPoint.y) && int2.y >= returnSmaller(startPoint.y, endPoint.y)){intersection2Check = true;}
-        */
 
         // Runs through checks to ensure intersection is on path
         if (isnan(int1.x) || isnan(int1.y)){intersection1Check = false;} // Check if there is an intersection
         if (isnan(int2.x) || isnan(int2.y)){intersection2Check = false;} // Check if there is an intersection
 
-        if (int1.x == int2.x && int1.y == int2.y){ intersection2Check = false; } // Check if they are the same point
+        //if (int1.x == int2.x && int1.y == int2.y){ intersection2Check = false; } // Check if they are the same point
 
         // Select best point
         if (intersection1Check == true && intersection2Check == true){ // If 2 intersections return one closer to the end point
             
-            if (distance(int1.x, int1.y, endPoint.x, endPoint.y) < distance(int2.x, int2.y, endPoint.x, endPoint.y)){ intersectionPoints.push_back(int1); }
+            if (distance(int1.x+xPos, int1.y+yPos, endPoint.x+xPos, endPoint.y+yPos) <= distance(int2.x+xPos, int2.y+yPos, endPoint.x+xPos, endPoint.y+yPos)){ intersectionPoints.push_back(int1); }
             else{ intersectionPoints.push_back(int2); }
         }
         else if (intersection1Check == true && intersection2Check == false){ // If 1 intersections return unless end point is within look ahead dist
             
-            if (pythag(endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            if (distance(xPos, yPos, endPoint.x+xPos, endPoint.y+yPos) <= lookAheadDis){ intersectionPoints.push_back(endPoint); }
             else{ intersectionPoints.push_back(int1); }
         }
         else if (intersection1Check == false && intersection2Check == true){ // If 1 intersections return unless end point is within look ahead dist
             
-            if (pythag(endPoint.x,endPoint.y) < lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            if (distance(xPos, yPos, endPoint.x+xPos, endPoint.y+yPos) <= lookAheadDis){ intersectionPoints.push_back(endPoint); }
             else{ intersectionPoints.push_back(int2); }
         }
         else{} // Don't append anything
 
         indexPP ++;
-
+        /*
         if (intersection1Check == true|| intersection2Check == true){
             lcd::clear();
             lcd::print(0, "%f : int1x", int1.x + xPos);
@@ -111,12 +109,19 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
             lcd::print(2, "%f : int2x", int2.x + xPos);
             lcd::print(3, "%f : int2y", int2.y + yPos);
 
-            lcd::print(6, "%f : intcheck 1", intersection1Check);
-            lcd::print(7, "%f : intcheck 2", intersection2Check);
+            lcd::print(6, "%d : intcheck 1", intersection1Check);
+            lcd::print(7, "%d : intcheck 2", intersection2Check);
         }
+            */
+            
+        
+        delay(10);
     }
 
-    
+    //std::cout << "int1Cheg: " << intersection1Check << "\n"; 
+    //std::cout << "int2Cheg: " << intersection2Check << "\n"; 
+    //std::cout << "intChoseX: " << intersectionPoints.back().x << "\n"; 
+    //std::cout << "intChoseX: " << intersectionPoints.back().y << "\n"; 
 
     if (intersectionPoints.size() != 0){ // Intersects path
 
@@ -130,7 +135,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 }
 
 float lookaheadinputvariable = 18.0;
-float lErrPPkP = 30.0 / lookaheadinputvariable * 300.0; //!300.0;
+float lErrPPkP = 4500.0 / lookaheadinputvariable; //!300.0; //! why is this on the linear
 float tErrPPkP = 15000.0; // 5000
 float lDerPPkD = 0.0; //actually set in line 158 if statement
 float tDerPPkD = 5000.0; //1000.0; //400.0; // 100
@@ -154,19 +159,20 @@ void doThePurePursuit (vector<coord> path){
 
     runPP = 0;
     firstBoundary = 0;
+
+    acutalPath.clear();
+
     while (runPP < 50){
 
         robotPos.x = xPos;
         robotPos.y = yPos;
 
+        acutalPath.push_back(robotPos);
 
         followPoint = findBestIntersection(path, lookaheadinputvariable, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
         distPP = pythag(followPoint.x, followPoint.y);
 
-        lcd::print(4, "%f : followPX", followPoint.x + xPos);
-        lcd::print(5, "%f : followPY", followPoint.y + yPos);
-
-        std::cout << followPoint.x + xPos << ", " << followPoint.y + yPos << ", " << xPos << ", " << yPos << "\n";
+        //std::cout << followPoint.x + xPos << ", " << followPoint.y + yPos << ", " << xPos << ", " << yPos << "\n";
 
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
@@ -174,8 +180,8 @@ void doThePurePursuit (vector<coord> path){
 
         tDerPP = tErrorPP - prevTErrorPP;
         lDerPP = lErrorPP - prevLErrorPP;
-
-        if(distPP < lookaheadinputvariable){
+        /*
+        if(distPP < lookaheadinputvariable){//
             if(firstBoundary == 0){
                 maxDistPP = distPP;
                 firstBoundary = 1;
@@ -189,9 +195,11 @@ void doThePurePursuit (vector<coord> path){
             lDerPPkD = 0.0;
             tWeightPP = 1.0;
         }
+        */
+
 
         lPowPP = lErrorPP * lErrPPkP + lDerPP * lDerPPkD; // Multiply each error by their tuning values
-        tPowPP = tWeightPP * (tErrorPP * tErrPPkP + tDerPP * tDerPPkD);
+        tPowPP = tErrorPP * tErrPPkP + tDerPP * tDerPPkD; //tWeightPP * (tErrorPP * tErrPPkP + tDerPP * tDerPPkD);
 
         rightPowPP = lPowPP + tPowPP;
         leftPowPP = lPowPP - tPowPP; 
@@ -207,15 +215,18 @@ void doThePurePursuit (vector<coord> path){
             }
         }
 
+        //lcd::print(4, "%f : right", rightPowPP);
+        //lcd::print(5, "%f : leftP", leftPowPP);
+
         rightDrive.move_voltage(rightPowPP); // Moves motors
         leftDrive.move_voltage(leftPowPP);
 
-        /*
-        rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
-        leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
-        rightDrive.brake();
-        leftDrive.brake();
-        */
+        
+        //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+        //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+        //rightDrive.brake();
+        //leftDrive.brake();
+        
         
         prevTErrorPP = tErrorPP;
         prevLErrorPP = lErrorPP;
@@ -227,7 +238,15 @@ void doThePurePursuit (vector<coord> path){
         }
         else { runPP = 0; }
         */
+
+        if (controller.get_digital(DIGITAL_X) == true){
+            runPP = 600;
+        }
     }
+    drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
+    drivetrain.brake();
+
+    graphThePath(path,acutalPath);
 }
 
 vector<float> coefficentsBC; // List of coefficents used for generating points (BC = Besier Curve)
@@ -251,9 +270,40 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
     return(output);
 }
 
-void graphThePath (vector<coord> targetPath, vector<coord> actualPath){
+coord inchToPixel(coord input){
+    float XcenterRelToFieldCenter = 48.0;
+    float YcenterRelToFieldCenter = -48.0;
 
-    for (int i = 0; i < targetPath.size(); i++){
-        //screen::draw_line();
+    return coord((input.x + XcenterRelToFieldCenter) / 144.0 * 240.0 + 240.0, (input.y + YcenterRelToFieldCenter) / 144.0 * 240.0 + 120.0);
+}
+
+void graphThePath (vector<coord> targetPath, vector<coord> actualPath){
+    screen::set_eraser(COLOR_BLACK);
+    //lcd::clear();
+    screen::erase();
+    screen::set_pen(COLOR_LIGHT_GOLDENROD_YELLOW);
+
+    delay(10);
+
+    screen::draw_rect(120.0,0.0,240.0,120.0);
+    screen::draw_rect(240.0,0.0,360.0,120.0);
+    screen::draw_rect(120.0,120.0,240.0,240.0);
+    screen::draw_rect(240.0,120.0,360.0,240.0);
+
+    screen::set_pen(COLOR_BLUE);
+    for (int i = 0; i <= targetPath.size(); i++){
+        screen::draw_line(inchToPixel(targetPath[i]).x,inchToPixel(targetPath[i]).y,inchToPixel(targetPath[i+1]).x,inchToPixel(targetPath[i+1]).y);
+        delay(1);
     }
+
+    screen::set_pen(COLOR_RED);
+    for (int i = 0; i <= actualPath.size(); i++){
+        screen::draw_line(inchToPixel(actualPath[i]).x,inchToPixel(actualPath[i]).y,inchToPixel(actualPath[i+1]).x,inchToPixel(actualPath[i+1]).y);
+        delay(1);
+    }
+    while(controller.get_digital(DIGITAL_R1) == false){
+
+        delay(100);
+    }
+
 }
