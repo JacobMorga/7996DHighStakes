@@ -113,7 +113,7 @@ void opcontrol() {
 
 	
 	//std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
-	std::vector<coord> pathJohn = {coord(0.1, 0.1), coord(0.0, 96.0), coord(-96.0,96.0), coord(-96.0,0.0)};
+	std::vector<coord> pathJohn = {coord(0.01, 0.01), coord(0.0, 96.0), coord(-96.0,96.0), coord(-96.0,0.0)};
 	doThePurePursuit(pathJohn);
 	
 	
