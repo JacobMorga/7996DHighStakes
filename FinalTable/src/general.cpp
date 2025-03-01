@@ -27,9 +27,9 @@ Rotation xTracking (10);
 Rotation yTracking (21);
 Rotation intakeRotation (2);
 
-IMU inertial1 (1);
-IMU inertial2 (11);
-IMU inertial3 (19);
+IMU inertial1 (2);
+IMU inertial2 (3);
+IMU inertial3 (19); 
 
 ADIPort backClaw ('H', ADI_DIGITAL_OUT);
 ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
@@ -81,7 +81,7 @@ float dif12, dif23, dif13;
 float leastDif, angle;
 int difSelect;
 float getAngle(void){
-    /*
+    
     inertial1value = inertial1.get_rotation();
     inertial2value = inertial2.get_rotation();
     inertial3value = inertial3.get_rotation();
@@ -97,9 +97,9 @@ float getAngle(void){
     if (difSelect == 1){angle = 0.5 * (inertial1value + inertial2value);} // Evaluate average of the two closest sensors
     else if (difSelect == 2){angle = 0.5 * (inertial2value + inertial3value);}
     else{angle = 0.5 * (inertial1value + inertial3value);}
-    */
+    
 
-    angle = inertial3.get_rotation();
+    //angle = inertial3.get_rotation();
 
     //angle = (pi / 2.0) - (angle / 180.0 * pi); // Convert to radians and have zero heading pi/2 rad
     angle = angle / 180.0 * pi;
