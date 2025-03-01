@@ -155,6 +155,11 @@ float distPP = 0.0;
 float maxDistPP = 0.0;
 bool firstBoundary = 0;
 
+float deEed(float eNum){
+    if(fabs(eNum) <= 0.0001){return 0;}
+    else{return eNum;}
+}
+
 void doThePurePursuit (vector<coord> path){
 
     runPP = 0;
@@ -172,7 +177,9 @@ void doThePurePursuit (vector<coord> path){
         followPoint = findBestIntersection(path, lookaheadinputvariable, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
         distPP = pythag(followPoint.x, followPoint.y);
 
-        //std::cout << followPoint.x + xPos << ", " << followPoint.y + yPos << ", " << xPos << ", " << yPos << "\n";
+
+
+        std::cout << deEed(followPoint.x + xPos) << ", " << deEed(followPoint.y + yPos) << ", " << deEed(xPos) << ", " << deEed(yPos) << ", " << deEed(tErrorPP) << "\n";
 
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians

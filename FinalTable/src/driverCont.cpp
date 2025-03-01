@@ -484,14 +484,11 @@ void runWallMech(){ //also holds printing so we only print in one task
         wallMech.move_voltage(WMPower);
         prevWMTarget = WMTarget;
 
-        /*
         lcd::clear();
         lcd::print(0, "%f : xPos", xPos);
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos);
-        */
         
-
         //debug combo system
         /*
         WMDistance = WMDistanceSensor.get();
