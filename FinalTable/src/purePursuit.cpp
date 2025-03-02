@@ -30,6 +30,44 @@ vector<coord> acutalPath {};
 //! 5. Robot was nacking at 0,0 so made path origin 0.01,0.01
 //! 6. Added max speed and made tuning values proportional to max distance
 
+coord inchToPixel(coord input){
+    float XcenterRelToFieldCenter = 48.0;
+    float YcenterRelToFieldCenter = -48.0;
+
+    return coord((input.x + XcenterRelToFieldCenter) / 144.0 * 240.0 + 240.0, (input.y + YcenterRelToFieldCenter) / 144.0 * 240.0 + 120.0);
+}
+
+void graphThePath (vector<coord> targetPath, vector<coord> actualPath){
+    screen::set_eraser(COLOR_BLACK);
+    //lcd::clear();
+    screen::erase();
+    screen::set_pen(COLOR_LIGHT_GOLDENROD_YELLOW);
+
+    delay(10);
+
+    screen::draw_rect(120.0,0.0,240.0,120.0);
+    screen::draw_rect(240.0,0.0,360.0,120.0);
+    screen::draw_rect(120.0,120.0,240.0,240.0);
+    screen::draw_rect(240.0,120.0,360.0,240.0);
+
+    screen::set_pen(COLOR_BLUE);
+    for (int i = 0; i <= targetPath.size() + 1; i++){
+        screen::draw_pixel(inchToPixel(targetPath[i]).x,inchToPixel(targetPath[i]).y);
+        delay(1);
+    }
+
+    screen::set_pen(COLOR_RED);
+    for (int i = 0; i <= actualPath.size(); i++){
+        screen::draw_line(inchToPixel(actualPath[i]).x,inchToPixel(actualPath[i]).y,inchToPixel(actualPath[i+1]).x,inchToPixel(actualPath[i+1]).y);
+        delay(1);
+    }
+    while(controller.get_digital(DIGITAL_R1) == false){
+
+        delay(100);
+    }
+
+}
+
 coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputPoint){
 
     shiftedPath.clear();
@@ -140,9 +178,9 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
 float lookaheadinputvariable = 18.0;
 float lErrPPkP = 1.0; //4500.0 / lookaheadinputvariable; //!300.0; 
-float tErrPPkP = 1.0; // 5000
+float tErrPPkP = 5.0; // 5000
 float lDerPPkD = 0.0; //actually set in line 158 if statement
-float tDerPPkD = 5000.0; //1000.0; //400.0; // 100
+float tDerPPkD = 0.0; //1000.0; //400.0; // 100
 
 float tDerPP = 0.0;
 float lDerPP = 0.0;
@@ -164,6 +202,7 @@ float deEed(float eNum){
     else{return eNum;}
 }
 
+vector<string> graphingPoints {};
 void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap){
 
     runPP = 0;
@@ -172,7 +211,7 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
     acutalPath.clear();
 
     lErrPPkP *= (12000.0 / lookaheadinputvariable);
-    tErrPPkP *= (pi / lookaheadinputvariable);
+    tErrPPkP *= (12000.0 / pi);
 
     while (runPP < 50){
 
@@ -184,9 +223,7 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
         followPoint = findBestIntersection(path, lookAheadDisPP, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
         distPP = pythag(followPoint.x, followPoint.y);
 
-
-
-        std::cout << deEed(followPoint.x + xPos) << ", " << deEed(followPoint.y + yPos) << ", " << deEed(xPos) << ", " << deEed(yPos) << ", " << deEed(tErrorPP) << "\n";
+        graphingPoints.push_back(to_string(deEed(followPoint.x + xPos)) +  ", " + to_string(deEed(followPoint.y + yPos)) + ", " + to_string(deEed(xPos)) + ", " + to_string(deEed(yPos)) + ", " + to_string(deEed(tErrorPP)));
 
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
@@ -228,13 +265,17 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
                 leftPowPP = getDir(lPowPP - tPowPP) * speedCap;
             }
         }
-
-        //lcd::print(4, "%f : right", rightPowPP);
-        //lcd::print(5, "%f : leftP", leftPowPP);
+        lcd::clear();
+        lcd::print(1, "xPos: %f", xPos);
+        lcd::print(2, "yPos: %f ", yPos);
+        lcd::print(3, "tPos: %f", tPos);
+        lcd::print(4, "Lerror: %f", lErrorPP);
+        lcd::print(5, "Terror: %f", tErrorPP);
+        lcd::print(6, "rightP: %f", rightPowPP);
+        lcd::print(7, "leftP: %f", leftPowPP);
 
         rightDrive.move_voltage(rightPowPP); // Moves motors
         leftDrive.move_voltage(leftPowPP);
-
         
         //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
         //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
@@ -260,6 +301,12 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
     drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
     drivetrain.brake();
 
+    for(string item : graphingPoints){
+
+        std::cout << item << "\n";
+        delay(1);
+    }
+
     graphThePath(path,acutalPath);
 }
 
@@ -284,40 +331,3 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
     return(output);
 }
 
-coord inchToPixel(coord input){
-    float XcenterRelToFieldCenter = 48.0;
-    float YcenterRelToFieldCenter = -48.0;
-
-    return coord((input.x + XcenterRelToFieldCenter) / 144.0 * 240.0 + 240.0, (input.y + YcenterRelToFieldCenter) / 144.0 * 240.0 + 120.0);
-}
-
-void graphThePath (vector<coord> targetPath, vector<coord> actualPath){
-    screen::set_eraser(COLOR_BLACK);
-    //lcd::clear();
-    screen::erase();
-    screen::set_pen(COLOR_LIGHT_GOLDENROD_YELLOW);
-
-    delay(10);
-
-    screen::draw_rect(120.0,0.0,240.0,120.0);
-    screen::draw_rect(240.0,0.0,360.0,120.0);
-    screen::draw_rect(120.0,120.0,240.0,240.0);
-    screen::draw_rect(240.0,120.0,360.0,240.0);
-
-    screen::set_pen(COLOR_BLUE);
-    for (int i = 0; i <= targetPath.size(); i++){
-        screen::draw_line(inchToPixel(targetPath[i]).x,inchToPixel(targetPath[i]).y,inchToPixel(targetPath[i+1]).x,inchToPixel(targetPath[i+1]).y);
-        delay(1);
-    }
-
-    screen::set_pen(COLOR_RED);
-    for (int i = 0; i <= actualPath.size(); i++){
-        screen::draw_line(inchToPixel(actualPath[i]).x,inchToPixel(actualPath[i]).y,inchToPixel(actualPath[i+1]).x,inchToPixel(actualPath[i+1]).y);
-        delay(1);
-    }
-    while(controller.get_digital(DIGITAL_R1) == false){
-
-        delay(100);
-    }
-
-}

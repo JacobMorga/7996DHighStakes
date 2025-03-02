@@ -80,7 +80,6 @@ void odometry(void){
 
         //odom output
         
-        lcd::clear();
         /*
         if(xPos <= 10.0 && xPos > 0.0){lcd::print(0, " %f : xPos (inches)", xPos);}
         else{lcd::print(0, "%f : xPos (inches)", xPos);}
@@ -88,9 +87,7 @@ void odometry(void){
         else{lcd::print(1, "%f : yPos (inches)", yPos);}
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
         */
-        lcd::print(4, "x: %f", xPos);
-        lcd::print(5, "y: %f", yPos);
-        lcd::print(6, "y: %f", tPos);
+
         
 
         delay(10);
