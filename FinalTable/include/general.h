@@ -44,6 +44,7 @@ extern ADILed led3;
 extern ADILed led4;
 
 extern const float pi;
+extern const float eConst;
 extern const bool pressed;
 extern const bool unpressed;
 extern const bool on;

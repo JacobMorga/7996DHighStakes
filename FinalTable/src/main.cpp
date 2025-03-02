@@ -113,18 +113,23 @@ void opcontrol() {
 	
 	//std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
 
+	/*
 	rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
 	leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
 	rightDrive.brake();
 	leftDrive.brake();
+	*/
 
 	//backClaw.set_value(1);
 	//delay(500);
 	//transit(1);
+	//colorSorting = 0;
 
-	std::vector<coord> pathJohn = {coord(0.01, 0.01), coord(0.0, 96.0), coord(-96.0,96.0), coord(-96.0,0.0)};
-	doThePurePursuit(pathJohn, 36.0, 6000.0);
-	
-	
-	
+	std::vector<coord> pathJohn = {};
+	pathJohn.push_back(coord(0.01, 0.01));
+	bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0), coord(0.0, 96.0), coord(-23.0, 96.0), coord(-24.0, 96.0), 20, pathJohn);
+	bezierCurve(coord(-72.0, 96.0), coord(-73.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 73.0), coord(-96.0, 72.0), 20, pathJohn);
+	pathJohn.push_back(coord(-96.0, 0.0));
+
+	doThePurePursuit(pathJohn, 36.0, 6000.0, 0);
 }

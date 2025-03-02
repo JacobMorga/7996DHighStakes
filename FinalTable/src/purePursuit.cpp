@@ -74,7 +74,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
     for (coord point : path){
 
-        shiftedPath.push_back(coord(point.x - xPos, point.y - yPos)); // Shifts the point to put the robot position on the origin
+        shiftedPath.push_back(coord(point.x - inputPoint.x, point.y - inputPoint.y)); // Shifts the point to put the robot position on the origin
         delay(5);
     }
 
@@ -109,12 +109,11 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         int2.y = (-D * diffX - fabs(diffY) * sqrtf(powf(lookAheadDis, 2.0) * powf(R, 2.0) - powf(D, 2.0))) / powf(R, 2.0);
 
         
-        if ( (int1.x > startPoint.x && int1.x > endPoint.x) || (int1.x < startPoint.x && int1.x < endPoint.x)){ intersection1Check = false; } // Checks if the intersection is within bounds
-        if ( (int1.y > startPoint.y && int1.y > endPoint.y) || (int1.y < startPoint.y && int1.y < endPoint.y)){ intersection1Check = false; }
+        if ( (int1.x+inputPoint.x > startPoint.x+inputPoint.x && int1.x+inputPoint.x > endPoint.x+inputPoint.x) || (int1.x+inputPoint.x < startPoint.x+inputPoint.x && int1.x+inputPoint.x < endPoint.x+inputPoint.x)){ intersection1Check = false; } // Checks if the intersection is within bounds
+        if ( (int1.y+inputPoint.y > startPoint.y+inputPoint.y && int1.y+inputPoint.y > endPoint.y+inputPoint.y) || (int1.y+inputPoint.y < startPoint.y+inputPoint.y && int1.y+inputPoint.y < endPoint.y+inputPoint.y)){ intersection1Check = false; }
 
-        if ( (int2.y > startPoint.y && int2.y > endPoint.y) || (int2.y < startPoint.y && int2.y < endPoint.y)){ intersection2Check = false; }
-        if ( (int2.x > startPoint.x && int2.x > endPoint.x) || (int2.x < startPoint.x && int2.x < endPoint.x)){ intersection2Check = false; }
-        
+        if ( (int2.x+inputPoint.x > startPoint.x+inputPoint.x && int2.x+inputPoint.x > endPoint.x+inputPoint.x) || (int2.x+inputPoint.x < startPoint.x+inputPoint.x && int2.x+inputPoint.x < endPoint.x+inputPoint.x)){ intersection2Check = false; } // Checks if the intersection is within bounds
+        if ( (int2.y+inputPoint.y > startPoint.y+inputPoint.y && int2.y+inputPoint.y > endPoint.y+inputPoint.y) || (int2.y+inputPoint.y < startPoint.y+inputPoint.y && int2.y+inputPoint.y < endPoint.y+inputPoint.y)){ intersection2Check = false; }    
 
         // Runs through checks to ensure intersection is on path
         if (isnan(int1.x) || isnan(int1.y)){intersection1Check = false;} // Check if there is an intersection
@@ -125,17 +124,17 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         // Select best point
         if (intersection1Check == true && intersection2Check == true){ // If 2 intersections return one closer to the end point
             
-            if (distance(int1.x+xPos, int1.y+yPos, endPoint.x+xPos, endPoint.y+yPos) <= distance(int2.x+xPos, int2.y+yPos, endPoint.x+xPos, endPoint.y+yPos)){ intersectionPoints.push_back(int1); }
+            if (distance(int1.x+inputPoint.x, int1.y+inputPoint.y, endPoint.x+inputPoint.x, endPoint.y+inputPoint.y) <= distance(int2.x+inputPoint.x, int2.y+inputPoint.y, endPoint.x+inputPoint.x, endPoint.y+inputPoint.y)){ intersectionPoints.push_back(int1); }
             else{ intersectionPoints.push_back(int2); }
         }
         else if (intersection1Check == true && intersection2Check == false){ // If 1 intersections return unless end point is within look ahead dist
             
-            if (distance(xPos, yPos, endPoint.x+xPos, endPoint.y+yPos) <= lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            if (distance(inputPoint.x, inputPoint.y, endPoint.x+inputPoint.x, endPoint.y+inputPoint.y) <= lookAheadDis){ intersectionPoints.push_back(endPoint); }
             else{ intersectionPoints.push_back(int1); }
         }
         else if (intersection1Check == false && intersection2Check == true){ // If 1 intersections return unless end point is within look ahead dist
             
-            if (distance(xPos, yPos, endPoint.x+xPos, endPoint.y+yPos) <= lookAheadDis){ intersectionPoints.push_back(endPoint); }
+            if (distance(inputPoint.x, inputPoint.y, endPoint.x+inputPoint.x, endPoint.y+inputPoint.y) <= lookAheadDis){ intersectionPoints.push_back(endPoint); }
             else{ intersectionPoints.push_back(int2); }
         }
         else{} // Don't append anything
@@ -144,10 +143,10 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         /*
         if (intersection1Check == true|| intersection2Check == true){
             lcd::clear();
-            lcd::print(0, "%f : int1x", int1.x + xPos);
-            lcd::print(1, "%f : int1y", int1.y + yPos);
-            lcd::print(2, "%f : int2x", int2.x + xPos);
-            lcd::print(3, "%f : int2y", int2.y + yPos);
+            lcd::print(0, "%f : int1x", int1.x + inputPoint.x);
+            lcd::print(1, "%f : int1y", int1.y + inputPoint.y);
+            lcd::print(2, "%f : int2x", int2.x + inputPoint.x);
+            lcd::print(3, "%f : int2y", int2.y + inputPoint.y);
 
             lcd::print(6, "%d : intcheck 1", intersection1Check);
             lcd::print(7, "%d : intcheck 2", intersection2Check);
@@ -178,7 +177,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
 float lookaheadinputvariable = 18.0;
 float lErrPPkP = 1.0; //4500.0 / lookaheadinputvariable; //!300.0; 
-float tErrPPkP = 5.0; // 5000
+float tErrPPkP = 2.5; // 5000
 float lDerPPkD = 0.0; //actually set in line 158 if statement
 float tDerPPkD = 0.0; //1000.0; //400.0; // 100
 
@@ -197,23 +196,33 @@ float distPP = 0.0;
 float maxDistPP = 0.0;
 bool firstBoundary = 0;
 
+float endpointDist = 0.0;
+float slowScale = 0.0;
+float ssK = -0.01;
+float ppSmoothDist = 12.0;
+int ppLoopMax = 50;
+bool pseudoVelSwitchPP = 0;
+float pseudoVelLimitPP = 0.25;
+float ppExitDist = 6.0;
+float pseudoPP = 0.0;
+
 float deEed(float eNum){
     if(fabs(eNum) <= 0.0001){return 0;}
     else{return eNum;}
 }
 
 vector<string> graphingPoints {};
-void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap){
+void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, bool ppSmooth){
 
     runPP = 0;
     firstBoundary = 0;
 
     acutalPath.clear();
 
-    lErrPPkP *= (12000.0 / lookaheadinputvariable);
+    lErrPPkP *= (12000.0 / lookAheadDisPP);
     tErrPPkP *= (12000.0 / pi);
 
-    while (runPP < 50){
+    while (runPP < ppLoopMax){
 
         robotPos.x = xPos;
         robotPos.y = yPos;
@@ -223,7 +232,7 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
         followPoint = findBestIntersection(path, lookAheadDisPP, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
         distPP = pythag(followPoint.x, followPoint.y);
 
-        graphingPoints.push_back(to_string(deEed(followPoint.x + xPos)) +  ", " + to_string(deEed(followPoint.y + yPos)) + ", " + to_string(deEed(xPos)) + ", " + to_string(deEed(yPos)) + ", " + to_string(deEed(tErrorPP)));
+        graphingPoints.push_back(to_string(deEed(followPoint.x + robotPos.x)) +  ", " + to_string(deEed(followPoint.y + robotPos.y)) + ", " + to_string(deEed(robotPos.x)) + ", " + to_string(deEed(robotPos.y)) + ", " + to_string(deEed(tErrorPP)));
 
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
@@ -231,23 +240,6 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
 
         tDerPP = tErrorPP - prevTErrorPP;
         lDerPP = lErrorPP - prevLErrorPP;
-        /*
-        if(distPP < lookAheadDisPP){//
-            if(firstBoundary == 0){
-                maxDistPP = distPP;
-                firstBoundary = 1;
-            }
-            lDerPPkD = 1'000'000.0; //500'000 before
-            tWeightAPP = (1.0 + sqrt(1.0 + 4.0 / tWeightKPP)) / 2.0;
-            tWeightBPP = 1.0 / (tWeightKPP * (tWeightAPP - 1.0));
-            tWeightPP = 1.0 / (tWeightKPP * (1.0 - (distPP / maxDistPP) - tWeightAPP)) + tWeightBPP;
-        }
-        else{
-            lDerPPkD = 0.0;
-            tWeightPP = 1.0;
-        }
-        */
-
 
         lPowPP = lErrorPP * lErrPPkP + lDerPP * lDerPPkD; // Multiply each error by their tuning values
         tPowPP = tErrorPP * tErrPPkP + tDerPP * tDerPPkD; //tWeightPP * (tErrorPP * tErrPPkP + tDerPP * tDerPPkD);
@@ -265,38 +257,48 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap)
                 leftPowPP = getDir(lPowPP - tPowPP) * speedCap;
             }
         }
+
+
+        endpointDist = pythag(path.back().x, path.back().y);
+        if(endpointDist < lookAheadDisPP && ppSmooth == 0){
+            slowScale = (-powf(eConst, -ssK * endpointDist) + 1.0) / (-powf(eConst, -ssK * lookAheadDisPP) + 1.0);
+            rightPowPP *= slowScale;
+            leftPowPP *= slowScale;
+        }
+        if(endpointDist < ppSmoothDist && ppSmooth == 1){
+            runPP += ppLoopMax;
+        }
+
         lcd::clear();
-        lcd::print(1, "xPos: %f", xPos);
-        lcd::print(2, "yPos: %f ", yPos);
-        lcd::print(3, "tPos: %f", tPos);
-        lcd::print(4, "Lerror: %f", lErrorPP);
-        lcd::print(5, "Terror: %f", tErrorPP);
+        lcd::print(0, "xPos: %f", robotPos.x);
+        lcd::print(1, "yPos: %f ", robotPos.y);
+        lcd::print(2, "tPos: %f", tPos);
+        lcd::print(4, "followPoint.x: %f", followPoint.x + robotPos.x);
+        lcd::print(5, "followPoint.y: %f", followPoint.y + robotPos.y);
         lcd::print(6, "rightP: %f", rightPowPP);
         lcd::print(7, "leftP: %f", leftPowPP);
 
-        rightDrive.move_voltage(rightPowPP); // Moves motors
-        leftDrive.move_voltage(leftPowPP);
+        //rightDrive.move_voltage(rightPowPP); // Moves motors
+        //leftDrive.move_voltage(leftPowPP);
         
         //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
         //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
         //rightDrive.brake();
         //leftDrive.brake();
         
-        
         prevTErrorPP = tErrorPP;
         prevLErrorPP = lErrorPP;
 
-        delay(10);
-        /*
-        if (pseudoVelocity < 0.25){ // Exit if robot hasnt moved position in a few loops
-            runPP++;
-        }
-        else { runPP = 0; }
-        */
+        pseudoPP = pseudoVelocity;
 
-        if (controller.get_digital(DIGITAL_X) == true){
-            runPP = 600;
-        }
+        if(pseudoVelSwitchPP == 0 && pseudoPP > pseudoVelLimitPP){pseudoVelSwitchPP = 1;}
+        
+        if (endpointDist < ppExitDist || (pseudoVelSwitchPP == 1 && pseudoPP < pseudoVelLimitPP)){runPP++;}
+        else{runPP = 0;}
+
+        if (controller.get_digital(DIGITAL_X) == true){runPP = ppLoopMax;}
+
+        delay(10);
     }
     drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
     drivetrain.brake();
@@ -314,7 +316,7 @@ vector<float> coefficentsBC; // List of coefficents used for generating points (
 vector<coord> output; // List of points in path
 coord tempPoint; // Temporary variable to store each point value
 
-vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int n){ // Inputs 5 points and how many segments to split curve into: //$ https://www.desmos.com/calculator/syvdhic9aw
+void bezierCurve(coord p1, coord p2, coord p3, coord p4, coord p5, int n, vector<coord>& listInput){ // Inputs 5 points and how many segments to split curve into: //$ https://www.desmos.com/calculator/syvdhic9aw
 
     output.clear();
 
@@ -326,8 +328,7 @@ vector<coord> bezierCurve (coord p1, coord p2, coord p3, coord p4, coord p5, int
 
         tempPoint.x = (pow(w,4.0) * (p5.x - 4.0*p4.x + 6.0*p3.x - 4.0*p2.x + p1.x)) + (4.0*pow(w,3.0) * (p4.x - 3.0*p3.x + 3.0*p2.x - p1.x)) + (6.0*pow(w,2.0) * (p3.x - 2.0*p2.x + p1.x)) + (4.0*w * (p2.x - p1.x)) + p1.x;
         tempPoint.y = (pow(w,4.0) * (p5.y - 4.0*p4.y + 6.0*p3.y - 4.0*p2.y + p1.y)) + (4.0*pow(w,3.0) * (p4.y - 3.0*p3.y + 3.0*p2.y - p1.y)) + (6.0*pow(w,2.0) * (p3.y - 2.0*p2.y + p1.y)) + (4.0*w * (p2.y - p1.y)) + p1.y;
-        output.push_back(tempPoint);
+        listInput.push_back(tempPoint);
     }
-    return(output);
 }
 
