@@ -51,14 +51,14 @@ void graphThePath (vector<coord> targetPath, vector<coord> actualPath){
     screen::draw_rect(240.0,120.0,360.0,240.0);
 
     screen::set_pen(COLOR_BLUE);
-    for (int i = 0; i <= targetPath.size() + 1; i++){
-        screen::draw_pixel(inchToPixel(targetPath[i]).x,inchToPixel(targetPath[i]).y);
+    for (int i = 0; i <= targetPath.size(); i++){
+        screen::draw_line(inchToPixel(targetPath[i]).x,inchToPixel(targetPath[i]).y,inchToPixel(targetPath[i+1]).x,inchToPixel(targetPath[i+1]).y);
         delay(1);
     }
 
     screen::set_pen(COLOR_RED);
-    for (int i = 0; i <= actualPath.size(); i++){
-        screen::draw_line(inchToPixel(actualPath[i]).x,inchToPixel(actualPath[i]).y,inchToPixel(actualPath[i+1]).x,inchToPixel(actualPath[i+1]).y);
+    for (int i = 0; i <= actualPath.size() + 1; i++){
+        screen::draw_pixel(inchToPixel(actualPath[i]).x,inchToPixel(actualPath[i]).y);
         delay(1);
     }
     while(controller.get_digital(DIGITAL_R1) == false){
