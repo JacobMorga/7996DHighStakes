@@ -510,4 +510,4 @@ void transit(int forcedStateInput){ //force exit from color sort in auton
     comboState = forcedStateInput;
     forcedTransit = 1;
     forcedState = forcedStateInput;
-}
+} // 
