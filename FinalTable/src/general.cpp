@@ -75,6 +75,11 @@ float getDir(float input){
     else { return 0.0; }
 }
 
+float deEed(float eNum){
+    if(fabs(eNum) <= 0.0001){return 0;}
+    else{return eNum;}
+}
+
 // Get Angle Function 
 float inertial1value, inertial2value, inertial3value;
 float dif12, dif23, dif13;
