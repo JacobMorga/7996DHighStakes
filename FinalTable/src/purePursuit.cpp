@@ -28,6 +28,7 @@ vector<coord> acutalPath {};
 //! 3. it was using the behind point also, wasnt returning the end point of the function
 //! 4. we only check the x-values of the intersections
 //! 5. Robot was nacking at 0,0 so made path origin 0.01,0.01
+//! 6. Added max speed and made tuning values proportional to max distance
 
 coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputPoint){
 
@@ -119,6 +120,8 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         delay(10);
     }
 
+    delay(10);
+
     //std::cout << "int1Cheg: " << intersection1Check << "\n"; 
     //std::cout << "int2Cheg: " << intersection2Check << "\n"; 
     //std::cout << "intChoseX: " << intersectionPoints.back().x << "\n"; 
@@ -136,8 +139,8 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 }
 
 float lookaheadinputvariable = 18.0;
-float lErrPPkP = 4500.0 / lookaheadinputvariable; //!300.0; //! why is this on the linear
-float tErrPPkP = 15000.0; // 5000
+float lErrPPkP = 1.0; //4500.0 / lookaheadinputvariable; //!300.0; 
+float tErrPPkP = 1.0; // 5000
 float lDerPPkD = 0.0; //actually set in line 158 if statement
 float tDerPPkD = 5000.0; //1000.0; //400.0; // 100
 
@@ -156,12 +159,15 @@ float distPP = 0.0;
 float maxDistPP = 0.0;
 bool firstBoundary = 0;
 
-void doThePurePursuit (vector<coord> path){
+void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap){
 
     runPP = 0;
     firstBoundary = 0;
 
     acutalPath.clear();
+
+    lErrPPkP *= (12000.0 / lookaheadinputvariable);
+    tErrPPkP *= (pi / lookaheadinputvariable);
 
     while (runPP < 50){
 
@@ -170,19 +176,19 @@ void doThePurePursuit (vector<coord> path){
 
         acutalPath.push_back(robotPos);
 
-        followPoint = findBestIntersection(path, lookaheadinputvariable, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
+        followPoint = findBestIntersection(path, lookAheadDisPP, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
         distPP = pythag(followPoint.x, followPoint.y);
 
-        //std::cout << followPoint.x + xPos << ", " << followPoint.y + yPos << ", " << xPos << ", " << yPos << "\n";
+        std::cout << followPoint.x + xPos << ", " << followPoint.y + yPos << ", " << xPos << ", " << yPos << "\n";
 
         tToTarget = arctan2(followPoint.x, followPoint.y); // Finds angle to target point
         tErrorPP = normAngle(tToTarget - (pi/2.0 - tPos)); // Find the difference in radians between target point and current theta in math radians
-        lErrorPP = pythag(followPoint.x, followPoint.y) * cos(tErrorPP); // Distance from the target scaled by the difference in angle
+        lErrorPP = distPP * cos(tErrorPP); // Distance from the target scaled by the difference in angle
 
         tDerPP = tErrorPP - prevTErrorPP;
         lDerPP = lErrorPP - prevLErrorPP;
         /*
-        if(distPP < lookaheadinputvariable){//
+        if(distPP < lookAheadDisPP){//
             if(firstBoundary == 0){
                 maxDistPP = distPP;
                 firstBoundary = 1;
@@ -205,14 +211,14 @@ void doThePurePursuit (vector<coord> path){
         rightPowPP = lPowPP + tPowPP;
         leftPowPP = lPowPP - tPowPP; 
 
-        if (fabs(rightPowPP) >= 12000.0 || fabs(leftPowPP) >= 12000.0){ // If power is over max value scale both sides
+        if (fabs(rightPowPP) >= speedCap || fabs(leftPowPP) >= speedCap){ // If power is over max value scale both sides
             if (fabs(rightPowPP) > fabs(leftPowPP)){
-                rightPowPP = getDir(lPowPP + tPowPP) * 12000.0;
-                leftPowPP = getDir(lPowPP - tPowPP) * fabs(12000.0 * (lPowPP - tPowPP) / (lPowPP + tPowPP));
+                rightPowPP = getDir(lPowPP + tPowPP) * speedCap;
+                leftPowPP = getDir(lPowPP - tPowPP) * fabs(speedCap * (lPowPP - tPowPP) / (lPowPP + tPowPP));
             }
             else{
-                rightPowPP = getDir(lPowPP + tPowPP) * fabs(12000.0 * (lPowPP + tPowPP) / (lPowPP - tPowPP));
-                leftPowPP = getDir(lPowPP - tPowPP) * 12000.0;
+                rightPowPP = getDir(lPowPP + tPowPP) * fabs(speedCap * (lPowPP + tPowPP) / (lPowPP - tPowPP));
+                leftPowPP = getDir(lPowPP - tPowPP) * speedCap;
             }
         }
 

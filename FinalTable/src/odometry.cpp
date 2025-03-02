@@ -79,17 +79,19 @@ void odometry(void){
         previousTheta = tPos;
 
         //odom output
-        /*
+        
         lcd::clear();
+        /*
         if(xPos <= 10.0 && xPos > 0.0){lcd::print(0, " %f : xPos (inches)", xPos);}
         else{lcd::print(0, "%f : xPos (inches)", xPos);}
         if(yPos <= 10.0 && yPos > 0.0){lcd::print(1, " %f : yPos (inches)", yPos);}
         else{lcd::print(1, "%f : yPos (inches)", yPos);}
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
-        lcd::print(4, "%f : inertial 1", inertial1.get_rotation());
-        lcd::print(5, "%f : inertial 2", inertial2.get_rotation());
-        lcd::print(6, "%f : inertial 3", inertial3.get_rotation());
         */
+        lcd::print(4, "x: %f", xPos);
+        lcd::print(5, "y: %f", yPos);
+        lcd::print(6, "y: %f", tPos);
+        
 
         delay(10);
     }
