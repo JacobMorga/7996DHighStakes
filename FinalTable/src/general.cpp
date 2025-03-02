@@ -52,6 +52,7 @@ void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 
 //Constants
 const float pi = 3.1415927410125732421875; // Cir/Dia
+const float eConst = 2.718281828459045235360287471352;
 const bool pressed = 1;
 const bool unpressed = 0;
 const bool on = 1;
@@ -69,7 +70,6 @@ float returnBigger (float x, float y){
 }
 
 float getDir(float input){
-
     if (input >= 0.0){ return 1.0; }
     else if (input < 0.0){ return -1.0; }
     else { return 0.0; }
@@ -110,12 +110,10 @@ float getAngle(void){
 float to_float (int n){ return (static_cast<float> (n)); }
 
 float distance(float x1, float y1, float x2, float y2){
-
     return sqrtf(powf(x2-x1, 2.0) + powf(y2-y1, 2.0));
 }
 
 float pythag (float a, float b){
-
     return sqrtf(powf(a, 2.0) + powf(b, 2.0));
 }
 
