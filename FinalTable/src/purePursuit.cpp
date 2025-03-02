@@ -27,6 +27,7 @@ vector<coord> acutalPath {};
 //! 2. we calculated the distance to the endpoint wrong (intersection code rerturns distance from robot)
 //! 3. it was using the behind point also, wasnt returning the end point of the function
 //! 4. we only check the x-values of the intersections
+//! 5. Robot was nacking at 0,0 so made path origin 0.01,0.01
 
 coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputPoint){
 
