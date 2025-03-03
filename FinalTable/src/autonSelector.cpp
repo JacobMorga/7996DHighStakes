@@ -2,7 +2,7 @@
 
 using namespace pros;
 
-int teamColor = COLOR_BLUE;
+int teamColor = COLOR_RED; //for skills (we would never want default blue anyway)
 
 bool runAutonSelector = true;
 
