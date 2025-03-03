@@ -314,7 +314,7 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap,
         //lcd::set_text(7, std::to_string(10));
 
         rightDrive.move_voltage(rightPowPP); // Moves motors
-        leftDrive.move_voltage(leftPowPP);
+        leftDrive.move_voltage(leftPowPP);q
         
         //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
         //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
