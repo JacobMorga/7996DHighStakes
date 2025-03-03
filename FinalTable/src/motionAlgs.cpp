@@ -94,7 +94,7 @@ float yTarShortInput = 0.0;
 
 bool TPSB1 = 0;
 
-void toPoint(float xTar, float yTar, float reversed, bool smooth, float exitDis, float powerLimit){
+void toPoint(float xTar, float yTar, float reversed, bool smooth, float powerLimit){
     toPointLoops = 0;
     tInt = 0.0;
     tDer = 0.0;
@@ -196,7 +196,7 @@ void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float o
     yTarShortInput = yTar;
     if(TPSB1){updateTargets = 0;}
     else{updateTargets = 1;}
-    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, 0.0, powerLimit);
+    toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, powerLimit);
 }
 
 void faceAway(float xTar, float yTar){

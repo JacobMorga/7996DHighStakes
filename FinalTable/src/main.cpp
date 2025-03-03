@@ -74,20 +74,20 @@ void autonomous() {
 	led3.update();
 	led4.update();
 	
-	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Red +");  defaultAutoRedPos();} // Runs auton based on auton selector output
-	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Red -");  defaultAutoRedNeg();} // And prints what auton its running
-	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Blue +");	 defaultAutoBluePos();}
-	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "D Blue -");	 defaultAutoBlueNeg();}
-	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Rush");  simpleRedRush();}
-	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RedNegMax");  redAWP = 0; redNegative();}
-	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Rush");	 simpleBlueRush();}
-	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BlueNegMax");	 blueAWP = 0; blueNegative();}
-	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Hook");	blueHooker();}
+	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos AWP"); bluePosAWP();} // Runs auton based on auton selector output
+	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg AWP"); blueNegAWP();} // And prints what auton its running
+	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos AWP"); redPosAWP();}
+	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg AWP"); redNegAWP();}
+	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos Max"); bluePosMax;}
+	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg Max"); blueNegMax();}
+	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos Max"); redPosMax();}
+	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg Max"); redNegMax();}
+	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills();}
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
 }
 
 void opcontrol() {
-	//runDriveCont();
+	runDriveCont();
 	//toPointShortBy(48.0, -24.0, 0, 1, clearingDist);
 	//calculateOffsets();
 	//runColorCalibration();
@@ -120,38 +120,4 @@ void opcontrol() {
 	leftDrive.brake();
 	*/
 
-	//backClaw.set_value(1);
-	//delay(500);
-	//transit(1);
-	//colorSorting = 0;
-
-	std::vector<coord> pathA = {};
-	std::vector<coord> pathB = {};
-	std::vector<coord> pathC = {coord(-24.0, 24.0), coord(-96.0, 96.0)};
-	std::vector<coord> pathD = {coord(0.01, 0.01), coord(-48.0, 48.0)};
-	std::vector<coord> pathE = {coord(-48.0, 48.0), coord(-96.0, 96.0)};
-
-	//figure 8
-	bezierCurve(coord(0.01, 0.01), coord(-96.0, 120.0), coord(-120.0, 96.0), coord(-96.0, 0.0), coord(-72.0, 24.0), 100, pathA);
-	bezierCurve(coord(-72.0, 24.0), coord(24.0, 120.0), coord(24.0, 48.0), coord(0.0, 0.0), coord(-24.0, 24.0), 100, pathB);
-
-	//horseshoe
-	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0), coord(0.0, 96.0), coord(-23.0, 96.0), coord(-24.0, 96.0), 20, pathA);
-	//pathA.push_back(coord(-72.0, 96.0));
-	//bezierCurve(coord(-72.0, 96.0), coord(-73.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 73.0), coord(-96.0, 72.0), 20, pathA);
-	//pathA.push_back(coord(-96.0, 0.0));
-
-	//doThePurePursuit(pathA, 36.0, 12000.0, 1);
-	//doThePurePursuit(pathB, 36.0, 12000.0, 1);
-	//doThePurePursuit(pathC, 36.0, 12000.0, 0);
-
-	doThePurePursuit(pathD, 36.0, 6000.0, 1);
-	doThePurePursuit(pathE, 36.0, 6000.0, 0);
-
-	drivetrain.brake();
-    while(controller.get_digital(DIGITAL_DOWN) == 0){delay(10);}
-    for(string item : graphingPoints){
-        std::cout << item << "\n";
-        delay(1);
-    }
 }

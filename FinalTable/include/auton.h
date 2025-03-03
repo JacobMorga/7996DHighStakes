@@ -1,22 +1,17 @@
 #ifndef AUTON_H
 #define AUTON_H
-extern void bluePositive(void);
-extern void blueNegative(void);
-extern void redPositive(void);
-extern void redNegative(void);
-extern void skills(void);
+extern void bluePosAWP();
+extern void blueNegAWP();
+extern void redPosAWP();
+extern void redNegAWP();
+extern void bluePosMax();
+extern void blueNegMax();
+extern void redPosMax();
+extern void redNegMax();
+extern void skills();
 extern float goalDist;
 extern float cornerDist;
 extern float ringStackDist;
 extern float clearingDist;
 extern float wallStakeDist;
-extern bool redAWP;
-extern bool blueAWP;
-extern void defaultAutoRedPos();
-extern void defaultAutoRedNeg();
-extern void defaultAutoBluePos();
-extern void defaultAutoBlueNeg();
-extern void simpleRedRush();
-extern void simpleBlueRush();
-extern void blueHooker();
 #endif
