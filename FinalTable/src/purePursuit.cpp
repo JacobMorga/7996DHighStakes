@@ -189,10 +189,10 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
 
 }
 
-float lErrPPkP = 1.0;
-float tErrPPkP = 2.5; // 5000
-float lDerPPkD = 0.0; //actually set in line 158 if statement
-float tDerPPkD = 0.0; //1000.0; //400.0; // 100
+float lErrPPkP = 1.0; //*tune
+float tErrPPkP = 2.5; //*tune
+float lDerPPkD = 0.0; //*tune
+float tDerPPkD = 0.0; //*tune
 
 float tDerPP = 0.0;
 float lDerPP = 0.0;
@@ -201,6 +201,8 @@ float prevLErrorPP = 0.0;
 float funch = 1'0'0'0'0'0'0'0'0;
 float lPowPP = 0.0;
 float tPowPP = 0.0;
+float rightPowCalc = 0.0;
+float leftPowCalc = 0.0;
 
 float tWeightPP = 0.0;
 float tWeightAPP = 0.0;
@@ -213,37 +215,39 @@ bool firstBoundary = 0;
 
 float endpointDist = 0.0;
 float slowScale = 0.0;
-float ssK = 0.1; //-0.01;
-float ssJ = 0.75;
-int ppLoopMax = 50;
+float slowScaleRad = 48.0; //*tune
+float ssK = 0.1; //*tune
+float ssJ = 0.0; //*tune
+int ppLoopMax = 50; //*tune
 bool pseudoVelSwitchPP = 0;
-float pseudoVelLimitPP = 0.25;
-float ppExitDist = 6.0;
+float pseudoVelLimitPP = 0.25; //*tune
+float ppExitDist = 6.0; //*tune
 float pseudoPP = 0.0;
 int pploops = 0;
 int graphedpoints = 0;
+//* tune lookahead distance
+//* tune speedcap
 
 vector<string> graphingPoints {};
-void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, bool ppSmooth){
+
+void purePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, bool ppSmooth){
     //lcd::set_text(7, std::to_string(0));
 
     runPP = 0;
     firstBoundary = 0;
-
     actualPath.clear();
 
-    lErrPPkP *= (12000.0 / lookAheadDisPP);
-    tErrPPkP *= (12000.0 / pi);
+    lErrPPkP *= (speedCap / lookAheadDisPP);
+    tErrPPkP *= (speedCap / pi);
 
     while (runPP < ppLoopMax){
         //lcd::set_text(7, std::to_string(1));
 
         robotPos.x = xPos;
         robotPos.y = yPos;
-
         actualPath.push_back(robotPos);
 
-        followPoint = findBestIntersection(path, lookAheadDisPP, robotPos); //? This is actually not a point but the difference in the robots position and the follow point
+        followPoint = findBestIntersection(path, lookAheadDisPP, robotPos); //robot centered
         distPP = pythag(followPoint.x, followPoint.y);
 
         pploops++;
@@ -256,7 +260,7 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap,
         tDerPP = tErrorPP - prevTErrorPP;
         lDerPP = lErrorPP - prevLErrorPP;
 
-        endpointDist = pythag(path.back().x, path.back().y); //! - robotPos.[x,y]?
+        endpointDist = pythag(path.back().x - robotPos.x, path.back().y - robotPos.y);
         if(endpointDist < lookAheadDisPP && ppSmooth == 0){
             if(firstBoundary == 0){
                 maxDistPP = endpointDist;
@@ -271,35 +275,29 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap,
         lPowPP = lErrorPP * lErrPPkP + lDerPP * lDerPPkD; // Multiply each error by their tuning values
         tPowPP = tWeightPP * (tErrorPP * tErrPPkP + tDerPP * tDerPPkD);
 
-        rightPowPP = lPowPP + tPowPP;
-        leftPowPP = lPowPP - tPowPP; 
+        rightPowCalc = lPowPP + tPowPP;
+        leftPowCalc = lPowPP - tPowPP;
 
         //lcd::set_text(7, std::to_string(9));
 
         if (fabs(rightPowPP) >= speedCap || fabs(leftPowPP) >= speedCap){ // If power is over max value scale both sides
             if (fabs(rightPowPP) > fabs(leftPowPP)){
-                rightPowPP = getDir(lPowPP + tPowPP) * speedCap;
-                leftPowPP = getDir(lPowPP - tPowPP) * fabs(speedCap * (lPowPP - tPowPP) / (lPowPP + tPowPP));
+                rightPowPP = getDir(rightPowCalc) * speedCap;
+                leftPowPP = getDir(leftPowCalc) * fabs(speedCap * (leftPowCalc) / (rightPowCalc));
             }
             else if(fabs(rightPowPP) < fabs(leftPowPP)){
-                rightPowPP = getDir(lPowPP + tPowPP) * fabs(speedCap * (lPowPP + tPowPP) / (lPowPP - tPowPP));
-                leftPowPP = getDir(lPowPP - tPowPP) * speedCap;
+                rightPowPP = getDir(rightPowCalc) * fabs(speedCap * (rightPowCalc) / (leftPowCalc));
+                leftPowPP = getDir(leftPowCalc) * speedCap;
             }
             else{
-                rightPowPP = getDir(lPowPP + tPowPP) * speedCap;
-                leftPowPP = getDir(lPowPP - tPowPP) * speedCap;
+                rightPowPP = getDir(rightPowCalc) * speedCap;
+                leftPowPP = getDir(leftPowCalc) * speedCap;
             }
         }
-
-        if(endpointDist < lookAheadDisPP){
-            if(ppSmooth == 0){
-                slowScale = 1.0 - (1.0 - ssJ) * (1.0 + ((powf(eConst, -ssK * endpointDist) - 1.0) / (1.0 - powf(eConst, -ssK * lookAheadDisPP))));
-                rightPowPP *= slowScale;
-                leftPowPP *= slowScale;
-            }
-            else{runPP = ppLoopMax;}
+        else{
+            rightPowPP = rightPowCalc;
+            leftPowPP = leftPowCalc;
         }
-
         
         //lcd::clear();
         //lcd::print(0, "xPos: %f", robotPos.x);
@@ -313,8 +311,6 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap,
         
         //lcd::set_text(7, std::to_string(10));
 
-        rightDrive.move_voltage(rightPowPP); // Moves motors
-        leftDrive.move_voltage(leftPowPP);
         
         //rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
         //leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
@@ -332,13 +328,25 @@ void doThePurePursuit (vector<coord> path, float lookAheadDisPP, float speedCap,
         if(endpointDist < ppExitDist || (pseudoVelSwitchPP == 1 && pseudoPP < pseudoVelLimitPP)){runPP++;}
         else{runPP = 0;}
 
-        if(controller.get_digital(DIGITAL_X) == true){runPP = ppLoopMax;}
+        if(endpointDist < slowScaleRad && ppSmooth == 0){
+            slowScale = 1.0 - (1.0 - ssJ) * (1.0 + ((powf(eConst, -ssK * endpointDist) - 1.0) / (1.0 - powf(eConst, -ssK * lookAheadDisPP))));
+            rightPowPP *= slowScale;
+            leftPowPP *= slowScale;
+        }
+        if(endpointDist < lookAheadDisPP && ppSmooth == 1){runPP = ppLoopMax;}
+
+        //if(controller.get_digital(DIGITAL_X) == true){runPP = ppLoopMax;}
 
         //lcd::set_text(7, std::to_string(11));
+
+        rightDrive.move_voltage(rightPowPP);
+        leftDrive.move_voltage(leftPowPP);
 
         delay(10);
     }
     if(ppSmooth == 0){drivetrain.brake();}
+    lErrPPkP *= (lookAheadDisPP / speedCap);
+    tErrPPkP *= (pi / speedCap);
 }
 
 vector<float> coefficentsBC; // List of coefficents used for generating points (BC = Bezier Curve)
