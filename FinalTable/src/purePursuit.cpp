@@ -23,7 +23,7 @@ coord followPoint;
 vector<coord> actualPath {};
 
 //! NOTEBOOK NOTES
-//! 1. IT CANT MOVE TO A POINT DIRECTLY AHEAD - VALUES OSCILATE BETWEEN 100M - -500M
+
 //! 2. we calculated the distance to the endpoint wrong (intersection code rerturns distance from robot)
 //! 3. it was using the behind point also, wasnt returning the end point of the function
 //! 4. we only check the x-values of the intersections
