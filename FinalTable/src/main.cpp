@@ -111,7 +111,7 @@ void opcontrol() {
 	//toPoint(0.0, 0.0, 0, 0);
 
 	
-	//std::vector<coord> pathJohn = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
+	//std::vector<coord> pathA = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
 
 	/*
 	rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
@@ -120,24 +120,38 @@ void opcontrol() {
 	leftDrive.brake();
 	*/
 
-	backClaw.set_value(1);
-	delay(500);
-	transit(1);
-	colorSorting = 0;
+	//backClaw.set_value(1);
+	//delay(500);
+	//transit(1);
+	//colorSorting = 0;
 
-	std::vector<coord> pathJohn = {coord(0.01, 0.01)};
-	std::vector<coord> pathJohn2 = {};
-	std::vector<coord> pathJohn3 = {};
+	std::vector<coord> pathA = {};
+	std::vector<coord> pathB = {};
+	std::vector<coord> pathC = {coord(-24.0, 24.0), coord(-96.0, 96.0)};
+	std::vector<coord> pathD = {coord(0.01, 0.01), coord(-48.0, 48.0)};
+	std::vector<coord> pathE = {coord(-48.0, 48.0), coord(-96.0, 96.0)};
 
-	bezierCurve(coord(0.01, 0.01), coord(-96.0, 120.0), coord(-120.0, 96.0), coord(-96.0, 0.0), coord(-72.0, 24.0), 100, pathJohn);
-	//bezierCurve(coord(-72.0, 24.0), coord(0.0, 120.0), coord(24.0, 72.0), coord(0.0, 0.0), coord(-24.0, 24.0), 100, pathJohn2);
+	//figure 8
+	bezierCurve(coord(0.01, 0.01), coord(-96.0, 120.0), coord(-120.0, 96.0), coord(-96.0, 0.0), coord(-72.0, 24.0), 100, pathA);
+	bezierCurve(coord(-72.0, 24.0), coord(24.0, 120.0), coord(24.0, 48.0), coord(0.0, 0.0), coord(-24.0, 24.0), 100, pathB);
 
-	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0), coord(0.0, 96.0), coord(-23.0, 96.0), coord(-24.0, 96.0), 20, pathJohn);
-	//pathJohn.push_back(coord(-72.0, 96.0));
-	//bezierCurve(coord(-72.0, 96.0), coord(-73.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 73.0), coord(-96.0, 72.0), 20, pathJohn);
-	//pathJohn.push_back(coord(-96.0, 0.0));
+	//horseshoe
+	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0), coord(0.0, 96.0), coord(-23.0, 96.0), coord(-24.0, 96.0), 20, pathA);
+	//pathA.push_back(coord(-72.0, 96.0));
+	//bezierCurve(coord(-72.0, 96.0), coord(-73.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 73.0), coord(-96.0, 72.0), 20, pathA);
+	//pathA.push_back(coord(-96.0, 0.0));
 
-	doThePurePursuit(pathJohn, 36.0, 6000.0, 0);
-	//doThePurePursuit(pathJohn2, 36.0, 12000.0, 0);
-	//doThePurePursuit(pathJohn3, 36.0, 12000.0, 0);
+	//doThePurePursuit(pathA, 36.0, 12000.0, 1);
+	//doThePurePursuit(pathB, 36.0, 12000.0, 1);
+	//doThePurePursuit(pathC, 36.0, 12000.0, 0);
+
+	doThePurePursuit(pathD, 36.0, 6000.0, 1);
+	doThePurePursuit(pathE, 36.0, 6000.0, 0);
+
+	drivetrain.brake();
+    while(controller.get_digital(DIGITAL_DOWN) == 0){delay(10);}
+    for(string item : graphingPoints){
+        std::cout << item << "\n";
+        delay(1);
+    }
 }
