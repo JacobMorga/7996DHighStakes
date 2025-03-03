@@ -48,21 +48,24 @@ void skills(){
     transit(6); //score preload on alliance stake
     delay(500);
     transit(1); //start intaking and put wall mech down
-    toPointShortBy(-24.0, 0.0, 1, 1, goalDist, 12000.0); //reverse into first goal
+    delay(350);
+    toPointShortBy(-24.0, 0.0, 1, 1, goalDist, 10000.0); //reverse into first goal
     backClaw.set_value(1); //grab first goal
-    purePursuit(sPath1, 24.0, 12000.0, 0); //intake three rings
+    delay(100);
+    purePursuit(sPath1, 24.0, 9000.0, 0); //intake three rings
     transit(4); //put last ring into wall mech
-    toPoint(-36.0, 48.0, 1, 1, 12000.0); //reverse back to wall stake
+    delay(100); // added by jacob
+    toPoint(-36.0, 48.0, 1, 1, 10000.0); //reverse back to wall stake
     transit(17); //only intake on bottom
     toPoint(-60.0, 48.0, 0, 0, 6000.0); //score wall stake
     transit(4);
     while(comboState != 7){delay(10);}
-    delay(500);
+    delay(1000); // added by jacob
     transit(1);
-    toPoint(-36.0, 48.0, 1, 1, 12000.0);
-    purePursuit(sPath2, 24.0, 12000.0, 1);
-    toPoint(-60.0, 0.0, 0, 1, 12000.0);
-    toPoint(-66.0, -18.0, 1, 1, 12000.0);
+    toPoint(-36.0, 48.0, 1, 1, 10000.0);
+    purePursuit(sPath2, 24.0, 10000.0, 1);
+    toPoint(-60.0, 0.0, 0, 1, 10000.0);
+    toPoint(-66.0, -18.0, 1, 1, 10000.0);
     backClaw.set_value(0);
     toPointShortBy(24.0, 0.0, 1, 0, goalDist, 12000.0);
     backClaw.set_value(1);  
