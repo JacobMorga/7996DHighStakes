@@ -72,6 +72,14 @@ void skills1(){
 }
 
 void skills2(){
+
+    //* to edit next
+    //*first corner end bezier lift intake topoints
+    //*switch bezier pps to segment pps when necessary
+    //*finish actual pathing
+    //*implement during pp event (zone?)
+    //*two kinds of smooth pp (add one to finish path without slowing down)
+
     teamColor = COLOR_RED;
     instantLift = 1;
     specialIntake = 1;
@@ -79,14 +87,14 @@ void skills2(){
     std::vector<coord> sPathB = {};
     std::vector<coord> sPathC = {};
     std::vector<coord> sPathD = {};
-    std::vector<coord> sPathE = {};
+    std::vector<coord> sPathE = {coord(-48.0,72.0),coord(-24.0,48.0),coord(-66.0,48.0)};
     std::vector<coord> sPathF = {};
     std::vector<coord> sPathG = {};
     std::vector<coord> sPathH = {};
     bezierCurve(coord(-14.0, -11.0), coord(-48.0, 25.0), coord(15.0, 37.0), coord(93.0, 152.0), coord(61.0, 96.0), 100, sPathA);
     bezierCurve(coord(0.0, 96.0), coord(-48.0, 44.0), coord(-48.0, 200.0), coord(-116.0, 80.0), coord(-48.0, 96.0), 100, sPathB);
-    bezierCurve(coord(-48.0, 72.0), coord(-24.0, 48.0), coord(-24.0, 6.0), coord(-48.0, 60.0), coord(-66.0, 60.0), 100, sPathC);
-    bezierCurve(coord(24.0, 0.0), coord(18.0, 54.0), coord(40.0, 80.0), coord(53.0, 61.0), coord(48.0, -12.0), 100, sPathD);
+    bezierCurve(coord(-48.0, 72.0), coord(-24.0, 48.0), coord(-24.0, 6.0), coord(-60.0, 50.0), coord(-86.0, 45.0), 100, sPathC);
+    bezierCurve(coord(24.0, 0.0), coord(20.0, 34.0), coord(38.0, 60.0), coord(51.0, 50.0), coord(48.0, -12.0), 100, sPathD);
 
     transit(6); //score alliance stake ring
     delay(750);
@@ -96,11 +104,14 @@ void skills2(){
     toPoint(-24.0, 0.0, 1, 1, 12000.0);
     backClaw.set_value(1);
     delay(100);
-    purePursuit(sPathA, 24.0, 12000.0, 0); //through ladder
+    purePursuit(sPathA, 36.0, 12000.0, 0); //through ladder //!24
     toPoint(42.0, 90.0, 1, 1, 12000.0); //reverse to get sixth ring
     toPoint(48.0, 108.0, 0, 1, 12000.0); //get sixth ring
     toPoint(66.0, 114.0, 0, 0, 12000.0); //clear corner by intaking
-    delay(1000);
+    delay(500);
+    toPoint(54.0, 114.0, 1, 1, 12000.0); //clear corner by intaking
+    toPoint(66.0, 114.0, 0, 0, 12000.0); //clear corner by intaking
+    delay(500);
     faceAway(72.0, 120.0); //turn to put goal in corner
     toPoint(60.0, 108.0, 1, 0, 12000.0); //put goal in corner
     backClaw.set_value(0);
@@ -112,32 +123,34 @@ void skills2(){
     
     //instead of pure pursuit (too small of movements in the corner)
     toPoint(-24.0, 90.0, 0, 1, 12000.0); //between ring and goal
-    toPoint(-48.0, 108.0, 0, 1, 12000.0); //back corner
+    toPoint(-48.0, 114.0, 0, 1, 12000.0); //back corner //!+6y
     toPoint(-60.0, 96.0, 0, 1, 12000.0); //second bottom ring
     toPoint(-48.0, 96.0, 0, 1, 12000.0); //last bottom ring
     //
 
     toPoint(-24.0, 72.0, 0, 1, 12000.0); //one more onto the goal
     toPoint(-48.0, 72.0, 0, 1, 12000.0); //wall mech this one
-    purePursuit(sPathC, 24.0, 12000.0, 0); //score first wall stake
-    toPoint(-48.0, 48.0, 1, 1, 12000.0); //back up
     transit(4);
+    purePursuit(sPathE, 24.0, 12000.0, 0); //score first wall stake //! was path C but it hit the tower
+    toPoint(-48.0, 48.0, 1, 1, 12000.0); //back up
     toPoint(-63.0, 48.0, 0, 1, 12000.0); //score second ring
-    toPoint(-48.0, 48.0, 1, 1, 12000.0); //back up again
+    toPoint(-36.0, 48.0, 1, 1, 12000.0); //back up again //!+12x
+    transit(1);
     toPoint(-48.0, -12.0, 0, 1, 12000.0); //line of 3 rings
     transit(3);
     toPoint(-60.0, 0.0, 0, 1, 12000.0); //last ring but its just in the bottom of the intake
     toPoint(-60.0, -12.0, 1, 1, 12000.0); //goal in corner
     backClaw.set_value(0);
     toPoint(6.0, 6.0, 0, 1, 12000.0); //toward other goal forward so we hold the intake ring
-    toPointShortBy(24.0, 0.0, 1, 1, goalDist, 12000.0); //get other goal
+    toPoint(24.0, 0.0, 1, 1, 12000.0); //get other goal
     backClaw.set_value(1);
     delay(100);
     transit(1);
     purePursuit(sPathD, 18.0, 12000.0, 0); //finish bottom right corner goal //!24 is probably path skippingly big
-    toPoint(60.0, 0.0, 1, 0, 12000.0); //wall mech ring
+    toPoint(60.0, 0.0, 0, 0, 12000.0); //wall mech ring
     transit(4);
     toPoint(60.0, -12.0, 1, 1, 12000.0); //score goal
+    backClaw.set_value(0);
 }
 
 void loadPaths(){
