@@ -82,7 +82,7 @@ void autonomous() {
 	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg Max"); blueNegMax();}
 	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos Max"); redPosMax();}
 	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg Max"); redNegMax();}
-	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills();}
+	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
 }
 

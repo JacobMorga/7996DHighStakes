@@ -40,7 +40,7 @@ float WMLoadingTarget = 60.0; //degrees
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 175.0; //180.0; //degrees
 float WMManualSpeed = 0.5; //degrees per cycle
-float WMRingDetectionDist = 50.0; //mm
+float WMRingDetectionDist = 80.0; //mm
 float prevWMTarget = 0.0;
 
 bool colorSorting = 1;
@@ -61,6 +61,7 @@ bool backClawBool = 0;
 bool instantLift = 0;
 bool forcedTransit = 0;
 int forcedState = 0;
+bool specialIntake = 0;
 
 #define intakeTog       DIGITAL_R1
 #define intakeRev       DIGITAL_R2
@@ -276,6 +277,7 @@ void runComboSystem(){
     //^ 16: intake reversing, wall mech loading
     //^ 17: secret state where just the bottom is intaking? unable to use controller to get here though it's only for autons i guess
     //^ 18: second secret state where the bottom's outtaking while the top's intaking. controller unable to reach this state
+    //^ 19: third secret state where its 17 but the wall mech is up
     while(1){
         //* state transitions
         backClawBool = backClaw.get_value();
@@ -295,7 +297,10 @@ void runComboSystem(){
         }
         else if(controller.get_digital_new_press(wallMechCycle)){ //pressed to cycle wall mech 
             if(comboState <= 3){comboState = 4;}
-            else if(comboState == 4){comboState = 7;}
+            else if(comboState == 4){
+                if(backClawBool){comboState = 7;}
+                else{comboState = 9;}
+            }
             else if(comboState == 5){comboState = 6;}
             else if(comboState == 6){comboState = 0;}
             else if(comboState == 7){comboState = 1;}
@@ -304,20 +309,27 @@ void runComboSystem(){
             else if(comboState == 16){comboState = 8;}
         }
         else if(backClawBool != prevBackClawBool){
-            if(comboState == 1){comboState = 3;}
-            else if(comboState == 3){comboState = 1;}
-            else if(comboState == 7){comboState = 9;}
+            if(comboState == 1 && backClawBool == 0){comboState = 3;}
+            else if(comboState == 3 && backClawBool == 1){comboState = 1;}
+            else if(comboState == 7 && backClawBool == 0){comboState = 9;}
             else if(comboState == 9){comboState = 7;}
         }
         else if(WMDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
             if(comboState == 4){ //redundant for clarity
-                if(instantLift){comboState = 7; justLoaded = 1;}
+                if(instantLift){
+                    if(specialIntake){comboState = 19;}
+                    else{comboState = 7;}
+                    justLoaded = 1;
+                }
                 else{comboState = 5; justLoaded = 1;}
             }
         }
         else if(intakeDistanceSensor.get() <= sortDistance && (comboState == 1 || comboState == 3 || comboState == 4 || comboState == 7 || comboState == 9)){ //ring detected
             if(comboState == 1){comboState = 10;}
-            else if(comboState == 3){comboState = 13;}
+            else if(comboState == 3){
+                if(!specialIntake){comboState = 13;}
+                else{comboState = 17;}
+            }
             else if(comboState == 4){comboState = 11;}
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
@@ -459,6 +471,11 @@ void runComboSystem(){
             intakeTop.move_voltage(intakeVoltage);
             intakeBottom.move_voltage(-intakeVoltage);
         }
+        else if(comboState == 19){ //^ 19: third secret state where its 17 but the wall mech is up
+            WMTarget = WMScoringTarget;
+            intakeTop.brake();
+            intakeBottom.move_voltage(-intakeVoltage);
+        }
         prevBackClawBool = backClawBool;
         delay(10);
     }
@@ -483,8 +500,6 @@ void runWallMech(){ //also holds printing so we only print in one task
         WMPreviousPos = WMPosition;
         wallMech.move_voltage(WMPower);
         prevWMTarget = WMTarget;
-
-
         
         //debug combo system
         /*

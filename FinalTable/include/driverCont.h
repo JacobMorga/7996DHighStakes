@@ -13,5 +13,6 @@ extern float WMKp;
 extern float WMKd;
 extern float WMScoringTarget;
 extern bool colorSorting;
+extern bool specialIntake;
 
 #endif
