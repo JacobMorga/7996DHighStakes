@@ -77,8 +77,8 @@ void skills2(){
     //*first corner end bezier lift intake topoints
     //*switch bezier pps to segment pps when necessary
     //*finish actual pathing
-    //*implement during pp event (zone?)
-    //*two kinds of smooth pp (add one to finish path without slowing down)
+    //& implement during pp event (zone?)
+    //& two kinds of smooth pp (add one to finish path without slowing down)
 
     teamColor = COLOR_RED;
     instantLift = 1;

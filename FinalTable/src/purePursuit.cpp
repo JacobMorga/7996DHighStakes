@@ -230,7 +230,7 @@ int graphedpoints = 0;
 
 vector<string> graphingPoints {};
 
-void purePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, bool ppSmooth){
+void purePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, int ppSmooth){
     //lcd::set_text(7, std::to_string(0));
 
     runPP = 0;
@@ -261,7 +261,7 @@ void purePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, bool
         lDerPP = lErrorPP - prevLErrorPP;
 
         endpointDist = pythag(path.back().x - robotPos.x, path.back().y - robotPos.y);
-        if(endpointDist < lookAheadDisPP && ppSmooth == 0){
+        if(endpointDist < lookAheadDisPP && (ppSmooth == 0 || ppSmooth == 2)){
             if(firstBoundary == 0){
                 maxDistPP = endpointDist;
                 firstBoundary = 1;
@@ -336,6 +336,7 @@ void purePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, bool
             leftPowPP *= slowScale;
         }
         if(endpointDist < lookAheadDisPP && ppSmooth == 1){runPP = ppLoopMax;}
+        if(endpointDist < 1.0 && ppSmooth == 2){runPP = ppLoopMax;}
 
         //if(controller.get_digital(DIGITAL_X) == true){runPP = ppLoopMax;}
 
@@ -366,4 +367,23 @@ void bezierCurve(coord p1, coord p2, coord p3, coord p4, coord p5, int n, vector
         tempPoint.y = (pow(w,4.0) * (p5.y - 4.0*p4.y + 6.0*p3.y - 4.0*p2.y + p1.y)) + (4.0*pow(w,3.0) * (p4.y - 3.0*p3.y + 3.0*p2.y - p1.y)) + (6.0*pow(w,2.0) * (p3.y - 2.0*p2.y + p1.y)) + (4.0*w * (p2.y - p1.y)) + p1.y;
         listInput.push_back(tempPoint);
     }
+}
+
+int whatToRun = 0;
+coord theCurrentPointJohn(0.0,0.0);
+void runCodeDuringCode (){
+
+    while(1){
+        theCurrentPointJohn.x = xPos;
+        theCurrentPointJohn.y = yPos;
+
+
+        if (whatToRun == 1 && distance(theCurrentPointJohn.x,theCurrentPointJohn.y, 48.0, 48.0) < 5.0){ // You set the whatToRun variable before a PP or toPoint and then it'll run this when you want it
+            //runs what you put in here
+            whatToRun = 0; // Resets at the end of the loop so it doesnt accidentially run twice
+        }
+
+        delay(20);
+    }
+
 }
