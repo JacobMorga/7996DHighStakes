@@ -184,12 +184,4 @@ void testing(){
 	purePursuit(pathC, 24.0, 12000.0, 0);
 
 	//purePursuit(pathD, 36.0, 12000.0, 1);
-	//purePursuit(pathE, 36.0, 12000.0, 0);
-
-	drivetrain.brake();
-    while(controller.get_digital(DIGITAL_DOWN) == 0){delay(10);}
-    for(string item : graphingPoints){
-        std::cout << item << "\n";
-        delay(1);
-    }
-}
+	//purePursuit(
