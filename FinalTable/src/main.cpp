@@ -66,24 +66,24 @@ void autonomous() {
 	screen::fill_rect(0,0,480,240);
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(teamColor);
-	led1.set_all(teamColor);
-	led2.set_all(teamColor);
-	led3.set_all(teamColor);
-	led4.set_all(teamColor);
-    led1.update();
-	led2.update();
-	led3.update();
-	led4.update();
 	
-	if      (autonSelected == 1){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos AWP"); bluePosAWP();} // Runs auton based on auton selector output
-	else if (autonSelected == 2){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg AWP"); blueNegAWP();} // And prints what auton its running
-	else if (autonSelected == 3){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos AWP"); redPosAWP();}
-	else if (autonSelected == 4){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg AWP"); redNegAWP();}
-	else if (autonSelected == 5){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos Max"); bluePosMax;}
-	else if (autonSelected == 6){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg Max"); blueNegMax();}
-	else if (autonSelected == 7){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos Max"); redPosMax();}
-	else if (autonSelected == 8){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg Max"); redNegMax();}
-	else if (autonSelected == 9){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	if      (autonSelected == 1 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos AWP"); bluePosAWP();} // Runs auton based on auton selector output
+	else if (autonSelected == 2 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg AWP"); blueNegAWP();} // And prints what auton its running
+	else if (autonSelected == 3 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos AWP"); redPosAWP();}
+	else if (autonSelected == 4 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg AWP"); redNegAWP();}
+	else if (autonSelected == 5 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos Max"); bluePosMax();}
+	else if (autonSelected == 6 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg Max"); blueNegMax();}
+	else if (autonSelected == 7 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos Max"); redPosMax();}
+	else if (autonSelected == 8 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg Max"); redNegMax();}
+	else if (autonSelected == 9 ){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 10){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 11){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 12){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 13){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 14){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 15){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 16){ printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
 }
 

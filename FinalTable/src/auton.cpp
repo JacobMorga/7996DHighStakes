@@ -3,35 +3,35 @@ using namespace pros;
 float goalDist = 8.0;
 
 void bluePosAWP(){
-
+    teamColor = COLOR_BLUE;
 }
 
 void blueNegAWP(){ 
-
+    teamColor = COLOR_BLUE;
 }
 
 void redPosAWP(){
-
+    teamColor = COLOR_RED;
 }
 
 void redNegAWP(){
-
+    teamColor = COLOR_RED;
 }
 
 void bluePosMax(){
-
+    teamColor = COLOR_BLUE;
 }
 
 void blueNegMax(){ 
-
+    teamColor = COLOR_BLUE;
 }
 
 void redPosMax(){
-
+    teamColor = COLOR_RED;
 }
 
 void redNegMax(){
-
+    teamColor = COLOR_RED;
 }
 
 void skills1(){
