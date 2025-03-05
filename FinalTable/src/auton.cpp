@@ -1,21 +1,43 @@
 #include "main.h"
 using namespace pros;
 float goalDist = 8.0;
+bool runThisCodeShort = 0;
 
 void bluePosAWP(){
     teamColor = COLOR_BLUE;
+    if (runThisCodeShort == false){
+
+    }
 }
 
 void blueNegAWP(){ 
     teamColor = COLOR_BLUE;
+    if (runThisCodeShort == false){
+
+    }
 }
 
 void redPosAWP(){
     teamColor = COLOR_RED;
+    if (runThisCodeShort == false){
+
+    }
 }
 
 void redNegAWP(){
     teamColor = COLOR_RED;
+
+    std::vector<coord> rnaPath1 = {};
+    bezierCurve(coord(-3.2, 19.2), coord(-18.0, 8.6), coord(-20.1, -3.2), coord(-20.4, -12.0), coord(-0.1, -17.8), 30, rnaPath1);
+
+    transit(7);
+    purePursuit(rnaPath1,18.0,10000,0);
+    backClaw.set_value(1);
+
+
+    if (runThisCodeShort == false){
+
+    }
 }
 
 void bluePosMax(){
@@ -174,22 +196,4 @@ void testing(){
 	bezierCurve(coord(-72.0, 24.0), coord(0.0, 96.0), coord(24.0, 72.0), coord(0.0, 0.0), coord(-24.0, 24.0), 100, pathB);
 
 	//horseshoe
-	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0), coord(0.0, 96.0), coord(-23.0, 96.0), coord(-24.0, 96.0), 20, pathA);
-	//pathA.push_back(coord(-72.0, 96.0));
-	//bezierCurve(coord(-72.0, 96.0), coord(-73.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 73.0), coord(-96.0, 72.0), 20, pathA);
-	//pathA.push_back(coord(-96.0, 0.0));
-
-	purePursuit(pathA, 24.0, 12000.0, 1);
-	purePursuit(pathB, 24.0, 12000.0, 1);
-	purePursuit(pathC, 24.0, 12000.0, 0);
-
-	//purePursuit(pathD, 36.0, 12000.0, 1);
-	//purePursuit(pathE, 36.0, 12000.0, 0);
-
-	drivetrain.brake();
-    while(controller.get_digital(DIGITAL_DOWN) == 0){delay(10);}
-    for(string item : graphingPoints){
-        std::cout << item << "\n";
-        delay(1);
-    }
-}
+	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0

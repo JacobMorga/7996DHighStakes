@@ -54,14 +54,16 @@ void autonSelector (){
             screen::draw_line(0,180,480,180);
                 
             if(status.y < 60){ row = 1; }
-            else if(60 < status.y < 120){ row = 2; }
-            else if(120 < status.y < 180){ row = 3; }
+            else if(60 < status.y && status.y < 120){ row = 2; }
+            else if(120 < status.y && status.y < 180){ row = 3; }
             else{ row = 4; }
 
             if(status.x < 120){ column = 1; }
-            else if(120 < status.x < 240){ column = 2; }
-            else if(240 < status.x < 360){ column = 3; }
+            else if(120 < status.x && status.x < 240){ column = 2; }
+            else if(240 < status.x && status.x < 360){ column = 3; }
             else { column = 4; }
+
+            if(status.y == 0 && status.x == 0){row = 0; column = 0;} // only happens on first loop (default press is 0,0)
 
             std::cout << row << ":" << column << "\n";
 
@@ -75,7 +77,7 @@ void autonSelector (){
             else if (row == 2 && column == 2){ autonSelected = 6;  screen::fill_rect(120,60 ,240,120); }
             else if (row == 2 && column == 3){ autonSelected = 7;  screen::fill_rect(240,60 ,360,120); }
             else if (row == 2 && column == 4){ autonSelected = 8;  screen::fill_rect(360,60 ,480,120); }
-            else if (row == 3 && column == 1){ autonSelected = 19; screen::fill_rect(0  ,120,120,180); }
+            else if (row == 3 && column == 1){ autonSelected = 9;  screen::fill_rect(0  ,120,120,180); }
             else if (row == 3 && column == 2){ autonSelected = 10; screen::fill_rect(120,120,240,180); }
             else if (row == 3 && column == 3){ autonSelected = 11; screen::fill_rect(240,120,360,180); }
             else if (row == 3 && column == 4){ autonSelected = 12; screen::fill_rect(360,120,480,180); }
@@ -98,25 +100,4 @@ void autonSelector (){
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "8"); 
             screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "9"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "10"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "11"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "12"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "13"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "14"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "15"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "16"); 
-
-
-            while(status.touch_status == E_TOUCH_HELD){
-                status = pros::screen::touch_status();
-                delay(20);
-            }
-            while(status.touch_status != E_TOUCH_HELD){
-                status = pros::screen::touch_status();
-                delay(20);
-            }
-
-        screen::erase();
-
-        delay(20);
-    }
-}
+            screen::p
