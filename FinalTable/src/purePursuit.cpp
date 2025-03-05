@@ -220,7 +220,7 @@ float ssK = 0.1; //*tune
 float ssJ = 0.0; //*tune
 int ppLoopMax = 50; //*tune
 bool pseudoVelSwitchPP = 0;
-float pseudoVelLimitPP = 0.25; //*tune
+float pseudoVelLimitPP = 1.0; //*tune
 float ppExitDist = 6.0; //*tune
 float pseudoPP = 0.0;
 int pploops = 0;
@@ -370,17 +370,28 @@ void bezierCurve(coord p1, coord p2, coord p3, coord p4, coord p5, int n, vector
 }
 
 int whatToRun = 0;
-coord theCurrentPointJohn(0.0,0.0);
+coord RCDCPos(0.0,0.0);
 void runCodeDuringCode (){
 
     while(1){
-        theCurrentPointJohn.x = xPos;
-        theCurrentPointJohn.y = yPos;
+        RCDCPos.x = xPos;
+        RCDCPos.y = yPos;
 
-
-        if (whatToRun == 1 && distance(theCurrentPointJohn.x,theCurrentPointJohn.y, 48.0, 48.0) < 5.0){ // You set the whatToRun variable before a PP or toPoint and then it'll run this when you want it
-            //runs what you put in here
+        if (whatToRun == 1 && distance(RCDCPos.x, RCDCPos.y, 36.0, 84.0) <= 6.0){ // You set the whatToRun variable before a PP or toPoint and then it'll run this when you want it
+            intakePiston.set_value(1);
             whatToRun = 0; // Resets at the end of the loop so it doesnt accidentially run twice
+        }
+        else if(whatToRun == 2){
+            
+            whatToRun = 0;
+        }
+        else if(whatToRun == 3){
+            
+            whatToRun = 0;
+        }
+        else if(whatToRun == 4){
+            
+            whatToRun = 0;
         }
 
         delay(20);

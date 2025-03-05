@@ -22,9 +22,9 @@ int exitLoops = 0; //universal
 bool pseudoVelSwitch = 0;
 float pseudoVelLimit = 1.0;
 float pseudoRotVelLimit = 0.15;
-float minAcceptableRotError = 1.5;
+float maxAcceptableRotError = 1.5;
 
-void facePoint(float xTar, float yTar){
+void facePoint(float xTar, float yTar, float speedLimit){
     pseudoVelSwitch = 0;
     exitLoops = 0;
     while (exitLoops < 25){
@@ -36,12 +36,13 @@ void facePoint(float xTar, float yTar){
         tDer = tError - tPrevError;
         tPrevError = tError;
         tPow = rotKP * tError + rotKI * tInt + rotKD * tDer;
+        if(fabs(tPow) > speedLimit){tPow = getDir(tPow) * speedLimit;}
         rightDrive.move_voltage(tPow); 
         leftDrive.move_voltage(-tPow);
 
         if(pseudoVelSwitch == 0 && fabs(pseudoRotVel) > pseudoRotVelLimit){pseudoVelSwitch = 1;}
 
-        if (fabs(tError / pi * 180.0) <= minAcceptableRotError || (pseudoVelSwitch == 1 && fabs(pseudoRotVel) < pseudoRotVelLimit)){exitLoops += 1;}
+        if (fabs(tError / pi * 180.0) <= maxAcceptableRotError || (pseudoVelSwitch == 1 && fabs(pseudoRotVel) < pseudoRotVelLimit)){exitLoops += 1;}
         else{exitLoops = 0;}
 
         delay(10);
@@ -84,7 +85,6 @@ float distLimit = 5.0;
 float TProtKP = 30000.0; //best so far 15000.0;
 float TProtKI = 0.0; //best so far 0.0;
 float TProtKD = 500000.0; //best so far 500000.0;
-
 
 float offsetDist = 0.0;
 float angleToTarget = 0.0;
@@ -199,10 +199,10 @@ void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float o
     toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, powerLimit);
 }
 
-void faceAway(float xTar, float yTar){
-    facePoint(2.0 * xPos - xTar, 2.0 * yPos - yTar);
+void faceAway(float xTar, float yTar, float speedLimit){
+    facePoint(2.0 * xPos - xTar, 2.0 * yPos - yTar, speedLimit);
 }
 
-void faceHeading(float tTar){
-    facePoint(xPos + 96.0 * cos(tTar), yPos + 96.0 * sin(tTar));
+void faceHeading(float tTar, float speedLimit){
+    facePoint(xPos + 96.0 * cos(tTar), yPos + 96.0 * sin(tTar), speedLimit);
 }
