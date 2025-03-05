@@ -8,7 +8,7 @@ int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 450.0; //412.5; //degrees
+float sortDegrees1 = 400.0; //450.0; //degrees
 float sortDegrees2 = 400.0; //degrees
 float stickItIn = 200.0; //ms
 float pullItOut = 75.0; //ms
@@ -24,9 +24,9 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 150.0; //375.0;
-float WMKd = 350.0; //2250.0; //350.0; 2000-2500
-float WMKi = 5.0; //0-10
+float WMKp = 300.0; //300.0; 
+float WMKd = 1000.0; //350.0; 
+float WMKi = 5.0; //5.0;
 float WMIntegralMax = 4000.0; //mV, arbitrary
 float WMErrorMax = 20.0;
 
@@ -36,11 +36,11 @@ float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
 float WMPower = 0.0;
 float WMIdleTarget = 40.0; //degrees
-float WMLoadingTarget = 60.0; //degrees
+float WMLoadingTarget = 61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
-float WMScoringTarget = 175.0; //180.0; //degrees
+float WMScoringTarget = 164.0; //!175.0; 
 float WMManualSpeed = 0.5; //degrees per cycle
-float WMRingDetectionDist = 80.0; //mm
+float WMRingDetectionDist = 90.0; //mm
 float prevWMTarget = 0.0;
 
 bool colorSorting = 1;
@@ -63,17 +63,19 @@ bool forcedTransit = 0;
 int forcedState = 0;
 bool specialIntake = 0;
 
-#define intakeTog       DIGITAL_R1
-#define intakeRev       DIGITAL_R2
-#define wallMechCycle   DIGITAL_L1
-#define backClawTog     DIGITAL_L2
-#define colorSortingTog DIGITAL_RIGHT
-#define wallMechUp      DIGITAL_X
-#define wallMechDown    DIGITAL_A
-#define leftCC          DIGITAL_LEFT
-#define rightCC         DIGITAL_UP
-#define teamColorTog    DIGITAL_B
-#define intakePis       DIGITAL_DOWN
+#define intakeTog        DIGITAL_R1
+#define intakeRev        DIGITAL_R2
+#define wallMechCycle    DIGITAL_L1
+#define backClawTog      DIGITAL_L2
+#define colorSortingTog  DIGITAL_RIGHT
+#define wallMechUp       DIGITAL_X
+#define wallMechDown     DIGITAL_A
+#define leftCC           DIGITAL_LEFT
+#define rightCC          DIGITAL_UP
+#define teamColorTog     DIGITAL_B
+#define intakePis        DIGITAL_DOWN
+#define instantLiftTog   DIGITAL_Y
+#define specialIntakeTog DIGITAL_LEFT
 
 void runDriveCont (){
     //$ Controller mapping:
@@ -97,6 +99,7 @@ void runDriveCont (){
     //$ some kind of macro for holding a second ring in the intake and scoring it on the wall stake after the wall mech ring is scored
 
     instantLift = 0;
+    specialIntake = 0;
     while (1){
         JRYValue = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0; // Scales 127 to 100 then cubes and converts to mV
         JLYValue = powf(controller.get_analog(ANALOG_LEFT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
@@ -115,6 +118,8 @@ void runDriveCont (){
             if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
             else{teamColor = COLOR_RED;}
         }
+        if(controller.get_digital_new_press(instantLiftTog)){instantLift = !instantLift;}
+        if(controller.get_digital_new_press(specialIntakeTog)){specialIntake = !specialIntake;}
 
         delay(10);
     }
@@ -315,10 +320,10 @@ void runComboSystem(){
             else if(comboState == 9){comboState = 7;}
         }
         else if(WMDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
-            if(comboState == 4){ //redundant for clarity
+            if(comboState == 4 && fabs(WMLoadingTarget - WMPosition) <= 5.0){ //redundant for clarity
                 if(instantLift){
                     if(specialIntake){comboState = 19;}
-                    else{comboState = 7;}
+                    else{comboState = 6;} //!7
                     justLoaded = 1;
                 }
                 else{comboState = 5; justLoaded = 1;}
@@ -494,7 +499,7 @@ void runWallMech(){ //also holds printing so we only print in one task
         if(WMTarget > 160.0 && getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;}
         if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
         if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
-        WMDerivative = WMPosition - WMPreviousPos;
+        WMDerivative = WMPreviousPos - WMPosition; //
         if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
         WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
         WMPreviousPos = WMPosition;
