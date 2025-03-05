@@ -114,4 +114,13 @@ void opcontrol() {
 	//toPoint(0.0, 0.0, 0, 0);
 
 	
-	//std::vector<coord> pathA = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.
+	//std::vector<coord> pathA = {coord(0.0, 0.0), coord(0.0, 96.0), coord(-96.0, 0.0), coord(-96.0, 96.0)};
+
+	/*
+	rightDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+	leftDrive.set_brake_modes(MOTOR_BRAKE_COAST);
+	rightDrive.brake();
+	leftDrive.brake();
+	*/
+
+}

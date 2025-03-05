@@ -196,4 +196,22 @@ void testing(){
 	bezierCurve(coord(-72.0, 24.0), coord(0.0, 96.0), coord(24.0, 72.0), coord(0.0, 0.0), coord(-24.0, 24.0), 100, pathB);
 
 	//horseshoe
-	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0
+	//bezierCurve(coord(0.0, 72.0), coord(0.0, 73.0), coord(0.0, 96.0), coord(-23.0, 96.0), coord(-24.0, 96.0), 20, pathA);
+	//pathA.push_back(coord(-72.0, 96.0));
+	//bezierCurve(coord(-72.0, 96.0), coord(-73.0, 96.0), coord(-96.0, 96.0), coord(-96.0, 73.0), coord(-96.0, 72.0), 20, pathA);
+	//pathA.push_back(coord(-96.0, 0.0));
+
+	purePursuit(pathA, 24.0, 12000.0, 1);
+	purePursuit(pathB, 24.0, 12000.0, 1);
+	purePursuit(pathC, 24.0, 12000.0, 0);
+
+	//purePursuit(pathD, 36.0, 12000.0, 1);
+	//purePursuit(pathE, 36.0, 12000.0, 0);
+
+	drivetrain.brake();
+    while(controller.get_digital(DIGITAL_DOWN) == 0){delay(10);}
+    for(string item : graphingPoints){
+        std::cout << item << "\n";
+        delay(1);
+    }
+}

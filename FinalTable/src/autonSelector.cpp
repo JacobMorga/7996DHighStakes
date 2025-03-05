@@ -100,4 +100,25 @@ void autonSelector (){
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "8"); 
             screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "9"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "10"); 
-            screen::p
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "11"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "12"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "13"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "14"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "15"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "16"); 
+
+
+            while(status.touch_status == E_TOUCH_HELD){
+                status = pros::screen::touch_status();
+                delay(20);
+            }
+            while(status.touch_status != E_TOUCH_HELD){
+                status = pros::screen::touch_status();
+                delay(20);
+            }
+
+        screen::erase();
+
+        delay(20);
+    }
+}
