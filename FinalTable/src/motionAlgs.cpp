@@ -21,10 +21,11 @@ float tTarget = 0.0; //this is a variable while tTar is an input
 int exitLoops = 0; //universal
 bool pseudoVelSwitch = 0;
 float pseudoVelLimit = 1.0;
-float pseudoRotVelLimit = 0.15;
+float pseudoRotVelLimit = 1.0;
 float maxAcceptableRotError = 1.5;
+float smoothFPError = 5.0;
 
-void facePoint(float xTar, float yTar, float speedLimit){
+void facePoint(float xTar, float yTar, bool fpSmooth, float speedLimit){
     pseudoVelSwitch = 0;
     exitLoops = 0;
     while (exitLoops < 25){
@@ -43,6 +44,7 @@ void facePoint(float xTar, float yTar, float speedLimit){
         if(pseudoVelSwitch == 0 && fabs(pseudoRotVel) > pseudoRotVelLimit){pseudoVelSwitch = 1;}
 
         if (fabs(tError / pi * 180.0) <= maxAcceptableRotError || (pseudoVelSwitch == 1 && fabs(pseudoRotVel) < pseudoRotVelLimit)){exitLoops += 1;}
+        else if(fpSmooth == 1 && fabs(tError / pi * 180.0) < smoothFPError){exitLoops += 25;}
         else{exitLoops = 0;}
 
         delay(10);
@@ -92,7 +94,7 @@ bool updateTargets = 0;
 float xTarShortInput = 0.0;
 float yTarShortInput = 0.0;
 
-bool TPSB1 = 0;
+bool TPSB1 = 1;
 
 void toPoint(float xTar, float yTar, float reversed, bool smooth, float powerLimit){
     toPointLoops = 0;
@@ -199,10 +201,11 @@ void toPointShortBy(float xTar, float yTar, float reversed, bool smooth, float o
     toPoint(xTar - offsetDist * cos(angleToTarget), yTar - offsetDist * sin(angleToTarget), reversed, smooth, powerLimit);
 }
 
-void faceAway(float xTar, float yTar, float speedLimit){
-    facePoint(2.0 * xPos - xTar, 2.0 * yPos - yTar, speedLimit);
+void faceAway(float xTar, float yTar, bool fpSmooth, float speedLimit){
+    facePoint(2.0 * xPos - xTar, 2.0 * yPos - yTar, fpSmooth, speedLimit);
 }
 
-void faceHeading(float tTar, float speedLimit){
-    facePoint(xPos + 96.0 * cos(tTar), yPos + 96.0 * sin(tTar), speedLimit);
+void faceHeading(float tTar, bool fpSmooth, float speedLimit){
+    tTar *= pi / 180.0;
+    facePoint(xPos + 96.0 * cos(tTar), yPos + 96.0 * sin(tTar), fpSmooth, speedLimit);
 }

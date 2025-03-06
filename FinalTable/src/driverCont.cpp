@@ -40,7 +40,7 @@ float WMLoadingTarget = 61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 164.0; //!175.0; 
 float WMManualSpeed = 0.5; //degrees per cycle
-float WMRingDetectionDist = 90.0; //mm
+float WMRingDetectionDist = 92.0; //mm //!90
 float prevWMTarget = 0.0;
 
 bool colorSorting = 1;
@@ -89,10 +89,10 @@ void runDriveCont (){
     //$                    R2: Reverse intake, hold button
     //$                    Up: Right corner clearer
     //$                  Down: Intake piston toggle
-    //$                  Left: -------
+    //$                  Left: special intake toggle
     //$                 Right: Color sorting on/off toggle  
     //$                 X (↑): Wall mech manual adjust up
-    //$                 Y (←): -------
+    //$                 Y (←): instant lift toggle
     //$                 A (→): Wall mech manual adjust down
     //$                 B (↓): Team color toggle
     //$ Potential additional adjustments/additions:
@@ -211,7 +211,7 @@ void colorSort(int incomingState){
 
     opticalSensor.set_led_pwm(100.0);
     exitcode = 0;
-    intakeSort1Start = intakeTop.get_position(); //intakeTop.get_position();
+    intakeSort1Start = intakeTop.get_position();
     while(exitcode == 0){
         rawColors = opticalSensor.get_raw();
         ambient = opticalSensor.get_brightness();
@@ -288,14 +288,14 @@ void runComboSystem(){
         backClawBool = backClaw.get_value();
         if(controller.get_digital_new_press(intakeTog)){ //pressed to start intaking 
             if(comboState == 0 || comboState == 2){
-                if(backClaw.get_value()){comboState = 1;}
+                if(backClawBool){comboState = 1;}
                 else{comboState = 3;}
             }
             else if(comboState == 1 || comboState == 3){comboState = 0;}
             else if(comboState == 4){comboState = 5;} 
             else if(comboState == 5 || comboState == 16){comboState = 4;}
             else if(comboState == 6 || comboState == 8){
-                if(backClaw.get_value()){comboState = 7;}
+                if(backClawBool){comboState = 7;}
                 else{comboState = 9;}
             }
             else if(comboState == 7 || comboState == 9){comboState = 6;}
@@ -519,7 +519,15 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(4, "%f : target of WM", WMTarget);
         lcd::print(5, "%f : error of WM", WMError);
         lcd::print(6, "%f : power of WM", WMPower / 1000.0);
-        lcd::print(7, "%f : integral power of WM", WMIntegral * WMKi);
+        lcd::print(7, "%d : back claw", backClawBool);
+        */
+
+        //odom output
+        /*
+        lcd::clear();
+        lcd::print(0, "%f : xPos", xPos);
+        lcd::print(1, "%f : yPos", yPos);
+        lcd::print(2, "%f : tPos", tPos);
         */
         
         delay(10);

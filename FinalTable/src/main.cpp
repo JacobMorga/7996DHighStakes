@@ -69,27 +69,33 @@ void autonomous() {
 	screen::set_eraser(teamColor);
 	runThisCodeShort = 0;
 	
-	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos AWP"); bluePosAWP();} // Runs auton based on auton selector output
-	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg AWP"); blueNegAWP();} // And prints what auton its running
-	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos AWP"); redPosAWP();}
-	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg AWP"); redNegAWP();}
-	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos Max"); bluePosMax();}
-	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg Max"); blueNegMax();}
-	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos Max"); redPosMax();}
-	else if (autonSelected == 8 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg Max"); redNegMax();}
-	else if (autonSelected == 9 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPos AWP Short");	runThisCodeShort = true; bluePosAWP();}
-	else if (autonSelected == 10){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNeg AWP Short");	runThisCodeShort = true; blueNegAWP();}
-	else if (autonSelected == 11){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPos AWP Short");	runThisCodeShort = true; redPosAWP();}
-	else if (autonSelected == 12){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNeg AWP Short");	runThisCodeShort = true; redNegAWP();}
+	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BiPedAL"); bluePosAWP();} // Runs auton based on auton selector output
+	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BaNAL"); 	blueNegAWP();} // And prints what auton its running
+	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RePeAL"); 	redPosAWP();}
+	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RegNAL"); 	redNegAWP();}
+	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BaPtisM"); bluePosMax();}
+	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BoNe 'eM"); blueNegMax();}
+	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red PluM"); redPosMax();}
+	else if (autonSelected == 8 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RaNdoM"); 	redNegMax();}
+	else if (autonSelected == 9 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "ByPasS");	runThisCodeShort = true; bluePosAWP();}
+	else if (autonSelected == 10){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BaNAnaS");	runThisCodeShort = true; blueNegAWP();}
+	else if (autonSelected == 11){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RePAyS");	runThisCodeShort = true; redPosAWP();}
+	else if (autonSelected == 12){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RetiNAS");	runThisCodeShort = true; redNegAWP();}
 	else if (autonSelected == 13){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
 	else if (autonSelected == 14){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
-	else if (autonSelected == 15){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
-	else if (autonSelected == 16){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
+	else if (autonSelected == 15){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Dr. Skill");}
+	else if (autonSelected == 16){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Testing");	autonTesting();}
 	
 	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
 }
 
 void opcontrol() {
+	if(driverSkills){
+		transit(6);
+		delay(500);
+		transit(1);
+		backClawBool = 0;
+	}
 	runDriveCont();
 	//toPointShortBy(48.0, -24.0, 0, 1, clearingDist);
 	//calculateOffsets();

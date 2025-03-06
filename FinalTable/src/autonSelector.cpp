@@ -12,8 +12,11 @@ int row, column = 0;
 int autonSelected = 0;
 int xTxtOffset = 20;
 int yTxtOffset = 20;
+bool driverSkills = 0;
 
 void autonSelector (){
+
+    driverSkills = 0;
 
     screen::erase();
 
@@ -25,7 +28,9 @@ void autonSelector (){
 
             screen::set_pen(COLOR_WHITE);
             screen::set_eraser(COLOR_BLACK);
-/*
+            screen::erase();
+
+            /*
             if (teamColor == COLOR_RED){
                 screen::erase_rect(0,0,119,240);
                 delay(20);
@@ -43,7 +48,8 @@ void autonSelector (){
                 screen::set_pen(COLOR_WHITE);
                 screen::draw_rect(0,0,119,119);
             }
-*/
+            */
+
             //screen::set_pen(COLOR_WHITE);
             screen::draw_line(240,0,240,240); // Splits auton box vertically 
             screen::draw_line(120,0,120,240);
@@ -64,6 +70,8 @@ void autonSelector (){
             else { column = 4; }
 
             if(status.y == 0 && status.x == 0){row = 0; column = 0;} // only happens on first loop (default press is 0,0)
+
+            if(row == 4 && column == 3){driverSkills = 1;}
 
             std::cout << row << ":" << column << "\n";
 
@@ -90,22 +98,22 @@ void autonSelector (){
             
             screen::set_pen(COLOR_WHITE);
 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "1"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "2"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "3"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "4"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "5"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "6"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "7"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "8"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "9"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "10"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "11"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "12"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "13"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "14"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "15"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "16"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "BiPedAL"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "BaNAL"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "RePeAL"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "RegNAL"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "BaPtisM"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "BoNe 'eM"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "Red PluM"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "RaNdoM"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "ByPAsS"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "BaNAnaS"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "RePAyS"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "RetiNAS"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "Skills"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "Skills"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "Dr. Skill"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "Testing"); 
 
 
             while(status.touch_status == E_TOUCH_HELD){
@@ -117,7 +125,7 @@ void autonSelector (){
                 delay(20);
             }
 
-        screen::erase();
+        //screen::erase();
 
         delay(20);
     }

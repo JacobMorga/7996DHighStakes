@@ -75,10 +75,9 @@ void odometry(void){
         yPos += deltaYGlobal;
 
         pseudoVelocity = 100.0 * sqrtf(powf(deltaXGlobal, 2.0) + powf(deltaYGlobal, 2.0)); //inches per second ish
-        pseudoRotVel = tPos - previousTheta;
+        pseudoRotVel = 100.0 * 180.0 / pi * (tPos - previousTheta); //degrees per second ish
         previousTheta = tPos;
 
-        //odom output
         
         /*
         if(xPos <= 10.0 && xPos > 0.0){lcd::print(0, " %f : xPos (inches)", xPos);}
@@ -88,7 +87,6 @@ void odometry(void){
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
         */
 
-        
 
         delay(10);
     }

@@ -1,6 +1,7 @@
 #include "main.h"
 using namespace pros;
 float goalDist = 8.0;
+float ringStackDist = 4.0;
 bool runThisCodeShort = 0;
 
 void bluePosAWP(){
@@ -12,31 +13,122 @@ void bluePosAWP(){
 
 void blueNegAWP(){ 
     teamColor = COLOR_BLUE;
-    if (runThisCodeShort == false){
+    specialIntake = 0;
 
+    std::vector<coord> bnaPath1 = {coord(36.0, 38.0), coord(0.0, 38.0), coord(0.0, 24.0), coord(-24.0, 0.0)};
+
+    transit(7); //alliance stake
+    delay(500);
+    transit(0);
+    toPoint(1.0, 27.0, 1, 1, 7000.0); //grab goal
+    backClaw.set_value(1);
+    delay(100);
+    transit(1);
+    toPoint(36.0, 24.0, 0, 0, 12000.0); //first ring stack all the way in
+    delay(500);
+    toPoint(36.0, 36.0, 0, 1, 12000.0); //align ring cube
+    purePursuit(bnaPath1, 24.0, 6000.0, 0); //get ring cube and go to top blue ring
+    if (runThisCodeShort == false){transit(3);}
+    toPoint(-30.0,-6.0,0,0,12000);
+    delay(750);
+    toPoint(-24.0, -6.0, 1, 1, 12000.0); //put goal behind
+
+    if (runThisCodeShort == false){
+        backClaw.set_value(0);
+        toPoint(-24.0, 6.0, 0, 1, 12000.0); //away from goal
+        toPoint(-51.0, 27.0, 1, 1, 12000.0); //second goal
+        backClaw.set_value(1);
+        delay(100);
+        transit(1); //load held ring
+        delay(1000);
+        toPoint(-40.0, 32.0, 0, 0, 12000.0); //touch ladder (try backward?)
     }
 }
 
+float savedKP = 0.0;
+float savedKI = 0.0;
+float savedKD = 0.0;
 void redPosAWP(){
     teamColor = COLOR_RED;
-    if (runThisCodeShort == false){
+    std::vector<coord> rpaPath1 = {coord(36.0, -12.0), coord(36.0, 24.0), coord(24.0, 36.0)};
+    savedKP = TProtKP;
+    savedKI = TProtKI;
+    savedKD = TProtKD;
 
+    toPoint(36.0, 30.0, 0, 1, 12000.0);
+    faceHeading(145.0, 1, 12000.0);
+    rightClearer.set_value(1);
+    delay(500);
+    smoothFPError = 10.0;
+    faceHeading(90.0, 0, 8000.0);
+    toPoint(36.0, 0.0, 1, 0, 12000.0);
+    faceHeading(135.0, 1, 12000.0);
+    rightClearer.set_value(0);
+    delay(100);
+    faceHeading(110.0, 1, 12000.0); //let arm come up
+    faceHeading(-90.1, 0, 12000.0); //face away from goal counter clockwise
+    toPoint(xPos, 18.0, 1, 1, 12000.0);
+    backClaw.set_value(1);
+    delay(250);
+    transit(1);
+    toPoint(22.0, 26.0, 0, 1, 12000.0); //intake bottom red ring
+    delay(500); //possession
+    purePursuit({coord(24.0, 24.0), coord(12.0, 12.0), coord(-18.0, 0.0)}, 12.0, 12000.0, 1);
+    toPoint(-24.0, 0, 0, 1, 3000.0); //intake bottom blue ring slowly
+    delay(500); //possession
+    toPoint(-36.0, -3.0, 0, 1, 12000.0); //intake top red ring
+    toPoint(-23.0, -9.5, 0, 1, 12000.0); //align for wall stake
+    transit(0);
+    faceHeading(-90.0, 0, 12000.0); //face wall stake //try slower if necessary
+    transit(6);
+    delay(750); //scoring
+    if(runThisCodeShort == false){ //awp
+        transit(2);
+        toPoint(-24.0, 24.0, 0, 0, 6000.0); //touch ladder
+    }
+
+    else if (runThisCodeShort == true){ //max
+        transit(1);
+        toPoint(36.0, -18.0, 0, 0, 12000.0);
     }
 }
 
 void redNegAWP(){
     teamColor = COLOR_RED;
+    specialIntake = 0;
 
     std::vector<coord> rnaPath1 = {};
+    std::vector<coord> rnaPath2 = {};
+    std::vector<coord> rnaPath3 = {coord(-36.0, 38.0), coord(0.0, 38.0), coord(0.0, 24.0), coord(24.0, 0.0)};
+    std::vector<coord> rnaPath4 = {coord(-24.0,0.0), coord(-30.0,-6.0)};
     bezierCurve(coord(-3.2, 19.2), coord(-18.0, 8.6), coord(-20.1, -3.2), coord(-20.4, -12.0), coord(-0.1, -17.8), 30, rnaPath1);
+    bezierCurve(coord(4.0, 20.0), coord(-25.0, 12.0), coord(-60.0, 18.0), coord(-60., 50.0), coord(-14.0, 44.0), 100, rnaPath2);
 
-    transit(7);
-    purePursuit(rnaPath1,18.0,10000,0);
+    transit(7); //alliance stake
+    delay(500);
+    transit(0);
+    toPoint(-3.0, 27.0, 1, 1, 7000.0); //grab goal
     backClaw.set_value(1);
-
+    delay(100);
+    transit(1);
+    toPoint(-36.0, 24.0, 0, 0, 12000.0); //first ring stack all the way in
+    delay(500);
+    toPoint(-36.0, 36.0, 0, 1, 12000.0); //align ring cube
+    purePursuit(rnaPath3, 24.0, 6000.0, 0); //get ring cube and go to top red ring
+    if (runThisCodeShort == false){transit(3);}
+    toPoint(30.0,-6.0,0,0,12000);
+    delay(750);
+    toPoint(24.0, -6.0, 1, 1, 12000.0); //put goal behind
 
     if (runThisCodeShort == false){
-
+        backClaw.set_value(0);
+        toPoint(24.0, 6.0, 0, 1, 12000.0); //away from goal
+        toPoint(51.0, 27.0, 1, 1, 12000.0); //second goal
+        backClaw.set_value(1);
+        delay(100);
+        transit(1); //load held ring
+        delay(1000);
+        toPoint(40.0, 32.0, 0, 0, 12000.0); //touch ladder (try backward?)
     }
 }
 
@@ -118,7 +210,7 @@ void skills2(){
     bezierCurve(coord(24.0, 0.0), coord(-36.0, -9.0), coord(66.0, 66.0), coord(48.0, 51.0), coord(48.0, -18.0), 100, sPathD);
 
     transit(6); //score alliance stake ring
-    delay(750);
+    delay(500);
     transit(1);
     delay(500);
     //toPointShortBy(-24.0, 0.0, 1, 1, goalDist - 6.0, 12000.0); //get first goal but go extra far to start the pure pursuit at the right spot
@@ -137,12 +229,12 @@ void skills2(){
     //delay(500); //just get that last ring
     toPoint(63.0, 112.0, 0, 0, 12000.0); //clear corner by intaking
     toPoint(48.0, 96.0, 1, 1, 12000.0); //back for second clear
-    facePoint(72.0, 108.0, 12000.0);
+    facePoint(72.0, 108.0, 0, 12000.0);
     toPoint(69.0, 108.0, 0, 1, 12000.0); //clear corner by intaking //!63, 112
     toPoint(69.0, 112.0, 0, 0, 12000.0); //farther in clearing
     //delay(500); //let the color sort get the ring out
     toPoint(48.0, 96.0, 1, 1, 12000.0); //away from corner
-    faceAway(72.0, 120.0, 12000.0); //ready to corner the goal //!144 cause it was nacking earlier or sm idk
+    faceAway(72.0, 120.0, 0, 12000.0); //ready to corner the goal //!144 cause it was nacking earlier or sm idk
 
     //bad post bezier corner
     //toPoint(42.0, 90.0, 1, 1, 12000.0); //reverse to get sixth ring
@@ -152,7 +244,7 @@ void skills2(){
     //toPoint(54.0, 114.0, 1, 1, 12000.0); //clear corner by intaking
     //toPoint(66.0, 114.0, 0, 0, 12000.0); //clear corner by intaking
     //delay(500);
-    //faceAway(72.0, 120.0); //turn to put goal in corner
+    //faceAway(72.0, 0, 120.0); //turn to put goal in corner
     //toPoint(60.0, 108.0, 1, 0, 12000.0); //put goal in corner
     //
 
@@ -169,7 +261,7 @@ void skills2(){
     toPoint(-24.0, 90.0, 0, 1, 12000.0); //between ring and goal
     rightClearer.set_value(1);
     toPoint(-57.0, 114.0, 0, 1, 12000.0); //back corner
-    facePoint(xPos+0.01, 0.0, 8000.0); //no idea if xPos on its own would funch arctan2 (shouldnt) but whatever
+    facePoint(xPos+0.01, 0.0, 0, 8000.0); //no idea if xPos on its own would funch arctan2 (shouldnt) but whatever
     rightClearer.set_value(0); //yes i know its kinda late here but let me cook nope its back up here bro did not cook
     toPoint(-54.0, 84.0, 0, 1, 12000.0); //second bottom ring
     toPoint(-48.0, 90.0, 0, 1, 12000.0); //last bottom ring //!-6y
@@ -183,7 +275,7 @@ void skills2(){
     transit(17);
     //toPoint(-42.0, 48.0, 1, 1, 12000.0); //back up
     toPoint(-54.0, 48.0, 1, 0, 12000.0); //to wall stake
-    facePoint(-120.0, yPos, 12000.0);
+    facePoint(-120.0, yPos, 0, 12000.0);
     transit(19); //mech up
     delay(500);
     toPoint(-60.0, 48.0, 0, 0, 12000.0); //ring on stake push
@@ -191,7 +283,7 @@ void skills2(){
     instantLift = 1;
     transit(4); //load second ring into mech and lift
     toPoint(-54.0, 48.0, 1, 0, 12000.0);
-    facePoint(-120.0, yPos, 12000.0);
+    facePoint(-120.0, yPos, 0, 12000.0);
     delay(1000);
     toPoint(-60.0, 48.0, 0, 0, 12000.0); //push ring onto stake
 
@@ -222,7 +314,7 @@ void skills2(){
     transit(17);
     purePursuit(sPathG, 24.0, 12000.0, 0); //wall stake 
     toPoint(54.0, 48.0, 1, 1, 12000.0); //back up with second ring in bottom of intake
-    facePoint(120.0, yPos, 12000.0);
+    facePoint(120.0, yPos, 0, 12000.0);
     transit(19);
     delay(500);
     drivetrain.move_voltage(8000.0);
@@ -247,12 +339,13 @@ void loadPaths(){
 
 }
 
-void testing(){
-	//backClaw.set_value(1);
+void autonTesting(){
+    //backClaw.set_value(1);
 	//delay(500);
 	//transit(1);
 	//colorSorting = 0;
 
+    /*
 	std::vector<coord> pathA = {coord(0.01, 0.01), coord(-24.0, 24.0)};
 	std::vector<coord> pathB = {};
 	std::vector<coord> pathC = {coord(-24.0, 24.0), coord(-96.0, 96.0)};
@@ -282,4 +375,29 @@ void testing(){
         std::cout << item << "\n";
         delay(1);
     }
+    */
+    
+    /*
+    faceHeading(0.0, 0, 12000.0);
+    delay(2000);
+    faceHeading(90.0, 0, 12000.0);
+    delay(2000);
+    faceHeading(180.0, 0, 12000.0);
+    delay(2000);
+    faceHeading(270.0, 0, 12000.0);
+    delay(2000);
+    faceHeading(-90.0, 0, 12000.0);
+    delay(2000);
+    faceHeading(360.0, 0, 12000.0);
+    delay(2000);
+    faceHeading(0.0, 0, 12000.0);
+    delay(2000);
+    */
+
+    toPoint(36.0, 33.0, 0, 1, 12000.0);
+    faceHeading(150.0, 1, 12000.0);
+    rightClearer.set_value(1);
+    delay(100);
+    faceHeading(90.0, 1, 12000.0);
+    toPoint(36.0, 0.0, 1, 0, 12000.0);
 }
