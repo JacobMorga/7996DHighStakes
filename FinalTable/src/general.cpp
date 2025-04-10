@@ -4,43 +4,43 @@ using namespace std;
 // Devices
 Controller controller (CONTROLLER_MASTER);
 
-Motor drive1 (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive2 (6, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive3 (15, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive1 (18, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive2 (19, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive3 (20, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor_Group rightDrive ({drive1, drive2, drive3});
 
-Motor drive4 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive5 (14, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor drive6 (12, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive4 (13, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive5 (12, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor drive6 (11, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor_Group leftDrive ({drive4, drive5, drive6});
 
 Motor_Group drivetrain ({drive1, drive2, drive3, drive4, drive5, drive6});
 
-Motor intakeTop (4, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
-Motor intakeBottom (5, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+Motor intakeTop (17, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
+Motor intakeBottom (14, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
-Motor wallMech (8, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
-ADIPotentiometer WMPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument declares potentiometer type
+Motor wallMech (1, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
+ADIPotentiometer WMPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument declares potentiometer type //? ok but i just switched the potentiometer to v5 and didnt change this and it still works so idek but whatever
 
-Rotation xTracking (10);
-Rotation yTracking (21);
-Rotation intakeRotation (2);
+Rotation xTracking (2);
+Rotation yTracking (3);
+Rotation intakeRotation (4);
 
-IMU inertial1 (2);
-IMU inertial2 (3);
-IMU inertial3 (19); 
+IMU inertial1 (5);
+IMU inertial2 (6);
+IMU inertial3 (7); 
 
-ADIPort backClaw ('H', ADI_DIGITAL_OUT);
+ADIPort backClaw ('A', ADI_DIGITAL_OUT);
 ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
 ADIPort leftClearer ('D', ADI_DIGITAL_OUT);
 ADIPort intakePiston ('F', ADI_DIGITAL_OUT);
 
-Optical opticalSensor(7);
+Optical opticalSensor(8);
 Distance intakeDistanceSensor(9);
-Distance WMDistanceSensor(18);
+Distance WMDistanceSensor(10);
 
-ADILed led1 ('A', 33); // Must be in separate groups
+ADILed led1 ('E', 33); // Must be in separate groups
 ADILed led2 ('C', 33);
 ADILed led3 ('B', 33);
 ADILed led4 ('G', 33);

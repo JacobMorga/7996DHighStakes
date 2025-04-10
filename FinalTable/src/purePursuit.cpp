@@ -99,7 +99,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         intersection2Check = true; 
 
         coord startPoint;
-        startPoint.x = shiftedPath[indexPP].x; // Retrives x and y for each end point of line
+        startPoint.x = shiftedPath[indexPP].x; // Retrieves x and y for each end point of line
         startPoint.y = shiftedPath[indexPP].y;
 
         coord endPoint;
@@ -382,15 +382,21 @@ void runCodeDuringCode (){
             whatToRun = 0; // Resets at the end of the loop so it doesnt accidentially run twice
         }
         else if(whatToRun == 2){
-            
+            intakePiston.set_value(1);
             whatToRun = 0;
         }
-        else if(whatToRun == 3){
-            
+        else if(whatToRun == 3 && distance(RCDCPos.x, RCDCPos.y, 6.0, 18.0) <= 3.0){
+            intakePiston.set_value(1);
             whatToRun = 0;
         }
-        else if(whatToRun == 4){
-            
+        else if(whatToRun == 4 && distance(RCDCPos.x, RCDCPos.y, 6.0, -18.0) <= 6.0){
+            rightClearer.set_value(1);
+            whatToRun = 0;
+        }
+        else if(whatToRun == 5){
+            whatToRun = 0;
+        }
+        else if(whatToRun == 6){
             whatToRun = 0;
         }
 

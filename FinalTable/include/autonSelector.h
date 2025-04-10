@@ -4,5 +4,6 @@
 extern void autonSelector ();
 extern int autonSelected;
 extern int teamColor;
+extern bool driverSkills;
 
 #endif

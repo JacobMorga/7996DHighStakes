@@ -10,6 +10,7 @@ extern void redPosMax();
 extern void redNegMax();
 extern void skills1();
 extern void skills2();
+extern void autonTesting();
 extern float goalDist;
 extern float cornerDist;
 extern float ringStackDist;
