@@ -99,7 +99,7 @@ coord findBestIntersection (vector<coord> path, float lookAheadDis, coord inputP
         intersection2Check = true; 
 
         coord startPoint;
-        startPoint.x = shiftedPath[indexPP].x; // Retrives x and y for each end point of line
+        startPoint.x = shiftedPath[indexPP].x; // Retrieves x and y for each end point of line
         startPoint.y = shiftedPath[indexPP].y;
 
         coord endPoint;

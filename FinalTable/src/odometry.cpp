@@ -1,10 +1,10 @@
 #include "main.h"
 
-const float xWheelDiameter = 2.742382; //calculated
-const float yWheelDiameter = 2.739546; //calculated
+const float xWheelDiameter = 2.742382; //2.6;
+const float yWheelDiameter = 2.739546; //2.6;
 
-const float xWheelOffset = 4.608845; //4.718740; //3.069875; //calculated
-const float yWheelOffset = -4.457098; //-4.512428; //-4.126149; //calculated
+const float xWheelOffset = 2.273514; //4.608845; 
+const float yWheelOffset = -4.251181; //-4.457098; 
 
 // Initialization variables
     float deltaXWheel = 0.0;
@@ -87,7 +87,6 @@ void odometry(void){
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
         */
 
-
         delay(10);
     }
 }
@@ -117,8 +116,8 @@ void calculateOffsets(){
 
     
     delay(3000);
-    rightDrive.move_voltage(6000.0);
-    leftDrive.move_voltage(-6000.0);
+    rightDrive.move_velocity(-600.0 / 4.0);
+    leftDrive.move_velocity(600.0 / 4.0);
     delay(12000);
     float xAccrued = xTracking.get_position();
     float yAccrued = yTracking.get_position();

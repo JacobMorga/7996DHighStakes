@@ -50,7 +50,7 @@ void facePoint(float xTar, float yTar, bool fpSmooth, float speedLimit){
         delay(10);
     }
     drivetrain.brake();
-    lcd::set_text(7, "freaky time");
+    //lcd::set_text(7, "freaky time");
 }
 
 const float lErrorMin = 1.0; 

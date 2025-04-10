@@ -98,22 +98,22 @@ void autonSelector (){
             
             screen::set_pen(COLOR_WHITE);
 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "BiPedAL"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "BaNAL"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "RePeAL"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "RegNAL"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "BaPtisM"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "BoNe 'eM"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "Red PluM"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "RaNdoM"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "ByPAsS"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "BaNAnaS"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "RePAyS"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "RetiNAS"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "BP A L"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "BN A L"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "RP A L"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "RN A L"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "BP M"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "BN M"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "RP M"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "RN M"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "BP A S"); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "BN A S"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "RP A S"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "RN A S"); 
             screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "Skills"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "Skills"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "Dr. Skill"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "Testing"); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "Driver S"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "Testing");
 
 
             while(status.touch_status == E_TOUCH_HELD){
