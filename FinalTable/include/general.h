@@ -52,13 +52,13 @@ extern const bool off;
 extern const float reverse;
 
 struct coord {
-
+    // Structure attributes
     float x;
     float y;
 
     // Constructors
-    coord() : x(0.0), y(0.0) {} //? Idk chat gpt said to delcare it this way
-    coord(float xIN, float yIN){
+    coord() : x(0.0), y(0.0) {} // Default constructor (empty coord defaults to 0,0)
+    coord(float xIN, float yIN){ // Constructor used to create member defined at point
         x = xIN;
         y = yIN;
     }

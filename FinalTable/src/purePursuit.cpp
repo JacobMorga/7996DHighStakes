@@ -24,13 +24,13 @@ vector<coord> actualPath {};
 
 //! NOTEBOOK NOTES
 
-//! 2. we calculated the distance to the endpoint wrong (intersection code rerturns distance from robot)
-//! 3. it was using the behind point also, wasnt returning the end point of the function
-//! 4. we only check the x-values of the intersections
-//! 5. Robot was nacking at 0,0 so made path origin 0.01, 0.01
-//! 6. Added max speed and made tuning values proportional to max distance
-//! 7. Error in syncing odometry output with function loop IE pos was changing during the loop
-//! 8. Added a fucntion that curbs speed when approchaing the end point
+// 2. we calculated the distance to the endpoint wrong (intersection code rerturns distance from robot)
+// 3. it was using the behind point also, wasnt returning the end point of the function
+// 4. we only check the x-values of the intersections
+// 5. Robot was nacking at 0,0 so made path origin 0.01, 0.01
+// 6. Added max speed and made tuning values proportional to max distance
+// 7. Error in syncing odometry output with function loop IE pos was changing during the loop
+// 8. Added a fucntion that curbs speed when approchaing the end point
 
 
 //! 7? removed delays from purepursuit and findbestintersection
@@ -298,7 +298,7 @@ void purePursuit (vector<coord> path, float lookAheadDisPP, float speedCap, int 
             rightPowPP = rightPowCalc;
             leftPowPP = leftPowCalc;
         }
-        
+
         //lcd::clear();
         //lcd::print(0, "xPos: %f", robotPos.x);
         //lcd::print(1, "yPos: %f ", robotPos.y);
