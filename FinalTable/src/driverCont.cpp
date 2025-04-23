@@ -24,9 +24,10 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 25.0; //300.0; //300.0; 
-float WMKi = 0.1; //5.0; //5.0;
-float WMKd = 50.0; //1000.0; //350.0; 
+float WMKp = 27.5; //300.0; //300.0; 
+float WMKi = 0.0; //0.1 //5.0; //5.0;
+float WMKd = 125.0; // 50.0 //1000.0; //350.0; 
+float WallMechAntiGravTuner = 2.0;
 float WMIntegralMax = 4000.0; //mV, arbitrary
 float WMErrorMax = 20.0;
 
@@ -37,7 +38,7 @@ float WMDerivative = 0.0;
 float WMPower = 0.0;
 
 float WMIdleTarget = 300.0; //20.0; //35.0; //degrees
-float WMLoadingTarget = 550.0; //40.0; //61.0; //degrees //!60
+float WMLoadingTarget = 590.0; //40.0; //61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 2000.0; //200.0; //120.0; //164.0; //!175.0; 
 
@@ -594,7 +595,8 @@ void runWallMech(){ //also holds printing so we only print in one task
         //if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
         WMDerivative = WMPreviousPos - WMPosition;
         if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
-        WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
+        if(WMTarget <= 400.0){WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;}
+        else{WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative + (WallMechAntiGravTuner * 500.0 * pow(eConst, -pow(WMPosition/1000.0,2.0)) - 125.0);}
         WMPreviousPos = WMPosition;
         wallMech.move_voltage(WMPower);
         prevWMTarget = WMTarget;
@@ -611,7 +613,7 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(3, "%f : position of WM", WMPosition);
         lcd::print(4, "%f : target of WM", WMTarget);
         lcd::print(5, "%f : error of WM", WMError);
-        lcd::print(6, "%f : power of WM", WMPower / 1000.0);
+        lcd::print(6, "%f : power of WM", WMPower);
         //lcd::print(7, "%d : back claw", backClawBool);
         lcd::print(7, "%f : WMi", WMKi * WMIntegral);
         

@@ -94,6 +94,21 @@ void opcontrol() {
 	//drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
 	//drivetrain.brake();
 
+	/*
+	float tmepvarbasd = 0;
+	while(1){
+		wallMech.move_voltage(tmepvarbasd);
+
+		if (controller.get_digital_new_press(DIGITAL_R1)){ tmepvarbasd += 25;}
+		if (controller.get_digital_new_press(DIGITAL_R2)){ tmepvarbasd -= 25;}
+
+		lcd::set_text(0, std::to_string(tmepvarbasd));
+		lcd::set_text(1, std::to_string(WMPotentiometer.get_value()));
+		delay(10);
+		lcd::clear();
+	}
+	*/
+
 	
 	if(driverSkills){
 		transit(6);
