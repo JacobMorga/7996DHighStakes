@@ -595,8 +595,8 @@ void runWallMech(){ //also holds printing so we only print in one task
         //if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
         WMDerivative = WMPreviousPos - WMPosition;
         if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
-        if(WMTarget <= 400.0){WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;}
-        else{WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative + (WallMechAntiGravTuner * 500.0 * pow(eConst, -pow(WMPosition/1000.0,2.0)) - 125.0);}
+        WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative + (WallMechAntiGravTuner * 500.0 * pow(eConst, -pow(WMPosition/1000.0,2.0)) - 125.0);
+        if((WMTarget < 400.0) && (WMPosition < 400.0)) { WMPower = 0.0; }
         WMPreviousPos = WMPosition;
         wallMech.move_voltage(WMPower);
         prevWMTarget = WMTarget;
