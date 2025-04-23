@@ -18,7 +18,7 @@ extern Motor intakeTop;
 extern Motor intakeBottom;
 extern Motor_Group intake;
 extern Motor wallMech;
-extern ADIPotentiometer WMPotentiometer;
+extern ADIPort WMPotentiometer;
 
 extern Rotation xTracking;
 extern Rotation yTracking;

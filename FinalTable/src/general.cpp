@@ -5,7 +5,7 @@ using namespace std;
 Controller controller (CONTROLLER_MASTER);
 
 Motor drive1 (18, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
-Motor drive2 (19, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
+Motor drive2 (16, MOTOR_GEAR_600, false, MOTOR_ENCODER_DEGREES);
 Motor drive3 (20, MOTOR_GEAR_600, true, MOTOR_ENCODER_DEGREES);
 Motor_Group rightDrive ({drive1, drive2, drive3});
 
@@ -21,7 +21,7 @@ Motor intakeBottom (14, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 Motor_Group intake ({intakeTop, intakeBottom});
 
 Motor wallMech (1, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
-ADIPotentiometer WMPotentiometer ('E', pros::E_ADI_POT_EDR); // second argument declares potentiometer type //? ok but i just switched the potentiometer to v5 and didnt change this and it still works so idek but whatever
+ADIPort WMPotentiometer ('H', E_ADI_ANALOG_IN); // second argument declares potentiometer type //? ok but i just switched the potentiometer to v5 and didnt change this and it still works so idek but whatever //! was E_ADI_POT_EDR, now E_ADI_POT_V2
 
 Rotation xTracking (2);
 Rotation yTracking (3);
@@ -29,7 +29,7 @@ Rotation intakeRotation (4);
 
 IMU inertial1 (5);
 IMU inertial2 (6);
-IMU inertial3 (7); 
+IMU inertial3 (7);
 
 ADIPort backClaw ('A', ADI_DIGITAL_OUT);
 ADIPort rightClearer ('G', ADI_DIGITAL_OUT);

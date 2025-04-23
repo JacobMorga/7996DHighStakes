@@ -24,9 +24,9 @@ float blueQuotient = 0.0;
 float WMTarget = 0.0; //degrees
 float WMError = 0.0; //degrees
 
-float WMKp = 300.0; //300.0; 
-float WMKd = 1000.0; //350.0; 
-float WMKi = 5.0; //5.0;
+float WMKp = 25.0; //300.0; //300.0; 
+float WMKi = 0.1; //5.0; //5.0;
+float WMKd = 50.0; //1000.0; //350.0; 
 float WMIntegralMax = 4000.0; //mV, arbitrary
 float WMErrorMax = 20.0;
 
@@ -35,10 +35,12 @@ float WMPosition = 0.0; //degrees
 float WMPreviousPos = 0.0; //degrees
 float WMDerivative = 0.0;
 float WMPower = 0.0;
-float WMIdleTarget = 20.0; //35.0; //degrees
-float WMLoadingTarget = 40.0; //61.0; //degrees //!60
+
+float WMIdleTarget = 300.0; //20.0; //35.0; //degrees
+float WMLoadingTarget = 550.0; //40.0; //61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
-float WMScoringTarget = 200.0; //120.0; //164.0; //!175.0; 
+float WMScoringTarget = 2000.0; //200.0; //120.0; //164.0; //!175.0; 
+
 float WMManualSpeed = 0.5; //degrees per cycle
 float WMRingDetectionDist = 94.0; //mm //!a little close, no?
 float prevWMTarget = 0.0;
@@ -63,6 +65,10 @@ bool forcedTransit = 0;
 int forcedState = 0;
 bool specialIntake = 0;
 bool driverControlBool = 0;
+
+void funch(){
+    lcd::set_text(0, std::to_string('funch'));
+}
 
 #define intakeTog        DIGITAL_R1
 #define intakeRev        DIGITAL_R2
@@ -121,7 +127,7 @@ void runDriveCont (){
         if(controller.get_digital_new_press(instantLiftTog)){instantLift = !instantLift;}
         if(controller.get_digital_new_press(specialIntakeTog)){specialIntake = !specialIntake;}
 
-        lcd::set_text(1, std::to_string(WMPotentiometer.get_angle()));
+        lcd::set_text(1, std::to_string(WMPotentiometer.get_value()));
 
         delay(10);
 
@@ -267,7 +273,8 @@ void colorSort(int incomingState){
             delay(10);
         }
 
-        intakeSort2Start = intakeTop.get_position(); //intakeTop.get_position();
+        intakeSort2Start = intakeTop.get_position(); //funch
+        funch();
         intake.move_voltage(-intakeVoltage);
         intakeStuckCounter = 0;
         while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200){ //&& forcedTransit == 0
@@ -579,13 +586,13 @@ void runWallMech(){ //also holds printing so we only print in one task
             WMIntegral = 0.0;
             WMDerivative = 0.0;
         }
-        WMPosition = WMPotentiometer.get_angle();
+        WMPosition = WMPotentiometer.get_value();
         WMError = WMTarget - WMPosition;
         WMIntegral += WMError;
         if(WMTarget > 160.0 && getDir(WMIntegral) != getDir(WMError)){WMIntegral = 0.0;}
-        if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
-        if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
-        WMDerivative = WMPreviousPos - WMPosition; //
+        //if(fabs(WMIntegral * WMKi) >= WMIntegralMax){WMIntegral = getDir(WMIntegral) * WMIntegralMax / WMKi;}
+        //if(fabs(WMError) > WMErrorMax){WMIntegral = 0.0;}
+        WMDerivative = WMPreviousPos - WMPosition;
         if(WMTarget <= 45.0){WMIntegral = 0.0; WMDerivative = 0.0;}
         WMPower = WMKp * WMError + WMKi * WMIntegral + WMKd * WMDerivative;
         WMPreviousPos = WMPosition;
@@ -605,8 +612,10 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(4, "%f : target of WM", WMTarget);
         lcd::print(5, "%f : error of WM", WMError);
         lcd::print(6, "%f : power of WM", WMPower / 1000.0);
-        lcd::print(7, "%d : back claw", backClawBool);
+        //lcd::print(7, "%d : back claw", backClawBool);
+        lcd::print(7, "%f : WMi", WMKi * WMIntegral);
         
+        std::cout << WMPotentiometer.get_value() << "\n";
 
         //odom output
         /*

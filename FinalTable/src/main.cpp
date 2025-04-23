@@ -43,7 +43,7 @@ void initialize() {
 
 	Task odomTask (odometry, "odomTask");
 	Task comboTask (runComboSystem, "comboTask");
-	Task WMTask (runWallMech, "WMTask"); //!THIS JOHN IS COMMENTED OUT
+	Task WMTask (runWallMech, "WMTask");
 	Task RCDCTask(runCodeDuringCode, "RCDCTask");
 }
 
