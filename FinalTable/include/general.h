@@ -37,11 +37,16 @@ extern Optical opticalSensor;
 extern Distance intakeDistanceSensor;
 extern Distance WMDistanceSensor;
 
-
 extern ADILed led1; 
 extern ADILed led2;
 extern ADILed led3;
 extern ADILed led4;
+
+//extern ADIDigitalIn backClawLim1;
+//extern ADIDigitalIn backClawLim2;
+
+extern Distance backClawDis1;
+extern Distance backClawDis2;
 
 extern const float pi;
 extern const float eConst;

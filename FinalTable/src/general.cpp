@@ -23,27 +23,38 @@ Motor_Group intake ({intakeTop, intakeBottom});
 Motor wallMech (1, MOTOR_GEAR_200, true, MOTOR_ENCODER_DEGREES);
 ADIPort WMPotentiometer ('H', E_ADI_ANALOG_IN); // second argument declares potentiometer type //? ok but i just switched the potentiometer to v5 and didnt change this and it still works so idek but whatever //! was E_ADI_POT_EDR, now E_ADI_POT_V2
 
-Rotation xTracking (2);
-Rotation yTracking (3);
-Rotation intakeRotation (4);
+Rotation xTracking (3);
+Rotation yTracking (9);
+//Rotation intakeRotation (4);
 
-IMU inertial1 (5);
-IMU inertial2 (6);
-IMU inertial3 (7);
+IMU inertial1 (2);
+IMU inertial2 (7);
+IMU inertial3 (21);
 
-ADIPort backClaw ('A', ADI_DIGITAL_OUT);
-ADIPort rightClearer ('G', ADI_DIGITAL_OUT);
-ADIPort leftClearer ('D', ADI_DIGITAL_OUT);
+//ADIDigitalOut backClaw ('G', 0);
+//ADIDigitalOut rightClearer ('A');
+//ADIDigitalOut leftClearer ('B');
+//ADIDigitalOut intakePiston ('F');
+
+ADIPort backClaw ('G', ADI_DIGITAL_OUT);
+ADIPort rightClearer ('A', ADI_DIGITAL_OUT);
+ADIPort leftClearer ('B', ADI_DIGITAL_OUT);
 ADIPort intakePiston ('F', ADI_DIGITAL_OUT);
 
-Optical opticalSensor(8);
-Distance intakeDistanceSensor(9);
-Distance WMDistanceSensor(10);
+Optical opticalSensor(10);
+Distance intakeDistanceSensor(4);
+Distance WMDistanceSensor(7);
 
 ADILed led1 ('E', 33); // Must be in separate groups
 ADILed led2 ('C', 33);
 ADILed led3 ('B', 33);
 ADILed led4 ('G', 33);
+
+//ADIDigitalIn backClawLim1 ('F');
+//ADIDigitalIn backClawLim2 ('G');
+
+Distance backClawDis1 (6);
+Distance backClawDis2 (15);
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 

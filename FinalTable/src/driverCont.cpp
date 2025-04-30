@@ -8,7 +8,7 @@ int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 400.0; //450.0; //degrees
+float sortDegrees1 = 376.0; //425.0; //400.0; //450.0; //degrees
 float sortDegrees2 = 400.0; //degrees
 float stickItIn = 200.0; //ms
 float pullItOut = 75.0; //ms
@@ -16,6 +16,7 @@ int intakeStuckCounter = 0;
 
 const float redLimit = 22000.0; //lower limits for rgb sort
 const float blueLimit = 17500.0;
+const float backClawDisLimit = 60.0;
 
 float ambient = 0.0; //zero to one
 float redQuotient = 0.0;
@@ -38,9 +39,9 @@ float WMDerivative = 0.0;
 float WMPower = 0.0;
 
 float WMIdleTarget = 300.0; //20.0; //35.0; //degrees
-float WMLoadingTarget = 590.0; //40.0; //61.0; //degrees //!60
+float WMLoadingTarget = 650.0; //40.0; //61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
-float WMScoringTarget = 2000.0; //200.0; //120.0; //164.0; //!175.0; 
+float WMScoringTarget = 3000.0; //200.0; //120.0; //164.0; //!175.0; 
 
 float WMManualSpeed = 0.5; //degrees per cycle
 float WMRingDetectionDist = 94.0; //mm //!a little close, no?
@@ -66,6 +67,10 @@ bool forcedTransit = 0;
 int forcedState = 0;
 bool specialIntake = 0;
 bool driverControlBool = 0;
+
+bool backClawDisTrigger1 = 0;
+bool backClawDisTrigger2 = 0;
+bool autoClampBlocked = 0;
 
 void funch(){
     lcd::set_text(0, std::to_string('funch'));
@@ -107,6 +112,7 @@ void runDriveCont (){
     instantLift = 0;
     specialIntake = 0;
     driverControlBool = 1;
+    backClaw.set_value(1);
     while (1){
         JRYValue = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0; // Scales 127 to 100 then cubes and converts to mV
         JLYValue = powf(controller.get_analog(ANALOG_LEFT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
@@ -117,6 +123,15 @@ void runDriveCont (){
         leftDrive.move_voltage(JRYValue + JLXValue);
 
         if(controller.get_digital_new_press(backClawTog)){backClaw.set_value(!backClaw.get_value());}
+        
+        //if(backClawLim1.get_value() && backClawLim2.get_value() && backClawBool == 0){backClaw.set_value(1);}
+        if(backClawDis1.get() <= backClawDisLimit){backClawDisTrigger1 = 1;}
+        else{backClawDisTrigger1 = 0;}
+        if(backClawDis2.get() <= backClawDisLimit){backClawDisTrigger2 = 1;}
+        else{backClawDisTrigger2 = 0;}
+        if(backClawDisTrigger1 && backClawDisTrigger2 && (autoClampBlocked == 0) && (controller.get_digital(backClawTog) == 0)){backClaw.set_value(1); autoClampBlocked = 1; backClawBool = 1;}
+        else if((backClawDisTrigger1 == 0) || (backClawDisTrigger2 == 0)){autoClampBlocked = 0;}
+        
         if(controller.get_digital_new_press(intakePis)){intakePiston.set_value(!intakePiston.get_value());}
         if(controller.get_digital_new_press(leftCC)){leftClearer.set_value(!leftClearer.get_value());}
         if(controller.get_digital_new_press(rightCC)){rightClearer.set_value(!rightClearer.get_value());}
@@ -575,6 +590,7 @@ void runComboSystem(){
             intakeTop.brake();
             intakeBottom.move_voltage(-intakeVoltage);
         }
+
         prevBackClawBool = backClawBool;
         delay(10);
     }
@@ -613,9 +629,11 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(3, "%f : position of WM", WMPosition);
         lcd::print(4, "%f : target of WM", WMTarget);
         lcd::print(5, "%f : error of WM", WMError);
-        lcd::print(6, "%f : power of WM", WMPower);
+        //lcd::print(6, "%f : power of WM", WMPower);
         //lcd::print(7, "%d : back claw", backClawBool);
-        lcd::print(7, "%f : WMi", WMKi * WMIntegral);
+        //lcd::print(7, "%f : WMi", WMKi * WMIntegral);
+        lcd::print(6, "%d : disbool 1", backClawDisTrigger1);
+        lcd::print(7, "%d : disbool 2", backClawDisTrigger2);        
         
         std::cout << WMPotentiometer.get_value() << "\n";
 
