@@ -28,10 +28,12 @@ void initialize() {
     xTracking.set_position(0.0);
     yTracking.set_position(0.0);
 	xTracking.set_reversed(0);
-	yTracking.set_reversed(1);
+	yTracking.set_reversed(0);
+
+	opticalSensor.set_integration_time(20);
 	
-	//while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
-	//delay(500);
+	while(inertial1.is_calibrating() || inertial2.is_calibrating() || inertial3.is_calibrating()){delay(20);}
+	delay(500);
 
 	inertial1.set_rotation(0.0);
 	inertial2.set_rotation(0.0);
@@ -109,7 +111,6 @@ void opcontrol() {
 	}
 	*/
 
-	
 	if(driverSkills){
 		transit(6);
 		delay(500);
@@ -117,6 +118,22 @@ void opcontrol() {
 		backClawBool = 0;
 	}
 	runDriveCont();
+	
+
+	//calculateOffsets();
+	
+
+	/*
+	intake.move_velocity(600.0);
+	while(WMDistanceSensor.get() >= 100.0){
+		delay(10);
+	}
+	intake.brake();
+	delay(1000);
+	intake.move_velocity(-600.0);
+	delay(250);
+	intake.brake();
+	*/
 	
 
 

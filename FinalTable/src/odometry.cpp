@@ -3,8 +3,8 @@
 const float xWheelDiameter = 2.742382; //2.6;
 const float yWheelDiameter = 2.739546; //2.6;
 
-const float xWheelOffset = 2.273514; //4.608845; 
-const float yWheelOffset = -4.251181; //-4.457098; 
+const float xWheelOffset = -1.594645; //2.273514; //4.608845; 
+const float yWheelOffset = 2.908144; //-4.251181; //-4.457098; 
 
 // Initialization variables
     float deltaXWheel = 0.0;
@@ -78,7 +78,6 @@ void odometry(void){
         pseudoRotVel = 100.0 * 180.0 / pi * (tPos - previousTheta); //degrees per second ish
         previousTheta = tPos;
 
-        
         /*
         if(xPos <= 10.0 && xPos > 0.0){lcd::print(0, " %f : xPos (inches)", xPos);}
         else{lcd::print(0, "%f : xPos (inches)", xPos);}
@@ -86,6 +85,10 @@ void odometry(void){
         else{lcd::print(1, "%f : yPos (inches)", yPos);}
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
         */
+    
+        lcd::print(0, "%f : xPos", xPos);
+        lcd::print(1, "%f : yPos", yPos);
+        lcd::print(2, "%f : tPos", tPos * 180.0 / pi);
 
         delay(10);
     }

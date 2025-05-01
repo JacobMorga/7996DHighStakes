@@ -6,16 +6,17 @@ float JRYValue, JRXValue, JLYValue, JLXValue; //joystick right y, right x, left 
 float intakeVoltage = 12000.0; // mV //11000
 int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
+float opticalSortProximity = 70.0; //whatever proximity unit ts returns
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 376.0; //425.0; //400.0; //450.0; //degrees
+float sortDegrees1 = 100.0; //425.0; //400.0; //450.0; //degrees
 float sortDegrees2 = 400.0; //degrees
-float stickItIn = 200.0; //ms
+float stickItIn = 250.0; //ms
 float pullItOut = 75.0; //ms
 int intakeStuckCounter = 0;
 
-const float redLimit = 22000.0; //lower limits for rgb sort
-const float blueLimit = 17500.0;
+const float redLimit = 6000.0; //22000.0; //lower limits for rgb sort
+const float blueLimit = 4250.0; //17500.0;
 const float backClawDisLimit = 60.0;
 
 float ambient = 0.0; //zero to one
@@ -39,18 +40,19 @@ float WMDerivative = 0.0;
 float WMPower = 0.0;
 
 float WMIdleTarget = 300.0; //20.0; //35.0; //degrees
-float WMLoadingTarget = 650.0; //40.0; //61.0; //degrees //!60
+float WMLoadingTarget = 700.0; //40.0; //61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 3000.0; //200.0; //120.0; //164.0; //!175.0; 
 
 float WMManualSpeed = 0.5; //degrees per cycle
-float WMRingDetectionDist = 94.0; //mm //!a little close, no?
+float WMRingDetectionDist = 45.0; //94.0; //mm //!a little close, no?
 float prevWMTarget = 0.0;
 
 bool colorSorting = 1;
 float intakeSort1Start = 0.0;
 float intakeSort2Start = 0.0;
 float distanceSensed = 0.0;
+float opticalProximity = 0.0;
 int comboState = 0;
 int sortingState = 0;
 int stoppedState = 0;
@@ -143,7 +145,7 @@ void runDriveCont (){
         if(controller.get_digital_new_press(instantLiftTog)){instantLift = !instantLift;}
         if(controller.get_digital_new_press(specialIntakeTog)){specialIntake = !specialIntake;}
 
-        lcd::set_text(1, std::to_string(WMPotentiometer.get_value()));
+        //lcd::set_text(1, std::to_string(WMPotentiometer.get_value()));
 
         delay(10);
 
@@ -174,7 +176,7 @@ float lowColorVal = 100000000.0;
 void runColorCalibration(){
     cout << "doing it" << "\n";
     opticalSensor.set_led_pwm(100.0);
-    for(int silk =0; silk < 1000; silk++){
+    while(controller.get_digital(DIGITAL_A) == 0){//for(int silk =0; silk < 1000; silk++){
         intake.move_voltage(intakeVoltage);
         rawColors = opticalSensor.get_raw();
         ambient = opticalSensor.get_brightness();
@@ -193,7 +195,7 @@ void runColorCalibration(){
     
     for (string item : ColorCalList){
 
-        cout << item , "\n";
+        cout << item << "\n";
         delay(1);   
     }
     delay(1000000000);
@@ -201,23 +203,25 @@ void runColorCalibration(){
 
 void testColorCalibration(){
 	float prevDistance = 0.0;
+	float prevProximity = 0.0;
 	int ringColor = 0;
 	bool colorDecided = 0;
 	intake.move_voltage(intakeVoltage);
 	opticalSensor.set_led_pwm(100.0);
 	while(1){
 		rawColors = opticalSensor.get_raw();
-		distanceSensed = intakeDistanceSensor.get();
+		//distanceSensed = WMDistanceSensor.get();
+        opticalProximity = opticalSensor.get_proximity();
         ambient = opticalSensor.get_brightness();
         redQuotient = rawColors.red / ambient;
         blueQuotient = rawColors.blue / ambient;
-		if(distanceSensed < 100){
+		if(opticalProximity > opticalSortProximity){
 			if(prevDistance >= 100){std::cout << "ring detected." << "\n";}
 			if(colorDecided == 0 && redQuotient >= redLimit){colorDecided = 1; ringColor = 1;}
 			if(colorDecided == 0 && blueQuotient >= blueLimit){colorDecided = 1; ringColor = 2;}
 			//std::cout << distanceSensed << ", " << rawColors.red << ", " << rawColors.green << ", " << rawColors.blue << ", " << rawColors.clear << "\n";
 		}
-		else if(distanceSensed >= 100 && prevDistance < 100){
+		else if(opticalProximity < opticalSortProximity && prevProximity > opticalSortProximity){
 			std::cout << "ring left." << "\n";
 			if(colorDecided == 0){std::cout << "color undecided." << "\n" << "\n";}
 			else{
@@ -227,7 +231,8 @@ void testColorCalibration(){
 			colorDecided = 0;
 			ringColor = 0;
 		}
-		prevDistance = distanceSensed;
+		//prevDistance = distanceSensed;
+        prevProximity = opticalProximity;
 		delay(10);
 	}
 }
@@ -263,9 +268,11 @@ void colorSort(int incomingState){
         ambient = opticalSensor.get_brightness();
         redQuotient = rawColors.red / ambient;
         blueQuotient = rawColors.blue / ambient;
-        distanceSensed = intakeDistanceSensor.get();
+        //distanceSensed = WMDistanceSensor.get();
+        opticalProximity = opticalSensor.get_proximity();
+        //distanceSensed = intakeDistanceSensor.get();
 
-        if(distanceSensed > sortDistance){exitcode = 1;} //ring passed through color sorter
+        if(opticalProximity < opticalSortProximity){exitcode = 1;} //ring passed through color sorter
         else if((redQuotient >= redLimit && teamColor == COLOR_BLUE) || (blueQuotient >= blueLimit && teamColor == COLOR_RED)){exitcode = 2;} //ring flagged color sorting
         else if(controller.get_digital_new_press(intakeTog)){exitcode = 3;} //exit to corresponding state
         else if(controller.get_digital_new_press(intakeRev)){exitcode = 4;}
@@ -278,21 +285,31 @@ void colorSort(int incomingState){
     else if(exitcode == 2){ //sort flagged ring
         if(dodge){WMTarget = WMIdleTarget;}
 
+        /*
         intakeStuckCounter = 0;
-        while(intakeDistanceSensor.get() < sortDistance && intakeStuckCounter < 200){ //!&& forcedTransit == 0
+        while(WMDistanceSensor.get() < sortDistance && intakeStuckCounter < 200){ //!&& forcedTransit == 0
             intakeStuckCounter += 1;
             delay(10);
-        }        
+        }
+        funch();
+        */
 
+        intakeStuckCounter = 0;
+        while(intakeDistanceSensor.get() >= 100.0 && intakeStuckCounter < 200){
+            intakeStuckCounter += 1;
+            delay(10);
+        }
+
+        intakeStuckCounter = 0;
+        intakeSort1Start = intakeTop.get_position(); //funch
         while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200){ //&& forcedTransit == 0
             intakeStuckCounter += 1;
             delay(10);
         }
 
-        intakeSort2Start = intakeTop.get_position(); //funch
-        funch();
         intake.move_voltage(-intakeVoltage);
         intakeStuckCounter = 0;
+        intakeSort2Start = intakeTop.get_position(); //funch
         while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200){ //&& forcedTransit == 0
             intakeStuckCounter += 1;
             delay(10);
@@ -401,7 +418,7 @@ void runComboSystem(){
                 else{comboState = 3;}
             }
             else if(comboState == 1 || comboState == 3){comboState = 0;}
-            else if(comboState == 4){comboState = 5;} 
+            else if(comboState == 4){comboState = 5;}
             else if(comboState == 5 || comboState == 16){comboState = 4;}
             else if(comboState == 6 || comboState == 8){
                 if(backClawBool){comboState = 7;}
@@ -428,8 +445,8 @@ void runComboSystem(){
             else if(comboState == 7 && backClawBool == 0){comboState = 9;}
             else if(comboState == 9){comboState = 7;}
         }
-        else if(WMDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
-            if(comboState == 4 && fabs(WMLoadingTarget - WMPosition) <= 5.0){ //redundant for clarity
+        else if(intakeDistanceSensor.get() <= WMRingDetectionDist && comboState == 4){ //wall mech loaded
+            if(comboState == 4 && fabs(WMLoadingTarget - WMPosition) <= 500.0){ //redundant for clarity //!was <=5.0 but we changed units so idk what it should be now
                 if(instantLift){
                     if(specialIntake){comboState = 19;}
                     else{comboState = 6;}
@@ -438,7 +455,8 @@ void runComboSystem(){
                 else{comboState = 5; justLoaded = 1;}
             }
         }
-        else if(intakeDistanceSensor.get() <= sortDistance && (comboState == 1 || comboState == 3 || comboState == 4 || comboState == 7 || comboState == 9)){ //ring detected
+        //else if(WMDistanceSensor.get() <= sortDistance && (comboState == 1 || comboState == 3 || comboState == 4 || comboState == 7 || comboState == 9)){ //ring detected
+        else if(opticalSensor.get_proximity() >= opticalSortProximity && (comboState == 1 || comboState == 3 || comboState == 4 || comboState == 7 || comboState == 9)){ //ring detected
             if(comboState == 1){comboState = 10;}
             else if(comboState == 3){
                 if(!specialIntake){comboState = 13;}
@@ -619,7 +637,8 @@ void runWallMech(){ //also holds printing so we only print in one task
         
         //debug combo system
         
-        WMDistance = WMDistanceSensor.get();
+        /*
+        WMDistance = intakeDistanceSensor.get();
         lcd::clear();
         lcd::print(0, "%d : combo state", comboState);
         lcd::print(1, "%d : color sorting", colorSorting);
@@ -628,22 +647,33 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(2, "%f : distance of WM sensor", WMDistance);
         lcd::print(3, "%f : position of WM", WMPosition);
         lcd::print(4, "%f : target of WM", WMTarget);
+        // lcd::print(3, "%f : redquotient", opticalSensor.get_raw().red / opticalSensor.get_brightness());
+        // lcd::print(4, "%f : bluequotient", opticalSensor.get_raw().blue / opticalSensor.get_brightness());
         lcd::print(5, "%f : error of WM", WMError);
         //lcd::print(6, "%f : power of WM", WMPower);
         //lcd::print(7, "%d : back claw", backClawBool);
         //lcd::print(7, "%f : WMi", WMKi * WMIntegral);
         lcd::print(6, "%d : disbool 1", backClawDisTrigger1);
-        lcd::print(7, "%d : disbool 2", backClawDisTrigger2);        
+        //lcd::print(7, "%d : disbool 2", backClawDisTrigger2);        
+        lcd::set_text(7, std::to_string(opticalSensor.get_proximity()));        
         
         std::cout << WMPotentiometer.get_value() << "\n";
+        */
 
         //odom output
         /*
         lcd::clear();
-        lcd::print(0, "%f : xPos", xPos);
-        lcd::print(1, "%f : yPos", yPos);
+        //lcd::print(0, "%f : xPos", xPos);
+        //lcd::print(1, "%f : yPos", yPos);
+        lcd::set_text(0, std::to_string());
+        lcd::set_text(1, std::to_string(yPos));
         lcd::print(2, "%f : tPos", tPos);
+        lcd::print(3, "%f : r1pos", xTracking.get_position());
+        lcd::print(4, "%f : r2pos", yTracking.get_position());
+        lcd::set_text(5, std::to_string(xTracking.get_position()));
+        lcd::set_text(6, std::to_string(yTracking.get_position()));
         */
+        
         
         delay(10);
     }
@@ -653,4 +683,4 @@ void transit(int forcedStateInput){ //force exit from color sort in auton
     comboState = forcedStateInput;
     forcedTransit = 1;
     forcedState = forcedStateInput;
-} // 
+}

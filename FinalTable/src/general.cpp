@@ -28,7 +28,7 @@ Rotation yTracking (9);
 //Rotation intakeRotation (4);
 
 IMU inertial1 (2);
-IMU inertial2 (7);
+IMU inertial2 (19);
 IMU inertial3 (21);
 
 //ADIDigitalOut backClaw ('G', 0);
@@ -36,10 +36,10 @@ IMU inertial3 (21);
 //ADIDigitalOut leftClearer ('B');
 //ADIDigitalOut intakePiston ('F');
 
-ADIPort backClaw ('G', ADI_DIGITAL_OUT);
-ADIPort rightClearer ('A', ADI_DIGITAL_OUT);
-ADIPort leftClearer ('B', ADI_DIGITAL_OUT);
-ADIPort intakePiston ('F', ADI_DIGITAL_OUT);
+ADIPort backClaw ('B', ADI_DIGITAL_OUT);
+ADIPort rightClearer ('D', ADI_DIGITAL_OUT);
+ADIPort leftClearer ('F', ADI_DIGITAL_OUT);
+ADIPort intakePiston ('A', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(10);
 Distance intakeDistanceSensor(4);
