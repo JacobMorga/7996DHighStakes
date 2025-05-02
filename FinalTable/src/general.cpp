@@ -71,6 +71,7 @@ const bool unpressed = 0;
 const bool on = 1;
 const bool off = 0;
 const float reverse = -1.0;
+const float fieldRatio = 0.985026041667;
 
 float returnSmaller (float x, float y){
     if (x < y){ return x; } // x is smaller

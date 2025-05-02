@@ -113,9 +113,13 @@ void opcontrol() {
 	}
 	*/
 
-	//facePoint(48.0, -48.0, false, 120000.0);
-	toPoint(0.0,48.0,0,0,6000);
+	//facePoint(48.0, 0.0, false, 6000.0);
+	//toPoint(-48.0,48.0,0.0,true,12000.0);
+	//toPoint(-96.0,0.0,0.0,true,12000.0);
+	//toPoint(-48.0,-48.0,0.0,true,12000.0);
+	//toPoint(0.0,0.0,0.0,false,12000.0);
 
+	//purePursuit({coord(0.1,0.1), coord(-48.0, 48.0), coord(-96.0, 0.0)}, 24.0, 12000.0, 0); //get ring cube and go to top red ring
 	if(driverSkills){
 		transit(6);
 		delay(500);

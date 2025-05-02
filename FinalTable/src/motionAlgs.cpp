@@ -1,8 +1,8 @@
 #include "main.h"
 
-float linKP = 500.0;
-float linKI = 1.0;
-float linKD = 5000.0;
+float linKP = 550.0;//500.0;
+float linKI = 3.0;//1.0;
+float linKD = 5000.0;//5000.0;
 
 float rotKP = 25000.0; //15000.0;
 float rotKI = 1000.0; //750.0;
@@ -53,7 +53,7 @@ void facePoint(float xTar, float yTar, bool fpSmooth, float speedLimit){
     //lcd::set_text(7, "freaky time");
 }
 
-const float lErrorMin = 1.0; 
+const float lErrorMin = 0.25; 
 const float lIntMax = 1000.0;
 
 float lError = 0.0;
@@ -97,6 +97,9 @@ float yTarShortInput = 0.0;
 bool TPSB1 = 1;
 
 void toPoint(float xTar, float yTar, float reversed, bool smooth, float powerLimit){
+
+    xTar *= fieldRatio;
+    yTar *= fieldRatio;
     toPointLoops = 0;
     tInt = 0.0;
     tDer = 0.0;
@@ -187,6 +190,7 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float powerLim
         lcd::print(7, "%f : tPow", tWeight * tPow / 1000.0);
         */
 
+       //toPointLoops = 0;
         delay(10);
     }
     drivetrain.brake();

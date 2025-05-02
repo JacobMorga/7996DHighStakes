@@ -47,8 +47,8 @@ void odometry(void){
         currentYPosition = to_float(yTracking.get_position());
         tPos = getAngle();
 
-        deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / 36000.0; //inches
-        deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / 36000.0;
+        deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / 36000.0 * fieldRatio; //inches
+        deltaYWheel = (currentYPosition - previousYPosition) * yWheelDiameter * pi / 36000.0 * fieldRatio;
         deltaTheta = tPos - previousTheta; //radians
         if (deltaTheta == 0.0){
             deltaXLocal = deltaXWheel;
@@ -94,12 +94,12 @@ void odometry(void){
         lcd::print(5, "%f : y encoder", currentYPosition);
         lcd::print(6,"%f : tPow", tPow);
         */
-       lcd::print(1,"xPos: %f", xPos);
-       lcd::print(2,"yPos: %f", yPos);
-       lcd::print(3,"tPos: %f", tPos *180.0/pi);
-       lcd::print(5,"rightPow: %f", rightPow);
-       lcd::print(6,"leftPow: %f", leftPow);
-       lcd::print(7,"lError: %f", lError);
+        //lcd::print(1,"xPos: %f", xPos);
+        //lcd::print(2,"yPos: %f", yPos);
+        //lcd::print(3,"tPos: %f", tPos *180.0/pi);
+        //lcd::print(5,"rightPow: %f", rightPow);
+        //lcd::print(6,"leftPow: %f", leftPow);
+        //lcd::print(7,"lError: %f", lError);
 
         delay(10);
     }

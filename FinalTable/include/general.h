@@ -55,6 +55,7 @@ extern const bool unpressed;
 extern const bool on;
 extern const bool off;
 extern const float reverse;
+extern const float fieldRatio;
 
 struct coord {
     // Structure attributes
