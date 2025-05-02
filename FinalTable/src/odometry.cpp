@@ -1,10 +1,10 @@
 #include "main.h"
 
-const float xWheelDiameter = 2.742382; //2.6;
-const float yWheelDiameter = 2.739546; //2.6;
+const float xWheelDiameter = 2.7345195048; //2.742382;
+const float yWheelDiameter = 2.73325125882; //2.739546;
 
-const float xWheelOffset = -1.594645; //2.273514; //4.608845; 
-const float yWheelOffset = 2.908144; //-4.251181; //-4.457098; 
+const float xWheelOffset = 1.624144; //-1.594645; //2.273514; //4.608845; 
+const float yWheelOffset = 2.873531; //2.908144; //-4.251181; //-4.457098; 
 
 // Initialization variables
     float deltaXWheel = 0.0;
@@ -43,8 +43,8 @@ void odometry(void){
     inertial3.set_heading(0.0);
 
     while(1){
-        currentXPosition = xTracking.get_position();
-        currentYPosition = yTracking.get_position();
+        currentXPosition = to_float(xTracking.get_position());
+        currentYPosition = to_float(yTracking.get_position());
         tPos = getAngle();
 
         deltaXWheel = (currentXPosition - previousXPosition) * xWheelDiameter * pi / 36000.0; //inches
@@ -85,10 +85,21 @@ void odometry(void){
         else{lcd::print(1, "%f : yPos (inches)", yPos);}
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
         */
-    
+       
+       /*
         lcd::print(0, "%f : xPos", xPos);
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos * 180.0 / pi);
+        lcd::print(4, "%f : x encoder", currentXPosition);
+        lcd::print(5, "%f : y encoder", currentYPosition);
+        lcd::print(6,"%f : tPow", tPow);
+        */
+       lcd::print(1,"xPos: %f", xPos);
+       lcd::print(2,"yPos: %f", yPos);
+       lcd::print(3,"tPos: %f", tPos *180.0/pi);
+       lcd::print(5,"rightPow: %f", rightPow);
+       lcd::print(6,"leftPow: %f", leftPow);
+       lcd::print(7,"lError: %f", lError);
 
         delay(10);
     }

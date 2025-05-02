@@ -20,5 +20,9 @@ extern float TProtKI;
 extern float TProtKD;
 extern float smoothFPError;
 
+extern float rightPow;
+extern float leftPow;
+extern float lError;
+
 
 #endif

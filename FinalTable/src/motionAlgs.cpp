@@ -4,9 +4,9 @@ float linKP = 500.0;
 float linKI = 1.0;
 float linKD = 5000.0;
 
-float rotKP = 15000.0;
-float rotKI = 750.0;
-float rotKD = 100000.0; //106250.0; 
+float rotKP = 25000.0; //15000.0;
+float rotKI = 1000.0; //750.0;
+float rotKD = 175000.0; //100000.0; //106250.0; 
 
 const float tErrorMin = -1.0; //*tune after tuning rotKI
 const float tErrorMax = 5.0 / 180.0 * pi; //*tune after tuning rotKI
@@ -151,7 +151,8 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float powerLim
         }
 
         //if(reversed == 1.0){rightPow *= -1.0; leftPow *= -1.0;}
-
+        //rightPow = 0;
+        //leftPow = 0;
         rightDrive.move_voltage(rightPow);
         leftDrive.move_voltage(leftPow);
 

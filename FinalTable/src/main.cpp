@@ -2,6 +2,7 @@
 using namespace pros;
 
 void initialize() {
+
 	screen::erase();
 	screen::set_eraser(COLOR_BLACK);
 	screen::set_pen(COLOR_YELLOW);
@@ -93,6 +94,7 @@ void autonomous() {
 
 void opcontrol() {
 
+
 	//drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
 	//drivetrain.brake();
 
@@ -111,6 +113,9 @@ void opcontrol() {
 	}
 	*/
 
+	//facePoint(48.0, -48.0, false, 120000.0);
+	toPoint(0.0,48.0,0,0,6000);
+
 	if(driverSkills){
 		transit(6);
 		delay(500);
@@ -118,6 +123,8 @@ void opcontrol() {
 		backClawBool = 0;
 	}
 	runDriveCont();
+	//drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
+	//drivetrain.brake();
 	
 
 	//calculateOffsets();

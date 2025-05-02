@@ -39,22 +39,24 @@ IMU inertial3 (21);
 ADIPort backClaw ('B', ADI_DIGITAL_OUT);
 ADIPort rightClearer ('D', ADI_DIGITAL_OUT);
 ADIPort leftClearer ('F', ADI_DIGITAL_OUT);
-ADIPort intakePiston ('A', ADI_DIGITAL_OUT);
+ADIPort intakePiston ('G', ADI_DIGITAL_OUT);
 
 Optical opticalSensor(10);
 Distance intakeDistanceSensor(4);
 Distance WMDistanceSensor(7);
 
-ADILed led1 ('E', 33); // Must be in separate groups
-ADILed led2 ('C', 33);
-ADILed led3 ('B', 33);
-ADILed led4 ('G', 33);
+ADILed led1 ('A', 64); // Must be in separate groups
+ADILed led2 ('C', 64);
+ADILed led3 ('E', 79);
+//ADILed led4 ('G', 33);
 
 //ADIDigitalIn backClawLim1 ('F');
 //ADIDigitalIn backClawLim2 ('G');
 
 Distance backClawDis1 (6);
 Distance backClawDis2 (15);
+
+
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
 
