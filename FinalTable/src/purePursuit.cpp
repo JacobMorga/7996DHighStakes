@@ -393,10 +393,16 @@ void runCodeDuringCode (){
             rightClearer.set_value(1);
             whatToRun = 0;
         }
-        else if(whatToRun == 5){
+        else if(whatToRun == 5 && distance(RCDCPos.x, RCDCPos.y, -24.0, 24.0) <= 6.0){
+            transit(6);
             whatToRun = 0;
         }
-        else if(whatToRun == 6){
+        else if(whatToRun == 6 && (fabs(180 / pi * getAngle() + 45.0) <= 10.0)){ //!don't use tPos because some genius decided to legitimately transform it in toPoint (me)
+            leftClearer.set_value(0);
+            whatToRun = 0;
+        }
+        else if(whatToRun == 7 && distance(RCDCPos.x, RCDCPos.y, -48.0, -24.0) <= 18.0){
+            transit(21);
             whatToRun = 0;
         }
 

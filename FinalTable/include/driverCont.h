@@ -9,11 +9,13 @@ extern void runWallMech();
 extern void transit(int forcedStateInput);
 extern int comboState;
 extern bool instantLift;
+extern bool instantLift2;
 extern float WMKp;
 extern float WMKd;
 extern float WMScoringTarget;
 extern bool colorSorting;
 extern bool specialIntake;
 extern bool backClawBool;
+extern void dejam(int incomingState);
 
 #endif

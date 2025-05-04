@@ -3,6 +3,8 @@ using namespace pros;
 
 void initialize() {
 
+	backClaw.set_value(0);
+
 	screen::erase();
 	screen::set_eraser(COLOR_BLACK);
 	screen::set_pen(COLOR_YELLOW);
@@ -72,10 +74,10 @@ void autonomous() {
 	screen::set_eraser(teamColor);
 	runThisCodeShort = 0;
 	
-	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BP A L");  bluePosAWP();} // Runs auton based on auton selector output
+	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos");  bluePos();} // Runs auton based on auton selector output
 	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BN A L"); 	blueNegAWP();} // And prints what auton its running
 	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RP A L"); 	redPosAWP();}
-	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RN A L"); 	redNegAWP();}
+	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg"); redNeg();}
 	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BP Max");  bluePosMax();}
 	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BN Max");  blueNegMax();}
 	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RP Max");  redPosMax();}
@@ -120,6 +122,7 @@ void opcontrol() {
 	//toPoint(0.0,0.0,0.0,false,12000.0);
 
 	//purePursuit({coord(0.1,0.1), coord(-48.0, 48.0), coord(-96.0, 0.0)}, 24.0, 12000.0, 0); //get ring cube and go to top red ring
+
 	if(driverSkills){
 		transit(6);
 		delay(500);
@@ -127,6 +130,17 @@ void opcontrol() {
 		backClawBool = 0;
 	}
 	runDriveCont();
+
+	/*
+	int timevarcounter = 0;
+	intake.move_voltage(13000.0);
+	while(1){
+		std::cout << "(" << timevarcounter << "," << intakeTop.get_current_draw() << ")" << "\n";
+		timevarcounter += 10;
+		delay(10);
+	}
+	*/
+
 	//drivetrain.set_brake_modes(MOTOR_BRAKE_COAST);
 	//drivetrain.brake();
 	

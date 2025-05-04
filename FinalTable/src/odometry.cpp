@@ -86,14 +86,14 @@ void odometry(void){
         lcd::print(2, "%f : tPos (degrees)", tPos * 180.0 / pi);
         */
        
-       /*
+       
         lcd::print(0, "%f : xPos", xPos);
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos * 180.0 / pi);
-        lcd::print(4, "%f : x encoder", currentXPosition);
-        lcd::print(5, "%f : y encoder", currentYPosition);
-        lcd::print(6,"%f : tPow", tPow);
-        */
+        //lcd::print(4, "%f : x encoder", currentXPosition);
+        //lcd::print(5, "%f : y encoder", currentYPosition);
+        //lcd::print(6,"%f : tPow", tPow);
+        
         //lcd::print(1,"xPos: %f", xPos);
         //lcd::print(2,"yPos: %f", yPos);
         //lcd::print(3,"tPos: %f", tPos *180.0/pi);

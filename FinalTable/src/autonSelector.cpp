@@ -98,10 +98,10 @@ void autonSelector (){
             
             screen::set_pen(COLOR_WHITE);
 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "BP A L"); 
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "Blue Pos"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "BN A L"); 
             screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "RP A L"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "RN A L"); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "Red Neg"); 
             screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "BP M"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "BN M"); 
             screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "RP M"); 

@@ -17,4 +17,10 @@ extern float ringStackDist;
 extern float clearingDist;
 extern float wallStakeDist;
 extern bool runThisCodeShort;
+extern void bluePos();
+extern void blueNeg();
+extern void blueSolo();
+extern void redPos();
+extern void redNeg();
+extern void redSolo();
 #endif
