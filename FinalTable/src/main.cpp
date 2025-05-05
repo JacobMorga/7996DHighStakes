@@ -74,9 +74,9 @@ void autonomous() {
 	screen::set_eraser(teamColor);
 	runThisCodeShort = 0;
 	
-	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos");  bluePos();} // Runs auton based on auton selector output
-	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BN A L"); 	blueNegAWP();} // And prints what auton its running
-	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RP A L"); 	redPosAWP();}
+	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos"); bluePos();} // Runs auton based on auton selector output
+	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg"); blueNeg();} // And prints what auton its running
+	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos");  redPos();}
 	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg"); redNeg();}
 	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BP Max");  bluePosMax();}
 	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BN Max");  blueNegMax();}

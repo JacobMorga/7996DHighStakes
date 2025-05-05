@@ -397,16 +397,19 @@ void runCodeDuringCode (){
             transit(6);
             whatToRun = 0;
         }
-        else if(whatToRun == 6 && (fabs(180 / pi * getAngle() + 45.0) <= 10.0)){ //!don't use tPos because some genius decided to legitimately transform it in toPoint (me)
+        else if(whatToRun == 6 && (((180 / pi * getAngle()) <= 0.0) || ((180 / pi * getAngle()) >= 310.0))){ //!don't use tPos because some genius decided to legitimately transform it in toPoint (me)
             leftClearer.set_value(0);
             whatToRun = 0;
         }
-        else if(whatToRun == 7 && distance(RCDCPos.x, RCDCPos.y, -48.0, -24.0) <= 18.0){
+        else if(whatToRun == 7 && (distance(RCDCPos.x, RCDCPos.y, -48.0, -24.0) <= 36.0)){
             transit(21);
             whatToRun = 0;
         }
-
-        delay(20);
+        else if(whatToRun == 8 && (((180 / pi * getAngle()) >= 0.0) || ((180 / pi * getAngle()) >= 310.0))){
+            rightClearer.set_value(0);
+            whatToRun = 0;
+        }
+        delay(5);
     }
 
 }

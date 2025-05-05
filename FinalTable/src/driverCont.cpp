@@ -9,7 +9,7 @@ float sortDistance = 20.0; //110.0; //mm
 float opticalSortProximity = 70.0; //whatever proximity unit ts returns
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
-float sortDegrees1 = 100.0; //425.0; //400.0; //450.0; //degrees
+float sortDegrees1 = 130.0; //425.0; //400.0; //450.0; //degrees
 float sortDegrees2 = 400.0; //degrees
 float stickItIn = 250.0; //ms
 float pullItOut = 75.0; //ms
@@ -44,6 +44,7 @@ float WMLoadingTarget = 700.0; //40.0; //61.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 3000.0; //200.0; //120.0; //164.0; //!175.0; 
 float WMForwardTarget = 2000.0;
+float WMHangTarget = 1000.0;
 
 float WMManualSpeed = 0.5; //degrees per cycle
 float WMRingDetectionDist = 45.0; //94.0; //mm //!a little close, no?
@@ -81,6 +82,9 @@ int dejamIncomingState;
 float dejamBarrier = 25.0;
 int dejamtimer = 0;
 int dejamtimerlimit = 20;
+float hangSlowing = 1.0;
+bool pitchSprint = 0;
+bool state21stop = 1;
 
 void funch(){
     lcd::set_text(0, std::to_string('funch'));
@@ -99,6 +103,7 @@ void funch(){
 #define intakePis        DIGITAL_DOWN
 #define instantLiftTog   DIGITAL_Y
 #define specialIntakeTog DIGITAL_LEFT
+#define engageHang       DIGITAL_DOWN
 
 void runDriveCont (){
     //$ Controller mapping:
@@ -129,8 +134,17 @@ void runDriveCont (){
         JRXValue = powf(controller.get_analog(ANALOG_RIGHT_X) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
         JLXValue = powf(controller.get_analog(ANALOG_LEFT_X) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
 
-        rightDrive.move_voltage(JRYValue - JLXValue);
-        leftDrive.move_voltage(JRYValue + JLXValue);
+        if(comboState != 23){hangSlowing = 1.0;}
+        else{hangSlowing = 0.5;}
+
+        if(inertial1.get_pitch() >= -10.0 || comboState != 23){pitchSprint = 0;}
+        else{pitchSprint = 1;}
+
+        if(pitchSprint != 1){
+            rightDrive.move_voltage(hangSlowing * (JRYValue - JLXValue));
+            leftDrive.move_voltage(hangSlowing * (JRYValue + JLXValue));
+        }
+        else{drivetrain.move_voltage(12000.0);}
         
         if(controller.get_digital_new_press(intakePis)){intakePiston.set_value(!intakePiston.get_value());}
         if(controller.get_digital_new_press(leftCC)){leftClearer.set_value(!leftClearer.get_value());}
@@ -293,14 +307,14 @@ void colorSort(int incomingState){
         */
 
         intakeStuckCounter = 0;
-        while(intakeDistanceSensor.get() >= 100.0 && intakeStuckCounter < 200){
+        while(intakeDistanceSensor.get() >= 100.0 && intakeStuckCounter < 20){
             intakeStuckCounter += 1;
             delay(10);
         }
 
         intakeStuckCounter = 0;
         intakeSort1Start = intakeTop.get_position(); //funch
-        while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 200){ //&& forcedTransit == 0
+        while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && intakeStuckCounter < 20){ //&& forcedTransit == 0
             intakeStuckCounter += 1;
             delay(10);
         }
@@ -308,7 +322,7 @@ void colorSort(int incomingState){
         intake.move_voltage(-intakeVoltage);
         intakeStuckCounter = 0;
         intakeSort2Start = intakeTop.get_position(); //funch
-        while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 200){ //&& forcedTransit == 0
+        while(intakeTop.get_position() > intakeSort2Start - sortDegrees2 && intakeStuckCounter < 20){ //&& forcedTransit == 0
             intakeStuckCounter += 1;
             delay(10);
         }
@@ -349,6 +363,7 @@ void runComboSystem(){
     //^ 20: dejam
     //^ 21: intake running, wall mech out forward
     //^ 22: intake stopped, wall mech out forward
+    //^ 23: hang state (intake stopped, wall mech barely high enough to get the hang bars up)
 
     //%  BABE WAKE UP NEW STATE MACHINE JUST DROPPED
     //%  ##: wall mech, intake.
@@ -415,7 +430,7 @@ void runComboSystem(){
         //* state transitions
         backClawBool = backClaw.get_value();
         if(controller.get_digital_new_press(intakeTog)){ //pressed to start intaking 
-            if(comboState == 0 || comboState == 2){
+            if(comboState == 0 || comboState == 2 || comboState == 23){
                 if(backClawBool){comboState = 1;}
                 else{comboState = 3;}
             }
@@ -435,11 +450,15 @@ void runComboSystem(){
                 else{comboState = 9;}
             }
             else if(comboState == 5){comboState = 6;}
-            else if(comboState == 6){comboState = 0;}
+            else if(comboState == 6 || comboState == 23){comboState = 0;}
             else if(comboState == 7){comboState = 1;}
             else if(comboState == 8){comboState = 2;}
             else if(comboState == 9){comboState = 3;}
             else if(comboState == 16){comboState = 8;}
+        }
+        else if(controller.get_digital_new_press(engageHang)){
+            if(comboState != 23){comboState = 23;}
+            else{comboState = 0;}
         }
         else if(backClawBool != prevBackClawBool){ //when back claw open/closes
             if(comboState == 1 && backClawBool == 0){comboState = 3;}
@@ -473,7 +492,7 @@ void runComboSystem(){
             else if(comboState == 4){comboState = 11;}
             else if(comboState == 7){comboState = 12;}
             else if(comboState == 9){comboState = 15;}
-            else if(comboState == 21){comboState = 22;}
+            else if(comboState == 21 && state21stop){comboState = 22;}
         }
         if((fabs(intakeTop.get_actual_velocity()) <= dejamBarrier) && ((comboState >= 1 && comboState <= 4) || (comboState >= 7 && comboState <= 16)) && checkDejam){ //if intake jamming
             dejamIncomingState = comboState;
@@ -488,7 +507,7 @@ void runComboSystem(){
             else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;} // + or - up to driver
         }
         else if(controller.get_digital(intakeRev)){ //intake reverse button 
-            if(comboState <= 3){comboState = 2;}
+            if(comboState <= 3 || comboState == 23){comboState = 2;}
             else if(comboState == 4 || comboState == 5){comboState = 16;}
             else if(comboState >= 6 && comboState <= 9){comboState = 8;}
         }
@@ -649,10 +668,18 @@ void runComboSystem(){
         else if(comboState == 21){//^ 21: intake running, wall mech out forward
             WMTarget = WMForwardTarget;
             intake.move_voltage(intakeVoltage);
+            if(colorSorting){opticalSensor.set_led_pwm(100.0);}
+            else{opticalSensor.set_led_pwm(0.0);}
         }
         else if(comboState == 22){ //^ 22: intake stopped, wall mech out forward
             WMTarget = WMForwardTarget;
             intake.brake();
+            opticalSensor.set_led_pwm(0.0);
+        }
+        else if(comboState == 23){ //^ 22: intake stopped, wall mech out forward
+            WMTarget = WMHangTarget;
+            intake.brake();
+            opticalSensor.set_led_pwm(0.0);
         }
 
         prevBackClawBool = backClawBool;

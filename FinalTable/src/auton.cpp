@@ -13,63 +13,136 @@ void bluePos(){
     facePoint(-24.0, 48.0, 1, 12000.0); //make sure you point at it when you put the wall mech down
     transit(6); //wall mech score
     delay(250);
-    faceHeading(270.0, 1, 12000.0); //pull line goal back farther
+    faceHeading(250.0, 1, 12000.0); //pull line goal back farther //right 0, forward 90
     transit(0);
     faceAway(0.0, 24.0, 1, 12000.0); //face away from second goal
-    toPoint(0.0, 24.0, 1, 0, 8000.0); //toward second goal (autoclamp) //!learn your freaking positives and negatives
+    toPoint(0.0, 24.0, 1, 0, 8000.0); //toward second goal (autoclamp)
     //if(backClaw.get_value() == 0){rightClearer.set_value(1); delay(1000); rightClearer.set_value(0); backClaw.set_value(1); delay(250);}
-    //~transit(1);
     toPoint(10.0, 36.0, 0, 1, 12000.0); //to ladder rings
-    facePoint(20.0, 48.0, 0, 12000.0); //face rings under ladder
+    facePoint(24.0, 48.0, 0, 12000.0); //face rings under ladder
     leftClearer.set_value(1);
     delay(150); //let clearer fall
     toPoint(-12.0, 6.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
     whatToRun = 6; //lift clearer during turn
+    //delay(20);
     //leftClearer.set_value(0);
+    WMForwardTarget = 1500.0;
     instantLift2 = 1; //~new
     transit(4); //~new
-    whatToRun = 7;
+    state21stop = 0;
     facePoint(-48.0, -24.0, 0, 12000.0); //face corner before you let the clearer up
-    //~transit(1); //prepare to intake everything
+    whatToRun = 7;
     toPoint(-48.0 - 50.0, -24.0 - 50.0, 0, 1, 12000.0); //!smooth? //also this is behind the field on purpose
-    //~transit(4); //hopefully this actually runs in time
-    //~while(comboState != 5 && missedCounter <= 100){delay(10); missedCounter += 1;}
-    //~missedCounter = 0;
     toPoint(18.0, 0.0, 1, 1, 12000.0); //to alliance stake
     facePoint(24.0, -24.0, 0, 12000.0); //point to alliance stake
     toPointShortBy(24.0, -24.0, 0, 0, 20.0, 8000.0); //correct distance to stake error
     transit(6); //score alliance stake //!22
     delay(500);
-    //~drivetrain.move_voltage(6000.0);
-    //~delay(250);
-    //~drivetrain.brake();
     transit(0); //pull wall mech back
     delay(500); //let wall mech up before we drive away so it doesn't get caught
     toPoint(0.0, 24.0, 1, 1, 12000.0); //go to ladder backward
     toPoint(0.0, 44.0, 0, 1, 12000.0); //touch ladder base
 }
 
-void blueNeg(){}
+void blueNeg(){
+    teamColor = COLOR_BLUE;
+    std::vector<coord> blueNegPath1 = {coord(0.0, 24.0), coord(12.0, 38.0)};
+    std::vector<coord> blueNegPath2 = {coord(12.0, 38.0), coord(36.0, 38.0), coord(36.0, 30.0)}; //!(-36,24)->(-36,30)
+    std::vector<coord> blueNegPath3 = {coord(36.0, 30.0), coord(0.0, 24.0)}; //!(-36,24)->(-36,30)
+    
+    toPoint(0.0, 24.0, 1, 1, 12000.0); //get goal with autoclamp //!(3, 21)
+    //toPoint(-3.0, 27.0, 1, 1, 6000.0); //go just a tad slower at the end
+    delay(100);
+    transit(1);
+    purePursuit(blueNegPath1, 12.0, 6000.0, 1); //three rings all bottom of stacks
+    purePursuit(blueNegPath2, 12.0, 6000.0, 1); //finish
+    purePursuit(blueNegPath3, 12.0, 12000.0, 1); //finish
+
+    toPoint(-12.0, 36.0, 0, 1, 12000.0); //to ladder rings
+    facePoint(-20.0, 48.0, 0, 12000.0); //face rings under ladder
+    rightClearer.set_value(1);
+    delay(150); //let clearer fall
+    toPoint(12.0, 0.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
+    whatToRun = 8; //lift clearer during turn
+    //leftClearer.set_value(0);
+    facePoint(48.0, -24.0, 0, 12000.0); //face corner before you let the clearer up
+    toPoint(48.0, -24.0, 0, 0, 12000.0); //intake bottom ring onto goal
+    //delay(500); //let the ring in (perchance unnecessary)
+    toPoint(24.0, 0.0, 1, 1, 12000.0); //leave corner
+    transit(4);
+    toPoint(-20.0, 3.0, 0, 1, 12000.0); //to ring stack //!weird +3y drift 💀
+    toPoint(-48.0, 3.0, 0, 1, 6000.0); //intake knocked ring //!weird +3y drift 💀
+    toPoint(-24.0, -3.0, 1, 1, 12000.0); //align to alliance stake
+    facePoint(-24.0, -24.0, 0, 12000.0); //face alliance stake
+    //toPointShortBy(24.0, -24.0, 0, 0, 20.0, 12000.0); //really aim that john
+    transit(6); //score alliance stake
+    delay(500); //let arm down
+    transit(0);
+    delay(500); //let arm up (perchance unnecessary)
+    toPoint(-24.0, 6.0, 1, 1, 12000.0); //away from alliance stake so the arm doesn't get caught
+    toPoint(-60.0, -12.0, 1, 0, 12000.0); //get goal over to corner=
+}
 
 void blueSolo(){}
 
-void redPos(){}
+void redPos(){
+    teamColor = COLOR_RED;
+    missedCounter = 0;
+    transit(21);
+    toPoint(24.0, 31.5, 0, 1, 12000.0); //rush goal
+    facePoint(24.0, 48.0, 1, 12000.0); //make sure you point at it when you put the wall mech down
+    transit(6); //wall mech score
+    delay(250);
+    faceHeading(-250.0, 1, 12000.0); //pull line goal back farther //right 0, forward 90
+    transit(0);
+    faceAway(0.0, 24.0, 1, 12000.0); //face away from second goal
+    toPoint(0.0, 24.0, 1, 0, 8000.0); //toward second goal (autoclamp)
+    //if(backClaw.get_value() == 0){rightClearer.set_value(1); delay(1000); rightClearer.set_value(0); backClaw.set_value(1); delay(250);}
+    toPoint(-10.0, 36.0, 0, 1, 12000.0); //to ladder rings
+    facePoint(-24.0, 48.0, 0, 12000.0); //face rings under ladder
+    leftClearer.set_value(1);
+    delay(150); //let clearer fall
+    toPoint(12.0, 6.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
+    whatToRun = 8; //lift clearer during turn
+    //delay(20);
+    //leftClearer.set_value(0);
+    WMForwardTarget = 1500.0;
+    instantLift2 = 1; //~new
+    transit(4); //~new
+    state21stop = 0;
+    facePoint(48.0, -24.0, 0, 12000.0); //face corner before you let the clearer up
+    whatToRun = 7;
+    toPoint(48.0 - 50.0, -24.0 - 50.0, 0, 1, 12000.0); //!smooth? //also this is behind the field on purpose
+    toPoint(-18.0, 0.0, 1, 1, 12000.0); //to alliance stake
+    facePoint(-24.0, -24.0, 0, 12000.0); //point to alliance stake
+    toPointShortBy(-24.0, -24.0, 0, 0, 20.0, 8000.0); //correct distance to stake error
+    transit(6); //score alliance stake //!22
+    delay(500);
+    transit(0); //pull wall mech back
+    delay(500); //let wall mech up before we drive away so it doesn't get caught
+    toPoint(0.0, 24.0, 1, 1, 12000.0); //go to ladder backward
+    toPoint(0.0, 44.0, 0, 1, 12000.0); //touch ladder base
+}
 
 void redNeg(){
     teamColor = COLOR_RED;
-    std::vector<coord> redNegPath1 = {coord(0.0, 24.0), coord(-24.0, 38.0), coord(-36.0, 38.0), coord(-36.0, 24.0)};
-    std::vector<coord> redNegPath2 = {coord(-36.0, 24.0), coord(0.0, 24.0)};
+    std::vector<coord> redNegPath1 = {coord(0.0, 24.0), coord(-12.0, 38.0)};
+    std::vector<coord> redNegPath2 = {coord(-12.0, 38.0), coord(-36.0, 38.0), coord(-36.0, 30.0)}; //!(-36,24)->(-36,30)
+    std::vector<coord> redNegPath3 = {coord(-36.0, 30.0), coord(0.0, 24.0)}; //!(-36,24)->(-36,30)
     
-    toPoint(3.0, 27.0, 1, 1, 12000.0); //get goal with autoclamp //!can it work smooth & (+3, +3)?
+    toPoint(-3.0, 22.0, 1, 1, 12000.0); //get goal with autoclamp
+    toPoint(3.0, 27.0, 1, 1, 6000.0); //go just a tad slower at the end
+    delay(100);
     transit(1);
-    purePursuit(redNegPath1, 12.0, 12000.0, 1); //three rings all bottom of stacks
-    purePursuit(redNegPath2, 12.0, 12000.0, 1); //finish
+    purePursuit(redNegPath1, 12.0, 6000.0, 1); //three rings all bottom of stacks
+    purePursuit(redNegPath2, 12.0, 6000.0, 1); //finish
+    purePursuit(redNegPath3, 12.0, 12000.0, 1); //finish
 
-    toPoint(12.0, 38.0, 0, 1, 12000.0); //to ladder rings
+    toPoint(12.0, 36.0, 0, 1, 12000.0); //to ladder rings
     facePoint(20.0, 48.0, 0, 12000.0); //face rings under ladder
     leftClearer.set_value(1);
     delay(150); //let clearer fall
-    toPoint(-12.0, 12.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
+    toPoint(-12.0, 0.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
     whatToRun = 6; //lift clearer during turn
     //leftClearer.set_value(0);
     facePoint(-48.0, -24.0, 0, 12000.0); //face corner before you let the clearer up
@@ -77,21 +150,30 @@ void redNeg(){
     //delay(500); //let the ring in (perchance unnecessary)
     toPoint(-24.0, 0.0, 1, 1, 12000.0); //leave corner
     transit(4);
-    toPoint(18.0, 3.0, 0, 1, 12000.0); //to ring stack //!weird +3y drift 💀
-    toPoint(30.0, 3.0, 0, 1, 6000.0); //intake knocked ring //!weird +3y drift 💀
+    toPoint(20.0, 3.0, 0, 1, 12000.0); //to ring stack //!weird +3y drift 💀
+    toPoint(42.0, 3.0, 0, 1, 6000.0); //intake knocked ring //!weird +3y drift 💀
     toPoint(24.0, -3.0, 1, 1, 12000.0); //align to alliance stake
     facePoint(24.0, -24.0, 0, 12000.0); //face alliance stake
-    toPointShortBy(24.0, -24.0, 0, 0, 20.0, 12000.0); //really aim that john
+    //toPointShortBy(24.0, -24.0, 0, 0, 20.0, 12000.0); //really aim that john
     transit(6); //score alliance stake
     delay(1000); //let arm down
     transit(0);
-    //delay(500); //let arm up (perchance unnecessary)
+    delay(500); //let arm up (perchance unnecessary)
     toPoint(24.0, 6.0, 1, 1, 12000.0); //away from alliance stake so the arm doesn't get caught
-    toPoint(96.0, -24.0, 1, 0, 12000.0); //jam goal into corner
+    toPoint(60.0, -12.0, 1, 0, 12000.0); //get goal over to corner
 
 }
 
 void redSolo(){}
+
+
+
+
+
+
+
+
+
 
 
 
