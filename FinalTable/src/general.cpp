@@ -56,6 +56,8 @@ ADILed led3 ('E', 79);
 Distance backClawDis1 (6);
 Distance backClawDis2 (15);
 
+pros::ADILED stripRight('a',55);
+pros::ADILED stripLeft('c',55);
 
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
@@ -328,6 +330,125 @@ int getLEFT (){
     else{ return sList[11]; }
 }
 
+
+// ---------- LED STUFF -----------------
+
+int rgbToHexInt(int r, int g, int b) {
+    return (r << 16) | (g << 8) | b;
+}
+
+// 0 - shift it forward (back value moves to front)
+// 1 - shift it backward (front value moves to back)
+void shiftVector (std::vector<int>& inputV, bool direc){
+
+	if (direc == false){
+		int back = inputV.back();
+		for(int i = inputV.size() - 1; i >= 1; i--){
+			inputV[i] = inputV[i-1];
+		}
+		inputV[0] = back;
+	}
+	else{
+		int front = inputV.front();
+		for(int i = 0; i < inputV.size() - 1; i++){
+			inputV[i] = inputV[i+1];
+		}
+		inputV.back() = front;
+
+	}
+}
+
+// startcolor,endcolor,ledstrips
+std::vector<int> colorGradientCalc (int sc, int ec, pros::ADILED& strip){
+
+	// Calculate RGB values from hex codes
+	float sRed = (sc >> 16) & 0xFF;
+	float sGreen = (sc >> 8) & 0xFF;
+	float sBlue = (sc) & 0xFF;
+
+	float eRed = (ec >> 16) & 0xFF;
+	float eGreen = (ec >> 8) & 0xFF;
+	float eBlue = (ec) & 0xFF;
+
+	std::vector<int> outputSteps; // Create and clear list
+	outputSteps.clear();
+
+	for (int i = 0; i < strip.length(); i++) { // Calculate RGB for each pixel
+		float t = static_cast<float>(i) / static_cast<float>(strip.length()); // Pct along strip
+
+		int r = static_cast<int>(sRed   + (eRed-sRed)     * t +0.5f); // Calc RGB values1
+		int g = static_cast<int>(sGreen + (eGreen-sGreen) * t +0.5f);
+		int b = static_cast<int>(sBlue  + (eBlue-sBlue)   * t +0.5f);
+
+		std::cout << "(" << r << "," << g << ")" << ",";
+
+		outputSteps.push_back(rgbToHexInt(r, g, b)); // Add to list
+	}
+
+	return outputSteps;
+}
+
+
+std::vector<std::vector<int>> colorTravelCalc (int startColor, int endColor, pros::ADILED& strip, bool direction){
+
+	std::vector<std::vector<int>> setOfColors = {}; // Vectors for each step of colors
+	std::vector<int> startingSet = colorGradientCalc(startColor,endColor,strip); // Basic set of colors
+	setOfColors.push_back(startingSet); // push back initial set
+
+	for(int i = 0; i < strip.length() - 1; i++){ // shift set a bunch of times and add to list
+		shiftVector(startingSet,direction);
+		setOfColors.push_back(startingSet);
+	}
+
+	return setOfColors;
+}
+
+
+
+void colorGradient(pros::ADILED& strip, std::vector<int> colorVector){
+
+	for (int i = 0; i < strip.length(); i++) { // Get coresponding value
+
+		strip[i] = colorVector[i];
+		pros::delay(5);
+	}
+	strip.update();
+}
+
+void colorTravel(pros::ADILED& strip, std::vector<std::vector<int>> gradientVectors, int timeStep){
+
+	for (std::vector<int> vector : gradientVectors){ // Get which color to use
+
+		for (int i = 0; i < vector.size(); i++){ // Set lights
+
+			strip[i] = vector[i];
+		}
+		strip.update();
+		pros::delay(timeStep);
+
+	}
+}
+
+void colorAlternate (std::vector<int> colors, pros::ADILED& strip, int timeStep){
+
+	for(int i = 0; i < strip.length(); i++){
+
+		strip[i] = colors[i % colors.size()];
+	}
+	strip.update();
+}
+
+void colorPulse(int startColor, int endColor, pros::ADILED& strip, int timeStep){
+    for(int i = 0; i < strip.length(); i++){
+        
+        strip.set_all(colorGradientCalc(startColor,endColor,strip)[i]);
+        strip.update();
+        delay(timeStep);
+    }
+}
+
+int C_Blue = 0x6600ff;
+int C_Red  = 0xff0000;
 
 
 

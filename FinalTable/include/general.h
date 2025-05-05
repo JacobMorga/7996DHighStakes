@@ -48,6 +48,9 @@ extern ADILed led4;
 extern Distance backClawDis1;
 extern Distance backClawDis2;
 
+extern pros::ADILED stripRight;
+extern pros::ADILED stripLeft;
+
 extern const float pi;
 extern const float eConst;
 extern const bool pressed;
@@ -104,3 +107,16 @@ extern int getDOWN();
 extern int getRIGHT();
 extern int getLEFT();
 #endif
+
+// ---------- LED STUFF -----------------
+
+extern int rgbToHexInt(int r, int g, int b);
+extern void shiftVector (std::vector<int>& inputV, bool direc);
+extern std::vector<int> colorGradientCalc (int sc, int ec, pros::ADILED& strip);
+extern std::vector<std::vector<int>> colorTravelCalc (int startColor, int endColor, pros::ADILED& strip, bool direction);
+extern void colorGradient(pros::ADILED& strip, std::vector<int> colorVector);
+extern void colorTravel(pros::ADILED& strip, std::vector<std::vector<int>> gradientVectors, int timeStep);
+extern void colorAlternate (std::vector<int> colors, pros::ADILED& strip, int timeStep);
+extern void colorPulse(int startColor, int endColor, pros::ADILED& strip, int timeStep);
+extern int C_Blue;
+extern int C_Red;
