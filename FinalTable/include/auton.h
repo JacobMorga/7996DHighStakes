@@ -23,4 +23,8 @@ extern void blueSolo();
 extern void redPos();
 extern void redNeg();
 extern void redSolo();
+extern void blueNegAS();
+extern void redNegAS();
+extern bool ladderTouch;
+extern bool skipAS;
 #endif

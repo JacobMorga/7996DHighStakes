@@ -24,5 +24,7 @@ extern float rightPow;
 extern float leftPow;
 extern float lError;
 
+extern bool checkPseudoVel;
+
 
 #endif

@@ -102,18 +102,18 @@ void autonSelector (){
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "Blue Neg"); 
             screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "Red Pos"); 
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "Red Neg"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "BP M"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "BN M"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "RP M"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "RN M"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, "BP A S"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "BN A S"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, "RP A S"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "RN A S"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "Skills"); 
-            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "Skills"); 
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "Driver S"); 
-            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "Testing");
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "AS Cor"); //blue negative alliance stake corner
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "AS Cor"); //red negative alliance stake corner
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "AS Lad"); //blue negative
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "AS Lad"); //red negative
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "NS Lad"); //blue negative
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "NS Lad"); //red negative
 
 
             while(status.touch_status == E_TOUCH_HELD){

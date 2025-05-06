@@ -3,6 +3,9 @@ using namespace pros;
 
 void initialize() {
 
+	//Task LEDTask(DoTheLEDs, "LEDtask");
+	//delay(100000000000);
+
 	backClaw.set_value(0);
 
 	screen::erase();
@@ -50,6 +53,7 @@ void initialize() {
 	Task comboTask (runComboSystem, "comboTask");
 	Task WMTask (runWallMech, "WMTask");
 	Task RCDCTask(runCodeDuringCode, "RCDCTask");
+	//Task LEDTask(DoTheLEDs, "LEDtask");
 }
 
 void disabled() {
@@ -67,31 +71,41 @@ void competition_initialize() {
 
 void autonomous() {
 	screen::erase(); // Erases auton selector
+	WMForwardTarget = 2200.0;
 
-	screen::set_pen(teamColor); // Colors brain screen with team color
+	/*
+	if(autonSelected == 1 || autonSelected == 2){teamColor = COLOR_BLUE;}
+	else{teamColor = COLOR_RED;}
+	*/
+
+	screen::set_pen(COLOR_GREEN); // Colors brain screen with team color
 	screen::fill_rect(0,0,480,240);
 	screen::set_pen(COLOR_BLACK);
-	screen::set_eraser(teamColor);
+	screen::set_eraser(COLOR_GREEN);
 	runThisCodeShort = 0;
 	
 	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos"); bluePos();} // Runs auton based on auton selector output
 	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg"); blueNeg();} // And prints what auton its running
 	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos");  redPos();}
 	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg"); redNeg();}
-	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BP Max");  bluePosMax();}
-	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BN Max");  blueNegMax();}
-	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RP Max");  redPosMax();}
-	else if (autonSelected == 8 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RN Max"); 	redNegMax();}
-	else if (autonSelected == 9 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BP A S");	runThisCodeShort = true; bluePosAWP();}
-	else if (autonSelected == 10){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BN A S");	runThisCodeShort = true; blueNegAWP();}
-	else if (autonSelected == 11){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RP A S");	runThisCodeShort = true; redPosAWP();}
-	else if (autonSelected == 12){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RN A S");	runThisCodeShort = true; redNegAWP();}
-	else if (autonSelected == 13){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
-	else if (autonSelected == 14){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Skills");	skills2();}
-	else if (autonSelected == 15){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Driver S"); }
-	else if (autonSelected == 16){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Testing");	autonTesting();}
+	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNAS Cor");  blueNegAS();}
+	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 8 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNAS Cor"); 	redNegAS();}
+	else if (autonSelected == 9 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 10){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNAS Lad"); ladderTouch = 1; blueNegAS();}
+	else if (autonSelected == 11){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 12){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNAS Lad"); ladderTouch = 1; redNegAS();}
+	else if (autonSelected == 13){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 14){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNNS Lad"); skipAS = 1; ladderTouch = 1; blueNegAS();}
+	else if (autonSelected == 15){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 16){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNNS Lad"); skipAS = 1; ladderTouch = 1; redNegAS();}
 	
-	else {printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");}
+	else {
+		screen::set_pen(COLOR_RED); // Colors brain screen with team color
+		screen::fill_rect(0,0,480,240);
+		printAtPoint(TEXT_LARGE_CENTER, 100, 100, "YOU'RE COOKED");
+	}
 }
 
 void opcontrol() {

@@ -24,6 +24,7 @@ float pseudoVelLimit = 1.0;
 float pseudoRotVelLimit = 1.0;
 float maxAcceptableRotError = 1.5;
 float smoothFPError = 5.0;
+bool checkPseudoVel = 1;
 
 void facePoint(float xTar, float yTar, bool fpSmooth, float speedLimit){
     pseudoVelSwitch = 0;
@@ -171,7 +172,7 @@ void toPoint(float xTar, float yTar, float reversed, bool smooth, float powerLim
         }
         */
 
-        if (dist < distLimit || (pseudoVelSwitch == 1 && pseudoVelocity < pseudoVelLimit)){
+        if (dist < distLimit || (pseudoVelSwitch == 1 && pseudoVelocity < pseudoVelLimit && checkPseudoVel == 1)){
             if (smooth == 0){toPointLoops += 1;} // +=1
             else{toPointLoops += 10;} //+=10
         }

@@ -45,9 +45,6 @@ Optical opticalSensor(10);
 Distance intakeDistanceSensor(4);
 Distance WMDistanceSensor(7);
 
-ADILed led1 ('A', 64); // Must be in separate groups
-ADILed led2 ('C', 64);
-ADILed led3 ('E', 79);
 //ADILed led4 ('G', 33);
 
 //ADIDigitalIn backClawLim1 ('F');
@@ -58,6 +55,7 @@ Distance backClawDis2 (15);
 
 pros::ADILED stripRight('a',55);
 pros::ADILED stripLeft('c',55);
+std::vector<pros::ADILED> allStrips = {stripRight,stripLeft};
 
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text){
@@ -438,11 +436,12 @@ void colorAlternate (std::vector<int> colors, pros::ADILED& strip, int timeStep)
 	strip.update();
 }
 
-void colorPulse(int startColor, int endColor, pros::ADILED& strip, int timeStep){
-    for(int i = 0; i < strip.length(); i++){
-        
-        strip.set_all(colorGradientCalc(startColor,endColor,strip)[i]);
-        strip.update();
+void colorPulse(int startColor, int endColor, vector<pros::ADILED>& strips, int timeStep){
+    for(int i = 0; i < strips[0].length(); i++){
+        for (pros::ADILED& strip : strips){
+            strip.set_all(colorGradientCalc(startColor,endColor,strip)[i]);
+            strip.update();
+        }
         delay(timeStep);
     }
 }
@@ -452,3 +451,11 @@ int C_Red  = 0xff0000;
 
 
 
+void DoTheLEDs (){
+    while(1){
+    //colorPulse(C_Red,0x770000,allStrips,250);
+    stripRight.set_all(0xFF0000);
+    stripRight.update();
+    delay(100);
+    }
+}

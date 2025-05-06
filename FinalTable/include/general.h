@@ -50,6 +50,7 @@ extern Distance backClawDis2;
 
 extern pros::ADILED stripRight;
 extern pros::ADILED stripLeft;
+extern std::vector<pros::ADILED> allStrips;
 
 extern const float pi;
 extern const float eConst;
@@ -84,7 +85,7 @@ extern float distance(float x1, float y1, float x2, float y2);
 extern float pythag (float a, float b);
 extern float arctan2(float x, float y);
 extern float normAngle(float angle);
-extern float normAngle2(float angle);
+extern float normAngle2pi(float angle);
 
 void printAtPoint(text_format_e_t txtFmt, int x, int y, const char* text);
 
@@ -117,6 +118,7 @@ extern std::vector<std::vector<int>> colorTravelCalc (int startColor, int endCol
 extern void colorGradient(pros::ADILED& strip, std::vector<int> colorVector);
 extern void colorTravel(pros::ADILED& strip, std::vector<std::vector<int>> gradientVectors, int timeStep);
 extern void colorAlternate (std::vector<int> colors, pros::ADILED& strip, int timeStep);
-extern void colorPulse(int startColor, int endColor, pros::ADILED& strip, int timeStep);
+extern void colorPulse(int startColor, int endColor, std::vector<pros::ADILED>& strips, int timeStep);
 extern int C_Blue;
 extern int C_Red;
+extern void DoTheLEDs ();

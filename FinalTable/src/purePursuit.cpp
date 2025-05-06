@@ -397,7 +397,7 @@ void runCodeDuringCode (){
             transit(6);
             whatToRun = 0;
         }
-        else if(whatToRun == 6 && (((180 / pi * getAngle()) <= 0.0) || ((180 / pi * getAngle()) >= 310.0))){ //!don't use tPos because some genius decided to legitimately transform it in toPoint (me)
+        else if(whatToRun == 6 && (((180 / pi * getAngle()) <= 10.0) || ((180 / pi * getAngle()) >= 310.0))){ //!don't use tPos because some genius decided to legitimately transform it in toPoint (me)
             leftClearer.set_value(0);
             whatToRun = 0;
         }
@@ -405,8 +405,12 @@ void runCodeDuringCode (){
             transit(21);
             whatToRun = 0;
         }
-        else if(whatToRun == 8 && (((180 / pi * getAngle()) >= 0.0) || ((180 / pi * getAngle()) >= 310.0))){
+        else if(whatToRun == 8 && ((180 / pi * normAngle(getAngle())) >= 15.0)){
             rightClearer.set_value(0);
+            whatToRun = 0;
+        }
+        else if(whatToRun == 9 && ((180 / pi * normAngle(getAngle())) <= -15.0)){
+            leftClearer.set_value(0);
             whatToRun = 0;
         }
         delay(5);
