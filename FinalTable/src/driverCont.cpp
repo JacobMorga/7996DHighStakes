@@ -346,7 +346,7 @@ void colorSort(int incomingState){
         intakeSort1Start = intakeTop.get_position(); //funch
         while(intakeTop.get_position() < intakeSort1Start + sortDegrees1 && dejamInColorSort == 0){ //&& forcedTransit == 0
             if(intakeTop.get_actual_velocity() <= dejamBarrier){dejamInColorSort = 1;}
-            delay(10);
+            // delay(10);
         }
         if(dejamInColorSort){intakeTop.move_voltage(-intakeVoltage); delay(200); dejamInColorSort = 0;}
 

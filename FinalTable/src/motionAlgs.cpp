@@ -1,5 +1,17 @@
 #include "main.h"
 
+
+/** motionAlgs.cpp - Motion Algorithms 
+ * 
+ * This file contains motion algorithms to control the robot's movement on the field.
+ * Functions include:
+ * - facePoint: Aligns the robot to a specific point on the field. Useful for targeting game objects on matter where you are.
+ * - toPoint: Moves the robot to a specific point on the field. Rotates and drives at the same time.
+ * - toPointShortBy: Moves the robot to a point offset by a certain distance. Useful for lining up at a certain radius from an object. (High Stakes wall stakes)
+ * - faceAway: Aligns the robot to face away from a specific point. (Reverse of toPoint)
+ * - faceHeading: Aligns the robot to a specific heading.
+ */
+
 float linKP = 550.0;//500.0;
 float linKI = 3.0;//1.0;
 float linKD = 5000.0;//5000.0;
