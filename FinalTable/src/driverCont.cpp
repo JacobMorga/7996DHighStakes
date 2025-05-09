@@ -747,6 +747,7 @@ void runComboSystem(){
         }
 
         prevBackClawBool = backClawBool;
+        
         delay(10);
     }
 }
