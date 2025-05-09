@@ -182,14 +182,21 @@ void blueNegAS(){
     if(skipAS == 0){
         transit(6); //score alliance stake preload
         delay(700);
-        transit(1);
+        transit(0);
         drivetrain.move_voltage(-3000.0);
         delay(500);
         drivetrain.move_voltage(0.0);
     }
     
+    toPoint(-12.0, 12.0, 1, 1, 12000.0); //away from stake and align positingin
+    faceAway(0.0, 24.0, 1, 12000.0); //face back to goal and align better
     toPoint(0.0, 26.0, 1, 1, 12000.0); //get goal with autoclamp
     delay(100);
+
+    //toPoint(0.0, 26.0, 1, 1, 12000.0); //get goal with autoclamp
+    //delay(100);
+
+    transit(1); //start loading preload onto goal for if skipAS
     purePursuit(blueNegASPath1, 12.0, 6000.0, 1); //three rings all bottom of stacks
     purePursuit(blueNegASPath2, 12.0, 6000.0, 1); //finish
     purePursuit(blueNegASPath3, 12.0, 12000.0, 1); //finish
@@ -202,22 +209,37 @@ void blueNegAS(){
     rightClearer.set_value(1);
     delay(150); //let clearer fall
     checkPseudoVel = 0;
-    toPoint(12.0, 0.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
+    toPoint(-6.0, 24.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
     checkPseudoVel = 1;
-    whatToRun = 8; //lift clearer during turn
-    //leftClearer.set_value(0);
-    facePoint(48.0, -30.0, 0, 12000.0); //face corner before you let the clearer up //!y-24 intentional overangle
-    toPoint(48.0, -24.0, 0, 1, 12000.0); //intake bottom ring onto goal //~just smoothed
-    //delay(500); //let the ring in (perchance unnecessary)
+    //whatToRun = 8; //lift clearer during turn
+    faceHeading(0.0, 1, 12000.0);
+    rightClearer.set_value(0);
+    delay(100);
+    facePoint(48.0, -30.0, 0, 12000.0); //face corner before you let the clearer up
+    WMScoringTarget = 2600.0;
+    transit(7);
+    toPoint(48.0, -24.0, 0, 1, 12000.0); //intake bottom ring onto goal
+
+    /*
+    //!remove if over time
+    toPoint(24.0, 0.0, 1, 1, 12000.0); //out for second push
+    toPoint(48.0, -24.0, 0, 1, 12000.0); //second push
+    */
+
     toPoint(24.0, 0.0, 1, 1, 12000.0); //leave corner
+    //transit(1);
+    WMScoringTarget = 2000.0;
     //transit(4);
     if(ladderTouch){
-        toPoint(-24.0, 24.0, 0, 1, 6000.0); //touch ladder
+        toPoint(-1.67, 25.67, 0, 1, 12000.0); //toward ladder //^change all other three if it works
+        WMScoringTarget = 3000.0;
+        //transit(7);
+        //toPoint(-24.0, 24.0, 0, 1, 6000.0); //touch ladder
     }
     else{
-        toPoint(-20.0, 3.0, 0, 1, 12000.0); //to ring stack //!weird +3y drift 💀
-        toPoint(-60.0, 3.0, 0, 1, 6000.0); //intake knocked ring //!weird +3y drift 💀
-        toPoint(-72.0, -12.0, 1, 0, 12000.0); //get goal over to corner
+        toPoint(-20.0, 3.0, 0, 1, 12000.0); //to ring stack 
+        toPoint(-60.0, 3.0, 0, 1, 6000.0); //intake knocked ring 
+        toPoint(-72.0, 0.0, 1, 0, 12000.0); //get goal over to corner
     }
 }
 
@@ -230,14 +252,21 @@ void redNegAS(){
     if(skipAS == 0){
         transit(6); //score alliance stake preload
         delay(700);
-        transit(1);
+        transit(0);
         drivetrain.move_voltage(-3000.0);
         delay(500);
         drivetrain.move_voltage(0.0);
     }
     
+    toPoint(12.0, 12.0, 1, 1, 12000.0); //away from stake and align positingin
+    faceAway(0.0, 24.0, 1, 12000.0); //face back to goal and align better
     toPoint(0.0, 26.0, 1, 1, 12000.0); //get goal with autoclamp
     delay(100);
+
+    //toPoint(0.0, 26.0, 1, 1, 12000.0); //get goal with autoclamp
+    //delay(100);
+
+    transit(1); //start loading preload onto goal for if skipAS
     purePursuit(redNegASPath1, 12.0, 6000.0, 1); //three rings all bottom of stacks
     purePursuit(redNegASPath2, 12.0, 6000.0, 1); //finish
     purePursuit(redNegASPath3, 12.0, 12000.0, 1); //finish
@@ -250,24 +279,163 @@ void redNegAS(){
     leftClearer.set_value(1);
     delay(150); //let clearer fall
     checkPseudoVel = 0;
-    toPoint(-6.0, 12.0, 1, 1, 12000.0); //come out of ladder with ring on clearer //$change blueneg
+    toPoint(6.0, 24.0, 1, 1, 12000.0); //come out of ladder with ring on clearer
     checkPseudoVel = 1;
-    whatToRun = 9; //lift clearer during turn
-    //leftClearer.set_value(0);
-    facePoint(-48.0, -30.0, 0, 12000.0); //face corner before you let the clearer up //!y-24 intentional overangle
-    toPoint(-48.0, -24.0, 0, 1, 12000.0); //intake bottom ring onto goal //~just smoothed
-    //delay(500); //let the ring in (perchance unnecessary)
+    //whatToRun = 9; //lift clearer during turn
+    faceHeading(200.0, 1, 12000.0);
+    leftClearer.set_value(0);
+    delay(100);
+    facePoint(-48.0, -30.0, 0, 12000.0); //face corner before you let the clearer up
+    WMScoringTarget = 2600.0;
+    transit(7);
+    toPoint(-48.0, -24.0, 0, 0, 12000.0); //intake bottom ring onto goal
+
+    /*
+    //!remove if over time
+    toPoint(-24.0, 0.0, 1, 1, 12000.0); //out for second push
+    toPoint(-48.0, -24.0, 0, 1, 12000.0); //second push
+    */
+
     toPoint(-24.0, 0.0, 1, 1, 12000.0); //leave corner
+    //transit(1);
+    WMScoringTarget = 2000.0;
     //transit(4);
     if(ladderTouch){
-        toPoint(24.0, 24.0, 0, 1, 6000.0); //touch ladder
+        toPoint(1.67, 25.67, 0, 1, 12000.0); //toward ladder
+        WMScoringTarget = 3000.0;
+        //transit(7);
+        //toPoint(24.0, 24.0, 0, 1, 6000.0); //touch ladder
     }
     else{
-        toPoint(20.0, 3.0, 0, 1, 12000.0); //to ring stack //!weird +3y drift 💀
-        toPoint(60.0, 3.0, 0, 1, 6000.0); //intake knocked ring //!weird +3y drift 💀
-        toPoint(72.0, -12.0, 1, 0, 12000.0); //get goal over to corner
+        toPoint(20.0, 3.0, 0, 1, 12000.0); //to ring stack
+        toPoint(60.0, 3.0, 0, 1, 6000.0); //intake knocked ring
+        toPoint(72.0, 0.0, 1, 0, 12000.0); //get goal over to corner
     }
 }
+
+void redPosNoRush(){
+    teamColor = COLOR_RED;
+    //std::vector<coord> redPosNPPath1 = {coord(12.0, 12.0), coord(12.0, 36.0), coord(36.0, 12.0), coord(48.0, -24.0)};
+
+    if(skipAS == 0){
+        transit(6); //score alliance stake preload
+        delay(700);
+        transit(0);
+        drivetrain.move_voltage(-3000.0);
+        delay(500);
+        drivetrain.move_voltage(0.0);
+    }
+    
+    toPoint(-12.0, 12.0, 1, 1, 12000.0); //away from stake and align positingin
+    
+    faceAway(0.0, 24.0, 1, 12000.0); //face back to goal and align better
+    toPoint(0.0, 26.0, 1, 1, 12000.0); //get goal with autoclamp
+    delay(100);
+
+    toPoint(-13.0, 37.0, 0, 1, 12000.0); //to ladder rings
+    facePoint(-24.0, 48.0, 0, 12000.0); //face rings under ladder
+    rightClearer.set_value(1);
+    delay(100);
+
+    toPoint(12.0, 12.0, 1, 1, 12000.0); //out of ladder with ring
+    transit(1); //start loading preload onto goal for if skipAS
+    rightClearer.set_value(0);
+    delay(100); //let clearer up
+
+    toPoint(0.0, 28.0, 0, 1, 12000.0); //corner clearer ring
+    toPoint(24.0, 24.0, 0, 1, 12000.0); //bottom stack ring
+    WMScoringTarget = 2600.0; //wall mech just above field wall to protect
+    transit(7);
+    facePoint(48.0, -24.0, 1, 12000.0); //face corner to not drag wall
+    toPoint(48.0, -24.0, 0, 0, 9000.0); //corner stack
+    //delay(1000);
+    
+    toPoint(24.0, 0.0, 1, 1, 12000.0); //reverse for second corner jab
+    toPoint(48.0, -24.0, 0, 0, 12000.0); //second corner jab
+    WMScoringTarget = 2000.0;
+    //transit(1); //wall mech back in so it doesn't hit the ladder early on the side
+    toPoint(-1.67, 25.67, 0, 1, 12000.0); //toward ladder
+    WMScoringTarget = 3000.0; 
+    //transit(7); //wall mech touch ladder
+    //toPoint(-24.0, 24.0, 0, 0, 6000.0); //touch ladder
+}
+
+void bluePosNoRush(){
+    teamColor = COLOR_BLUE;
+    //std::vector<coord> bluePosNPPath1 = {coord(-12.0, 12.0), coord(-12.0, 36.0), coord(-36.0, 12.0), coord(-46.0, -24.0)};
+
+    if(skipAS == 0){
+        transit(6); //score alliance stake preload
+        delay(700);
+        transit(0);
+        drivetrain.move_voltage(-3000.0);
+        delay(500);
+        drivetrain.move_voltage(0.0);
+    }
+
+    toPoint(12.0, 12.0, 1, 1, 12000.0); //away from stake and align positingin
+    
+    faceAway(0.0, 24.0, 1, 12000.0); //face back to goal and align better
+    toPoint(0.0, 26.0, 1, 1, 12000.0); //get goal with autoclamp
+    delay(100);
+
+    toPoint(13.0, 37.0, 0, 1, 12000.0); //to ladder rings
+    facePoint(24.0, 48.0, 0, 12000.0); //face rings under ladder
+    leftClearer.set_value(1);
+    delay(300);
+
+    toPoint(-12.0, 12.0, 1, 1, 12000.0); //out of ladder with ring
+    transit(1); //start loading preload onto goal for if skipAS
+    leftClearer.set_value(0);
+    delay(100); //let clearer up
+
+    //purePursuit(bluePosNPPath1, 12.0, 12000.0, 0); //intake ladder ring in front of you, bottom ring of 2-stack, and bottom ring of 4-stack (color sorting along the way hopefully)
+    toPoint(0.0, 28.0, 0, 1, 12000.0); //corner clearer ring
+    toPoint(-24.0, 24.0, 0, 1, 12000.0); //bottom stack ring
+    WMScoringTarget = 2600.0;
+    transit(7);
+    facePoint(-48.0, -24.0, 1, 12000.0); //face corner to not drag wall
+    toPoint(-48.0, -24.0, 0, 0, 10000.0); //corner stack
+    //delay(1000);
+    
+    toPoint(-24.0, 0.0, 1, 1, 12000.0); //reverse for second corner jab
+    toPoint(-48.0, -24.0, 0, 0, 12000.0); //second corner jab
+    WMScoringTarget = 2000.0;
+    //transit(1);
+    toPoint(1.67, 25.67, 0, 1, 12000.0); //toward ladder
+    WMScoringTarget = 3000.0;
+    //transit(7);
+    //toPoint(24.0, 24.0, 0, 0, 6000.0); //touch ladder
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -27,4 +27,6 @@ extern void blueNegAS();
 extern void redNegAS();
 extern bool ladderTouch;
 extern bool skipAS;
+extern void redPosNoRush();
+extern void bluePosNoRush();
 #endif

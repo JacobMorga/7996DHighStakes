@@ -6,7 +6,7 @@ float JRYValue, JRXValue, JLYValue, JLXValue; //joystick right y, right x, left 
 float intakeVoltage = 12000.0; // mV //11000
 int exitcode = 0; //color sort loop exitcode
 float sortDistance = 20.0; //110.0; //mm
-float opticalSortProximity = 70.0; //whatever proximity unit ts returns
+float opticalSortProximity = 200.0; //whatever proximity unit ts returns //& this was 70 before last day if the color sorting starts funching really hard
 //float sortDelay1 = 750.0; //ms
 //float sortDelay2 = 200.0; //ms
 float sortDegrees1 = 150.0; //!130 degrees
@@ -43,7 +43,7 @@ float WMIdleTarget = 300.0; //20.0; //35.0; //degrees
 float WMLoadingTarget = 675.0; //degrees //!60
 float WMLoadingBTarget = 70.0; //degrees, unused and untested
 float WMScoringTarget = 3000.0; //200.0; //120.0; //164.0; //!175.0; 
-float WMForwardTarget = 2000.0; //sets to 1500 at the start of driver
+float WMForwardTarget = 2000.0; //sets to 1200 at the start of driver
 float WMHangTarget = 1000.0;
 float WMDescoreTarget = 2275.0; //oh no 
 
@@ -88,6 +88,9 @@ bool pitchSprint = 0;
 //bool state21stop = 1;
 bool justLifted = 0;
 
+bool printTeamBool = 1;
+bool allowDebug = 1;
+
 void funch(){
     lcd::set_text(0, std::to_string('funch'));
 }
@@ -96,12 +99,12 @@ void funch(){
 #define intakeRev        DIGITAL_R2
 #define wallMechCycle    DIGITAL_L1
 #define backClawTog      DIGITAL_L2
-#define colorSortingTog  DIGITAL_RIGHT
+#define colorSortingTog  DIGITAL_B
 #define wallMechUp       DIGITAL_X
 #define wallMechDown     DIGITAL_A
 #define leftCC           DIGITAL_LEFT
 #define rightCC          DIGITAL_UP
-#define teamColorTog     DIGITAL_B
+#define teamColorTog     DIGITAL_RIGHT
 #define intakePis        DIGITAL_DOWN
 #define instantLiftTog   DIGITAL_Y
 #define specialIntakeTog DIGITAL_LEFT
@@ -113,23 +116,31 @@ void runDriveCont (){
     //$ Right joystick Y axis: Driving
     //$  Left joystick X axis: Turning
     //$  Left joystick Y axis: -------
+
     //$                    L1: Wall mech state cycle
     //$                    L2: Back claw toggle
     //$                    R1: Intake toggle
     //$                    R2: Reverse intake, hold button
-    //$                    Up: Corner clearer/goal rush arm toggle
-    //$                  Down: Reach for descore
-    //$                  Left: Goal rush clamp toggle
-    //$                 Right: Color sorting on/off toggle  
-    //$                 X (↑): Manual wall mech driving up/in/+ in goal tipping state
-    //$                 Y (←): Intake and pause regardless of goal (used to get rings out of ladder for wall mech)
-    //$                 A (→): Manual wall mech driving down/out/- in goal tipping state
-    //$                 B (↓): "Hang"
+
+    //$                    Up: Right corner clearer toggle
+    //$                  Down: Hang toggle
+    //$                  Left: Left corner clearer toggle
+    //$                 Right: Debug: Team color switch
+    
+    //$                 X (↑): Debug: Manual wall mech driving up/in/+ in goal tipping state
+    //$                 Y (←): Debug: Instant lift toggle
+    //$                 A (→): Debug: Manual wall mech driving down/out/- in goal tipping state
+    //$                 B (↓): Color sorting on/off toggle
 
     instantLift = 0;
+    instantLift2 = 0;
     specialIntake = 0;
     driverControlBool = 1;
     WMForwardTarget = 1200.0;
+    WMScoringTarget = 3000.0;
+    comboState = 0;
+    forcedTransit = 0;
+    forcedState = 0;
     //backClaw.set_value(1);
     while (1){
         JRYValue = powf(controller.get_analog(ANALOG_RIGHT_Y) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0; // Scales 127 to 100 then cubes and converts to mV
@@ -137,16 +148,10 @@ void runDriveCont (){
         JRXValue = powf(controller.get_analog(ANALOG_RIGHT_X) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
         JLXValue = powf(controller.get_analog(ANALOG_LEFT_X) / 127.0 * 100.0, 3.0) / 1000.0 * 12.0;
 
-        if(comboState != 23){
-            hangSlowing = 1.0;
-        }
+        if(comboState != 23){hangSlowing = 1.0;}
         else{
-            if(backClawBool){
-                hangSlowing = 0.75;
-            }
-            else{
-                hangSlowing = 0.5;
-            }
+            if(backClawBool){hangSlowing = 0.67;}
+            else{hangSlowing = 0.5;}
         }
 
         if(inertial1.get_pitch() >= -10.0 || comboState != 23){pitchSprint = 0;}
@@ -158,16 +163,18 @@ void runDriveCont (){
         }
         else{drivetrain.move_voltage(12000.0);}
         
-        if(controller.get_digital_new_press(intakePis)){intakePiston.set_value(!intakePiston.get_value());}
+        //if(controller.get_digital_new_press(intakePis)){intakePiston.set_value(!intakePiston.get_value());}
         if(controller.get_digital_new_press(leftCC)){leftClearer.set_value(!leftClearer.get_value());}
         if(controller.get_digital_new_press(rightCC)){rightClearer.set_value(!rightClearer.get_value());}
         if(controller.get_digital_new_press(colorSortingTog)){colorSorting = !colorSorting;}
-        if(controller.get_digital_new_press(teamColorTog)){
-            if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
-            else{teamColor = COLOR_RED;}
+        if(allowDebug){
+            if(controller.get_digital_new_press(teamColorTog)){
+                if(teamColor == COLOR_RED){teamColor = COLOR_BLUE;}
+                else{teamColor = COLOR_RED;}
+            }
+            if(controller.get_digital_new_press(instantLiftTog)){instantLift2 = !instantLift2;}
+            //if(controller.get_digital_new_press(specialIntakeTog)){specialIntake = !specialIntake;}
         }
-        if(controller.get_digital_new_press(instantLiftTog)){instantLift2 = !instantLift2;}
-        if(controller.get_digital_new_press(specialIntakeTog)){specialIntake = !specialIntake;}
 
         //lcd::set_text(1, std::to_string(WMPotentiometer.get_value()));
 
@@ -385,7 +392,6 @@ void runComboSystem(){
     //^ 18: second secret state where the bottom's outtaking while the top's intaking. controller unable to reach this state
     //^ 19: third secret state where its 17 but the wall mech is up
     //^ 20: dejam
-
     //^ 21: intake running, wall mech out forward
     //^ 22: intake stopped, wall mech out forward
     //^ 23: hang state (intake stopped, wall mech barely high enough to get the hang bars up)
@@ -534,11 +540,11 @@ void runComboSystem(){
             dejamIncomingState = comboState;
             comboState = 20;
         }
-        if(controller.get_digital_new_press(wallMechUp)){ //manual wall mech target editing
+        if(controller.get_digital_new_press(wallMechUp) && allowDebug){ //manual wall mech target editing
             if(comboState == 4 || comboState == 5){WMLoadingTarget += WMManualSpeed;}
             else if(comboState >= 6 && comboState <= 9){WMScoringTarget -= WMManualSpeed;} // + or - up to driver
         }
-        else if(controller.get_digital_new_press(wallMechDown)){
+        else if(controller.get_digital_new_press(wallMechDown) && allowDebug){
             if(comboState == 4 || comboState == 5){WMLoadingTarget -= WMManualSpeed;}
             else if(comboState >= 6 && comboState <= 9){WMScoringTarget += WMManualSpeed;} // + or - up to driver
         }
@@ -838,14 +844,20 @@ void runWallMech(){ //also holds printing so we only print in one task
         lcd::print(1, "%f : yPos", yPos);
         lcd::print(2, "%f : tPos", tPos * 180.0 / pi);
 
-        lcd::print(4, "%d : comboState", comboState);
         lcd::print(5, "%f : WM pos", WMPosition);
         lcd::print(6, "%f : WM target", WMTarget);
         lcd::print(7, "%f : todeg(norm(getang()))", 180.0 / pi * normAngle(getAngle()));
         */
+        //lcd::print(4, "%d : comboState", comboState);
 
-        std::cout << comboState << "\n";
         
+        if(teamColor == COLOR_RED){printTeamBool = 1;}
+        else{printTeamBool = 0;}
+
+        if(controller.get_digital(DIGITAL_R1) && controller.get_digital(DIGITAL_R2) && controller.get_digital(DIGITAL_L1) && controller.get_digital(DIGITAL_L2)){std::cout << "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<< "\n";}
+        else{std::cout << "redQuotient: " << opticalSensor.get_raw().red / opticalSensor.get_brightness() << " - " "opticalProximity: " << opticalSensor.get_proximity() << " - " << "comboState: " << comboState << " - " << "backClawBool: " << backClawBool << " - " << "specialIntake: " << specialIntake << " - " << "teamBool: " << printTeamBool << " - " << "dejamTimer: " << dejamtimer << " - " << "checkDejam: " << checkDejam << " - " << "dejamIncomingState: " << dejamIncomingState << " - " << "forcedTransit: " << forcedTransit << " - " << "forcedState: " << forcedState << " - " << "\n" << "\n";}
+        
+
         delay(10);
     }
 }
@@ -858,7 +870,11 @@ void transit(int forcedStateInput){ //force exit from color sort in auton
 }
 
 void dejam(int incomingState){
-    if (intakeTop.get_actual_velocity() > dejamBarrier){dejamtimer = 0; transit(incomingState);}
+    if (intakeTop.get_actual_velocity() > dejamBarrier){
+        dejamtimer = 0;
+        transit(incomingState);
+        if(incomingState < 10 || incomingState > 15){forcedTransit = 0;}
+    }
     else{
         dejamtimer++;
         //transit(incomingState);
@@ -869,5 +885,6 @@ void dejam(int incomingState){
         intake.move_voltage(-intakeVoltage);
         delay(167);
         transit(incomingState);
+        if(incomingState < 10 || incomingState > 15){forcedTransit = 0;}
     }
 }
