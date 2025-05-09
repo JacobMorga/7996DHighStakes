@@ -19,5 +19,6 @@ extern bool backClawBool;
 extern void dejam(int incomingState);
 //extern bool state21stop;
 extern float WMForwardTarget;
+extern bool allowDebug;
 
 #endif

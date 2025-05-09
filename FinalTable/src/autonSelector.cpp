@@ -26,9 +26,15 @@ void autonSelector (){
 
         status = screen::touch_status();
 
-            screen::set_pen(COLOR_WHITE);
             screen::set_eraser(COLOR_BLACK);
             screen::erase();
+
+            screen::set_pen(COLOR_BLUE);
+            screen::fill_rect(0, 0, 240, 240);
+            screen::set_pen(COLOR_RED);
+            screen::fill_rect(240, 0, 480, 240);
+
+            screen::set_pen(COLOR_WHITE);
 
             /*
             if (teamColor == COLOR_RED){
@@ -98,21 +104,28 @@ void autonSelector (){
             
             screen::set_pen(COLOR_WHITE);
 
+            //row 1
             screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,0  +yTxtOffset, "Blue Pos"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,0  +yTxtOffset, "Blue Neg"); 
             screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,0  +yTxtOffset, "Red Pos"); 
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,0  +yTxtOffset, "Red Neg"); 
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, ""); 
+
+            //row 2
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,60 +yTxtOffset, "AS NRush"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,60 +yTxtOffset, "AS Cor"); //blue negative alliance stake corner
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,60 +yTxtOffset, "AS NRush");
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,60 +yTxtOffset, "AS Cor"); //red negative alliance stake corner
+
+            //row 3
             screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,120+yTxtOffset, ""); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,120+yTxtOffset, "AS Lad"); //blue negative
             screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,120+yTxtOffset, ""); 
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,120+yTxtOffset, "AS Lad"); //red negative
-            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, ""); 
+
+            //row 4
+            screen::print(TEXT_MEDIUM_CENTER, 0  +xTxtOffset,180+yTxtOffset, "NS NR"); 
             screen::print(TEXT_MEDIUM_CENTER, 120+xTxtOffset,180+yTxtOffset, "NS Lad"); //blue negative
-            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, ""); 
+            screen::print(TEXT_MEDIUM_CENTER, 240+xTxtOffset,180+yTxtOffset, "NS NR"); 
             screen::print(TEXT_MEDIUM_CENTER, 360+xTxtOffset,180+yTxtOffset, "NS Lad"); //red negative
 
 

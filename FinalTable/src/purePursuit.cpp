@@ -405,11 +405,11 @@ void runCodeDuringCode (){
             transit(21);
             whatToRun = 0;
         }
-        else if(whatToRun == 8 && ((180 / pi * normAngle(getAngle())) >= 15.0)){
+        else if(whatToRun == 8 && ((180.0 / pi * normAngle(getAngle())) >= 15.0)){
             rightClearer.set_value(0);
             whatToRun = 0;
         }
-        else if(whatToRun == 9 && ((180 / pi * normAngle(getAngle())) <= -15.0)){
+        else if(whatToRun == 9 && ((180.0 / pi * normAngle(getAngle())) <= -15.0)){
             leftClearer.set_value(0);
             whatToRun = 0;
         }

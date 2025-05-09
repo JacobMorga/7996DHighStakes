@@ -83,22 +83,26 @@ void autonomous() {
 	screen::set_pen(COLOR_BLACK);
 	screen::set_eraser(COLOR_GREEN);
 	runThisCodeShort = 0;
+	allowDebug = 0;
 	
 	if      (autonSelected == 1 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Pos"); bluePos();} // Runs auton based on auton selector output
 	else if (autonSelected == 2 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Blue Neg"); blueNeg();} // And prints what auton its running
 	else if (autonSelected == 3 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Pos");  redPos();}
-	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg"); redNeg();}
-	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
-	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNAS Cor");  blueNegAS();}
-	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
-	else if (autonSelected == 8 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNAS Cor"); 	redNegAS();}
+	else if (autonSelected == 4 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "Red Neg");  redNeg();}
+
+	else if (autonSelected == 5 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPAS NR");  bluePosNoRush();}
+	else if (autonSelected == 6 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNAS Cor"); blueNegAS();}
+	else if (autonSelected == 7 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPAS NR");  redPosNoRush();}
+	else if (autonSelected == 8 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNAS Cor"); redNegAS();}
+
 	else if (autonSelected == 9 ){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
 	else if (autonSelected == 10){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNAS Lad"); ladderTouch = 1; blueNegAS();}
 	else if (autonSelected == 11){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
 	else if (autonSelected == 12){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNAS Lad"); ladderTouch = 1; redNegAS();}
-	else if (autonSelected == 13){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+
+	else if (autonSelected == 13){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BPNS NR");  skipAS = 1; bluePosNoRush();}
 	else if (autonSelected == 14){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "BNNS Lad"); skipAS = 1; ladderTouch = 1; blueNegAS();}
-	else if (autonSelected == 15){printAtPoint(TEXT_LARGE_CENTER, 180, 100, ""); }
+	else if (autonSelected == 15){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RPNS NR");  skipAS = 1; redPosNoRush();}
 	else if (autonSelected == 16){printAtPoint(TEXT_LARGE_CENTER, 180, 100, "RNNS Lad"); skipAS = 1; ladderTouch = 1; redNegAS();}
 	
 	else {
